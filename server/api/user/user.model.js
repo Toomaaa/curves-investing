@@ -7,7 +7,10 @@ import mongoose, {Schema} from 'mongoose';
 const authTypes = ['github', 'twitter', 'facebook', 'google'];
 
 var UserSchema = new Schema({
+  isActivated: Boolean,
   name: String,
+  // firstName: String,
+  // lastName: String,
   email: {
     type: String,
     lowercase: true,
@@ -33,6 +36,10 @@ var UserSchema = new Schema({
       }
     }
   },
+  isPasswordSet: Boolean,
+  individualAccount: Boolean,
+  isPartofClub: Boolean,
+  club: Array,
   provider: String,
   salt: String,
   facebook: {},
