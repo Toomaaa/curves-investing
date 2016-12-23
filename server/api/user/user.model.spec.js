@@ -6,7 +6,8 @@ var user;
 var genUser = function() {
   user = new User({
     provider: 'local',
-    name: 'Fake User',
+    firstName: 'Fake',
+    lastName: 'User',
     email: 'test@example.com',
     password: 'password'
   });
@@ -120,7 +121,8 @@ describe('User Model', function() {
       });
 
       it('should remain the same hash unless the password is updated', function() {
-        user.name = 'Test User';
+        user.firstName = 'Test';
+        user.lastName = 'User';
         return expect(user.save()
           .then(function(u) {
             return u.authenticate('password');

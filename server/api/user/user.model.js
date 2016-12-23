@@ -8,9 +8,9 @@ const authTypes = ['github', 'twitter', 'facebook', 'google'];
 
 var UserSchema = new Schema({
   isActivated: Boolean,
-  name: String,
-  // firstName: String,
-  // lastName: String,
+  // name: String,
+  firstName: String,
+  lastName: String,
   email: {
     type: String,
     lowercase: true,
@@ -56,7 +56,8 @@ UserSchema
   .virtual('profile')
   .get(function() {
     return {
-      name: this.name,
+      firstName: this.firstName,
+      lastName: this.lastName,
       role: this.role
     };
   });
