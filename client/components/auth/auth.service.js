@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 'use strict';
 
 class _User {
