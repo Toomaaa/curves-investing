@@ -1,155 +1,85 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-12">
-      <h1>Enregistrement</h1>
+      <h1>Sign up</h1>
     </div>
     <div class="col-sm-12">
-      <uib-tabset active="activeJustified">
-        <uib-tab index="0" heading="Compte individuel">
-          <br />
-          <form class="form" name="form" ng-submit="vm.registerUser(form)" novalidate>
+      <form class="form" name="form" ng-submit="vm.register(form)" novalidate>
 
-            <div class="row">
-              <div class="col-sm-6">
-                <div class="form-group" ng-class="{ 'has-success': form.firstName.$valid && vm.submitted,
-                                                    'has-error': form.firstName.$invalid && vm.submitted }">
-                  <label>Prénom</label>
+        <div class="form-group" ng-class="{ 'has-success': form.name.$valid && vm.submitted,
+                                            'has-error': form.name.$invalid && vm.submitted }">
+          <label>Name</label>
 
-                  <input type="text" name="firstName" class="form-control" ng-model="vm.user.firstName"
-                         required autofocus />
-                  <p class="help-block" ng-show="form.firstName.$error.required && vm.submitted">
-                    Votre prénom est requis
-                  </p>
-                </div>
-              </div>
+          <input type="text" name="name" class="form-control" ng-model="vm.user.name"
+                 required/>
+          <p class="help-block" ng-show="form.name.$error.required && vm.submitted">
+            A name is required
+          </p>
+        </div>
 
-              <div class="col-sm-6">
-                <div class="form-group" ng-class="{ 'has-success': form.lastName.$valid && vm.submitted,
-                                                    'has-error': form.lastName.$invalid && vm.submitted }">
-                  <label>Nom</label>
+        <div class="form-group" ng-class="{ 'has-success': form.email.$valid && vm.submitted,
+                                            'has-error': form.email.$invalid && vm.submitted }">
+          <label>Email</label>
 
-                  <input type="text" name="lastName" class="form-control" ng-model="vm.user.lastName"
-                         required/>
-                  <p class="help-block" ng-show="form.lastName.$error.required && vm.submitted">
-                    Votre nom est requis
-                  </p>
-                </div>
-              </div>
-            </div>
+          <input type="email" name="email" class="form-control" ng-model="vm.user.email"
+                 required
+                 mongoose-error/>
+          <p class="help-block" ng-show="form.email.$error.email && vm.submitted">
+            Doesn't look like a valid email.
+          </p>
+          <p class="help-block" ng-show="form.email.$error.required && vm.submitted">
+            What's your email address?
+          </p>
+          <p class="help-block" ng-show="form.email.$error.mongoose">
+            {{ vm.errors.email }}
+          </p>
+        </div>
 
-            <div class="form-group" ng-class="{ 'has-success': form.email.$valid && vm.submitted,
-                                                'has-error': form.email.$invalid && vm.submitted }">
-              <label>Email</label>
+        <div class="form-group" ng-class="{ 'has-success': form.password.$valid && vm.submitted,
+                                            'has-error': form.password.$invalid && vm.submitted }">
+          <label>Password</label>
 
-              <input type="email" name="email" class="form-control" ng-model="vm.user.email"
-                     required
-                     mongoose-error/>
-              <p class="help-block" ng-show="form.email.$error.email && vm.submitted">
-                Cela ne semble pas être une adresse email valide.
-              </p>
-              <p class="help-block" ng-show="form.email.$error.required && vm.submitted">
-                Quelle est votre adresse email ?
-              </p>
-              <p class="help-block" ng-show="form.email.$error.mongoose">
-                {{ vm.errors.email }}
-              </p>
-            </div>
+          <input type="password" name="password" class="form-control" ng-model="vm.user.password"
+                 ng-minlength="3"
+                 required
+                 mongoose-error/>
+          <p class="help-block"
+             ng-show="(form.password.$error.minlength || form.password.$error.required) && vm.submitted">
+            Password must be at least 3 characters.
+          </p>
+          <p class="help-block" ng-show="form.password.$error.mongoose">
+            {{ vm.errors.password }}
+          </p>
+        </div>
 
+        <div class="form-group" ng-class="{ 'has-success': form.confirmPassword.$valid && vm.submitted,
+                                            'has-error': form.confirmPassword.$invalid && vm.submitted }">
+          <label>Confirm Password</label>
+          <input type="password" name="confirmPassword" class="form-control" ng-model="vm.user.confirmPassword"
+                 match="vm.user.password"
+                 ng-minlength="3" required/>
+          <p class="help-block"
+             ng-show="form.confirmPassword.$error.match && vm.submitted">
+            Passwords must match.
+          </p>
+        </div>
 
-            <div class="row">
-              <div class="col-sm-6">
-                <div class="form-group" ng-class="{ 'has-success': form.password.$valid && vm.submitted,
-                                                    'has-error': form.password.$invalid && vm.submitted }">
-                  <label>Mot de passe</label>
+        <div>
+          <button class="btn btn-inverse btn-lg btn-register" type="submit">
+            Sign up
+          </button>
+          <a class="btn btn-default btn-lg btn-login" ui-sref="login">
+            Login
+          </a>
+        </div>
 
-                  <input type="password" name="password" class="form-control" ng-model="vm.user.password"
-                         ng-minlength="3"
-                         required
-                         mongoose-error/>
-                  <p class="help-block"
-                     ng-show="(form.password.$error.minlength || form.password.$error.required) && vm.submitted">
-                    Le mot de passe doit être d'au moins 3 caractères.
-                  </p>
-                  <p class="help-block" ng-show="form.password.$error.mongoose">
-                    {{ vm.errors.password }}
-                  </p>
-                </div>
-              </div>
-
-              <div class="col-sm-6">
-                <div class="form-group" ng-class="{ 'has-success': form.confirmPassword.$valid && vm.submitted,
-                                                    'has-error': form.confirmPassword.$invalid && vm.submitted }">
-                  <label>Confirmer le mot de passe</label>
-                  <input type="password" name="confirmPassword" class="form-control" ng-model="vm.user.confirmPassword"
-                         match="vm.user.password"
-                         ng-minlength="3" required/>
-                  <p class="help-block"
-                     ng-show="form.confirmPassword.$error.match && vm.submitted">
-                    Les mots de passe doivent être identiques.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-group" ng-class="{ 'has-success': form.userClubCode.$valid && vm.submitted,
-                                                'has-error': form.userClubCode.$invalid && vm.submitted }">
-              <label>Si vous faites partie d'un club d'investissement, entrez son code</label>
-
-                                                                      <!-- ng-model="vm.user.firstName" -->
-              <input type="text" name="clubCode" class="form-control" 
-                      />
-              <!-- <p class="help-block" ng-show="form.clubCode.$error.required && vm.submitted">
-                Votre prénom est requis
-              </p> -->
-            </div>
-
-            <div>
-              <button class="btn btn-inverse btn-lg btn-register" type="submit">
-                S'enregistrer
-              </button>
-              <a class="btn btn-default btn-lg btn-login" ui-sref="login">
-                Connexion
-              </a>
-            </div>
-
-            <hr/>
-            <div class="row">
-              <div class="col-sm-4 col-md-3">
-                <oauth-buttons classes="btn-block"></oauth-buttons>
-              </div>
-            </div>
-          </form>
-        </uib-tab>
-        <uib-tab index="1" heading="Club d'investissement" disable="tab.disabled">
-
-          <br />
-          <form class="form" name="form" ng-submit="vm.registerClub(form)" novalidate>
-
-            <div class="form-group" ng-class="{ 'has-success': form.clubName.$valid && vm.submitted,
-                                                'has-error': form.clubName.$invalid && vm.submitted }">
-              <label>Nom du club d'investissement</label>
-
-              <input type="text" name="clubName" class="form-control" ng-model="vm.club.clubName"
-                     required />
-              <p class="help-block" ng-show="form.clubName.$error.required && vm.submitted">
-                Le nom du club est requis
-              </p>
-            </div>
-
-            <div>
-              <button class="btn btn-inverse btn-lg btn-register" type="submit">
-                S'enregistrer
-              </button>
-              <a class="btn btn-default btn-lg btn-login" ui-sref="login">
-                Connexion
-              </a>
-            </div>
-
-          </form>
-
-
-        </uib-tab>
-      </uib-tabset>
+        <hr/>
+        <div class="row">
+          <div class="col-sm-4 col-md-3">
+            <oauth-buttons classes="btn-block"></oauth-buttons>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
   <hr>

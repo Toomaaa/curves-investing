@@ -11,8 +11,7 @@ describe('User API:', function() {
   before(function() {
     return User.remove().then(function() {
       user = new User({
-        firstName: 'Fake',
-        lastName: 'User',
+        name: 'Fake User',
         email: 'test@example.com',
         password: 'password'
       });
