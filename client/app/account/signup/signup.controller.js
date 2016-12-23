@@ -14,9 +14,10 @@ export default class SignupController {
 
 
   /*@ngInject*/
-  constructor(Auth, $state) {
+  constructor(Auth, $state, $http) {
     this.Auth = Auth;
     this.$state = $state;
+    this.$http = $http;
   }
 
   registerUser(form) {
@@ -50,36 +51,19 @@ export default class SignupController {
   }
 
   registerClub(form) {
-    this.submitted = true;
-    console.log("ok ici");
-
-    if(form.$valid) {
-      return this.Auth.createClub({
-        clubCode: 'ABCDE',
-        clubName: 'BIC',
-        initialAmount: 0,
-        monthlyAmount: 100,
-        shareAmount: 1,
-        creationDate: '2012-04-23T18:25:43.511Z',
-        exitPercentage: 2,
-        members: [],
-        president: { firstName: 'Guillaume', lastName: 'Bruno' },
-        treasurer: { firstName : 'Thomas', lastName: 'Anicotte' },
-        pendingApproval: []
-      })
-        .then(() => {
-          // Account created, redirect to home
-          this.$state.go('main');
-        })
-        .catch(err => {
-          err = err.data;
-          this.errors = {};
-          // Update validity of form fields that match the mongoose errors
-          angular.forEach(err.errors, (error, field) => {
-            form[field].$setValidity('mongoose', false);
-            this.errors[field] = error.message;
-          });
-        });
-    }
+    this.$http.post('/api/clubs', {
+      clubCode: 'ABCDE',
+      clubName: this.club.clubName,
+      initialAmount: this.club.initialAmount,
+      monthlyAmount: this.club.monthlyAmount,
+      shareAmount: this.club.shareAmount,
+      creationDate: this.club.creationDate,
+      exitPercentage: this.club.exitPercentage,
+      members: [],
+      president: { firstName: 'Guillaume', lastName: 'Bruno' },
+      treasurer: { firstName : 'Thomas', lastName: 'Anicotte' },
+      pendingApproval: []
+    });
   }
+
 }

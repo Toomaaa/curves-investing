@@ -136,8 +136,63 @@
               </p>
             </div>
 
+            <div class="form-group" ng-class="{ 'has-success': form.initialAmount.$valid && vm.submitted,
+                                                'has-error': form.initialAmount.$invalid && vm.submitted }">
+              <label>Montant du versement initial</label>
+
+              <input type="text" name="initialAmount" class="form-control" ng-model="vm.club.initialAmount"
+                     required />
+              <p class="help-block" ng-show="form.initialAmount.$error.required && vm.submitted">
+                Le montant du versement initial est requis
+              </p>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-success': form.monthlyAmount.$valid && vm.submitted,
+                                                'has-error': form.monthlyAmount.$invalid && vm.submitted }">
+              <label>Montant du versement mensuel</label>
+
+              <input type="text" name="monthlyAmount" class="form-control" ng-model="vm.club.monthlyAmount"
+                     required />
+              <p class="help-block" ng-show="form.monthlyAmount.$error.required && vm.submitted">
+                Le montant du versement mensuel est requis
+              </p>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-success': form.shareAmount.$valid && vm.submitted,
+                                                'has-error': form.shareAmount.$invalid && vm.submitted }">
+              <label>Montant de la part</label>
+
+              <input type="text" name="shareAmount" class="form-control" ng-model="vm.club.shareAmount"
+                     required />
+              <p class="help-block" ng-show="form.shareAmount.$error.required && vm.submitted">
+                Le montant de la part est requis
+              </p>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-success': form.exitPercentage.$valid && vm.submitted,
+                                                'has-error': form.exitPercentage.$invalid && vm.submitted }">
+              <label>Pourcentage de frais de démission</label>
+
+              <input type="text" name="exitPercentage" class="form-control" ng-model="vm.club.exitPercentage"
+                     required />
+              <p class="help-block" ng-show="form.exitPercentage.$error.required && vm.submitted">
+                Le pourcentage de frais de démission est requis
+              </p>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-success': form.creationDate.$valid && vm.submitted,
+                                                'has-error': form.creationDate.$invalid && vm.submitted }">
+              <label>Date de création du club</label>
+
+              <input type="date" name="creationDate" class="form-control" ng-model="vm.club.creationDate"
+                     required />
+              <p class="help-block" ng-show="form.creationDate.$error.required && vm.submitted">
+                La date de création du club est requise
+              </p>
+            </div>
+
             <div>
-              <button class="btn btn-inverse btn-lg btn-register" type="submit">
+              <button class="btn btn-inverse btn-lg btn-register" type="submit"> <!--  ng-click="$ctrl.registerClub()"> -->
                 S'enregistrer
               </button>
               <a class="btn btn-default btn-lg btn-login" ui-sref="login">
