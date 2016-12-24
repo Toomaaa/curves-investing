@@ -1,0 +1,20 @@
+.select-text-center {
+	text-align-last: center
+}
+
+.signup-members-plus {
+	font-size: 25px;
+}
+
+.signup-members-plus i {
+	cursor: pointer;
+}
+
+.signup-members-trash {
+	font-size: 20px;
+	text-align: left;
+}
+
+.signup-members-trash i {
+	cursor: pointer;
+}

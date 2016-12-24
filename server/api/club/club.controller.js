@@ -78,6 +78,14 @@ export function show(req, res) {
     .catch(handleError(res));
 }
 
+// Gets a single Club from his clubCode from the DB
+export function clubCodeGet(req, res) {
+  return Club.findOne({ clubCode : req.params.clubCode }).exec()
+    .then(handleEntityNotFound(res))
+    .then(respondWithResult(res))
+    .catch(handleError(res));
+}
+
 // Creates a new Club in the DB
 export function create(req, res) {
   return Club.create(req.body)
