@@ -1,4 +1,4 @@
-<div class="container"><!--   ng-init="members = [      { firstName: '', lastName: '', function: 'Président', email: '' },      { firstName: '', lastName: '', function: 'Trésorier', email: '' },      { firstName: '', lastName: '', function: 'Membre', email: '' },      { firstName: '', lastName: '', function: 'Membre', email: '' },      { firstName: '', lastName: '', function: 'Membre', email: '' }    ]"> -->
+<div class="container">
   <div class="row">
     <div class="col-sm-12">
       <h1>Enregistrement</h1>
@@ -159,10 +159,13 @@
                                                     'has-error': clubForm.initialAmount.$invalid && vm.submitted }">
                   <label>Montant du versement initial</label>
 
-                  <input type="text" name="initialAmount" class="form-control" ng-model="vm.club.initialAmount"
+                  <input type="number" name="initialAmount" class="form-control" ng-model="vm.club.initialAmount"
                          required />
                   <p class="help-block" ng-show="clubForm.initialAmount.$error.required && vm.submitted">
                     Le montant du versement initial est requis
+                  </p>
+                  <p class="help-block" ng-show="clubForm.initialAmount.$error.number && vm.submitted">
+                    Entrez un nombre
                   </p>
                 </div>
               </div>
@@ -172,10 +175,13 @@
                                                     'has-error': clubForm.monthlyAmount.$invalid && vm.submitted }">
                   <label>Montant du versement mensuel</label>
 
-                  <input type="text" name="monthlyAmount" class="form-control" ng-model="vm.club.monthlyAmount"
+                  <input type="number" name="monthlyAmount" class="form-control" ng-model="vm.club.monthlyAmount"
                          required />
                   <p class="help-block" ng-show="clubForm.monthlyAmount.$error.required && vm.submitted">
                     Le montant du versement mensuel est requis
+                  </p>
+                  <p class="help-block" ng-show="clubForm.monthlyAmount.$error.number && vm.submitted">
+                    Entrez un nombre
                   </p>
                 </div>
               </div>
@@ -185,10 +191,13 @@
                                                     'has-error': clubForm.shareAmount.$invalid && vm.submitted }">
                   <label>Montant de la part</label>
 
-                  <input type="text" name="shareAmount" class="form-control" ng-model="vm.club.shareAmount"
+                  <input type="number" name="shareAmount" class="form-control" ng-model="vm.club.shareAmount"
                          required />
                   <p class="help-block" ng-show="clubForm.shareAmount.$error.required && vm.submitted">
                     Le montant de la part est requis
+                  </p>
+                  <p class="help-block" ng-show="clubForm.shareAmount.$error.number && vm.submitted">
+                    Entrez un nombre
                   </p>
                 </div>
               </div>
@@ -198,10 +207,13 @@
                                                     'has-error': clubForm.exitPercentage.$invalid && vm.submitted }">
                   <label>Pourcentage de frais de démission</label>
 
-                  <input type="text" name="exitPercentage" class="form-control" ng-model="vm.club.exitPercentage"
+                  <input type="number" name="exitPercentage" class="form-control" ng-model="vm.club.exitPercentage"
                          required />
                   <p class="help-block" ng-show="clubForm.exitPercentage.$error.required && vm.submitted">
                     Le pourcentage de frais de démission est requis
+                  </p>
+                  <p class="help-block" ng-show="clubForm.exitPercentage.$error.number && vm.submitted">
+                    Entrez un nombre
                   </p>
                 </div>
               </div>
@@ -212,8 +224,8 @@
 
               <div class="col-sm-12">
                 <br />
-                <div class="form-group text-center" ng-class="{ 'has-success': clubForm.members.$valid && vm.submitted,
-                                                    'has-error': clubForm.members.$invalid && vm.submitted }">
+                <div class="text-center">
+
                   <label>Membres</label>
                   <br /><br />
 
@@ -233,11 +245,19 @@
                   </div>
 
                   <div class="row" ng-repeat="(i, member) in members track by $index">
-                    <div class="col-sm-offset-2 col-sm-2">
-                      <input class="form-control" ng-model="member.firstName" required />
+                    <div class="col-sm-offset-2 col-sm-2" ng-class="{ 'has-success': clubForm.firstName{{i}}.$valid && vm.submitted,
+                                                    'has-error': clubForm.firstName{{i}}.$invalid && vm.submitted }">
+                      <input class="form-control" type="text" name="firstName{{i}}" ng-model="member.firstName" required />
+                      <p class="help-block" ng-show="clubForm.firstName{{i}}.$error.required && vm.submitted">
+                        Prénom requis
+                      </p>
                     </div>
-                    <div class="col-sm-2">
-                      <input class="form-control" ng-model="member.lastName" required />
+                    <div class="col-sm-2" ng-class="{ 'has-success': clubForm.lastName{{i}}.$valid && vm.submitted,
+                                                    'has-error': clubForm.lastName{{i}}.$invalid && vm.submitted }">
+                      <input class="form-control" type="text" name="lastName{{i}}" ng-model="member.lastName" required />
+                      <p class="help-block" ng-show="clubForm.lastName{{i}}.$error.required && vm.submitted">
+                        Nom requis
+                      </p>
                     </div>
                     <div class="col-sm-2">
                       <select class="form-control select-text-center" name="function" ng-model="member.function" />
@@ -246,8 +266,18 @@
                         <option value="member">Membre</option>
                       </select>
                     </div>
-                    <div class="col-sm-2">
-                      <input class="form-control" ng-model="member.email" required />
+                    <div class="col-sm-2" ng-class="{ 'has-success': clubForm.email{{i}}.$valid && vm.submitted,
+                                                    'has-error': clubForm.email{{i}}.$invalid && vm.submitted }">
+                      <input class="form-control" type="email" name="email{{i}}" ng-model="member.email" required />
+                      <p class="help-block" ng-show="clubForm.email{{i}}.$error.email && vm.submitted">
+                        Email non valide
+                      </p>
+                      <p class="help-block" ng-show="clubForm.email{{i}}.$error.required && vm.submitted">
+                        Email requis
+                      </p>
+                      <p class="help-block" ng-show="clubForm.email{{i}}.$error.mongoose">
+                        {{ vm.errors.email }}
+                      </p>
                     </div>
                     <div class="col-sm-1 signup-members-trash">
                       <i class="fa fa-trash" aria-hidden="true" ng-click="removeMember(i)"></i>

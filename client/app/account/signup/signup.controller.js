@@ -86,44 +86,45 @@ export default class SignupController {
 
 
   registerClub(form) {
-    var members = angular.copy(this.$scope.members);
+    this.submitted = true;
 
-    var president = members.find(findPresident);
-    members.splice(members.indexOf(president),1);
-    var treasurer = members.find(findTreasurer);
-    members.splice(members.indexOf(treasurer),1);
+    if(form.$valid) {
+      var members = angular.copy(this.$scope.members);
+
+      var president = members.find(findPresident);
+      members.splice(members.indexOf(president),1);
+      var treasurer = members.find(findTreasurer);
+      members.splice(members.indexOf(treasurer),1);
 
 
-    generateClubCode(this.$http, this.club, function(clubCode, api, club) {
-      api.post('/api/clubs', {
-        clubCode: clubCode,
-        clubName: club.clubName,
-        initialAmount: club.initialAmount,
-        monthlyAmount: club.monthlyAmount,
-        shareAmount: club.shareAmount,
-        creationDate: club.creationDate,
-        exitPercentage: club.exitPercentage,
-        members: members,
-        president: president,
-        treasurer: treasurer,
-        pendingApproval: []
-      })
-        .then(function(response) {
-          console.log('then : '+response.data);
+      generateClubCode(this.$http, this.club, function(clubCode, api, club) {
+        api.post('/api/clubs', {
+          clubCode: clubCode,
+          clubName: club.clubName,
+          initialAmount: club.initialAmount,
+          monthlyAmount: club.monthlyAmount,
+          shareAmount: club.shareAmount,
+          creationDate: club.creationDate,
+          exitPercentage: club.exitPercentage,
+          members: members,
+          president: president,
+          treasurer: treasurer,
+          pendingApproval: []
         })
-        .catch(function(response) {
-          console.log('catch : '+response.data);
-        })
-        .finally(function() {
-          console.log('finally post');
-        });
-    });
+          .then(function(response) {
+            console.log('then : '+response.data);
+          })
+          .catch(function(response) {
+            console.log('catch : '+response.data);
+          })
+          .finally(function() {
+            console.log('finally post');
+          });
+      });
+    }
+    
 
     
-    
-
-
-
     function findPresident(element) {
       return element.function == 'president';
     }
