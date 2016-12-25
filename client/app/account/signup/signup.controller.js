@@ -36,6 +36,20 @@ export default class SignupController {
       $scope.members.splice(i,1);
       if($scope.members.length < 5) { $scope.members.push({ firstName: '', lastName: '', function: 'Membre', email: '' }); }
     };
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
   }
 
   registerUser(form) {
@@ -70,24 +84,26 @@ export default class SignupController {
 
 
 
+
   registerClub(form) {
-    var membersXX = this.$scope.members;
+    var members = angular.copy(this.$scope.members);
 
-    var president = membersXX.find(findPresident);
-    membersXX.splice(membersXX.indexOf(president),1);
-    var treasurer = membersXX.find(findTreasurer);
-    membersXX.splice(membersXX.indexOf(treasurer),1);
+    var president = members.find(findPresident);
+    members.splice(members.indexOf(president),1);
+    var treasurer = members.find(findTreasurer);
+    members.splice(members.indexOf(treasurer),1);
 
 
-    this.$http.post('/api/clubs', {
-        clubCode: 'ABCDE',
-        clubName: this.club.clubName,
-        initialAmount: this.club.initialAmount,
-        monthlyAmount: this.club.monthlyAmount,
-        shareAmount: this.club.shareAmount,
-        creationDate: this.club.creationDate,
-        exitPercentage: this.club.exitPercentage,
-        members: membersXX,
+    generateClubCode(this.$http, this.club, function(clubCode, api, club) {
+      api.post('/api/clubs', {
+        clubCode: clubCode,
+        clubName: club.clubName,
+        initialAmount: club.initialAmount,
+        monthlyAmount: club.monthlyAmount,
+        shareAmount: club.shareAmount,
+        creationDate: club.creationDate,
+        exitPercentage: club.exitPercentage,
+        members: members,
         president: president,
         treasurer: treasurer,
         pendingApproval: []
@@ -101,6 +117,9 @@ export default class SignupController {
         .finally(function() {
           console.log('finally post');
         });
+    });
+
+    
     
 
 
@@ -111,7 +130,7 @@ export default class SignupController {
     function findTreasurer(element) {
       return element.function == 'treasurer';
     }
-    function generateClubCode($http, callback)
+    function generateClubCode(api, clubData, callback)
     {
         var code = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -119,21 +138,22 @@ export default class SignupController {
         for( var i=0; i < 5; i++ )
           code += possible.charAt(Math.floor(Math.random() * possible.length));
 
-          // code = '';
-
-        // $http.get('/api/clubs/clubCode/'+code)
-        //   .then(function(response) {
-        //     if(response.status === 200) { console.log("200"); generateClubCode(); }
-        //   })
-        //   .catch(function(response) {
-        //     if(response.status === 404) { console.log("404"); callback(code); }
-        //   })
-        //   .finally(function() {
-        //     console.log("ok finally");
-        //   });
-        callback(code);
+        api.get('/api/clubs/clubCode/'+code)
+          .then(function(response) {
+            if(response.status === 200) { console.log("200"); generateClubCode(api, clubData, callback); }
+          })
+          .catch(function(response) {
+            if(response.status === 404) { console.log("404"); callback(code, api, clubData); }
+          })
+          .finally(function() {
+            console.log("ok finally");
+          });
         
     }
   }
+
+
+
+  
 
 }
