@@ -102,7 +102,38 @@ export default class SignupController {
           pendingApproval: []
         })
           .then(function(response) {
-            console.log('then : '+response.data);
+            
+            scope.members.forEach(function(member) {
+
+              // generateFakePassword(function(fakePassword) {
+                api.post('/api/users', {
+                  isActivated: false,
+                  firstName: member.firstName,
+                  lastName: member.lastName,
+                  email: member.email,
+                  password: generateFakePassword(),
+                  isPasswordSet: false,
+                  individualAccount: false,
+                  isPartOfClub: true,
+                  club: [ { clubCode: clubCode, status: 'Approved', function: member.function } ]
+                })
+                  .then(function(response) {
+                    console.log("then post 2 : ");
+                    console.log(response);
+                  })
+                  .catch(function(response) {
+
+                    console.log("catch post 2 : ");
+                    console.log(response);
+                  })
+                  .finally(function() {
+                    console.log("finally 2");
+                  });
+              // });
+
+              
+            });
+              
             scope.clubSubmitted = true;
           })
           .catch(function(response) {
@@ -141,6 +172,17 @@ export default class SignupController {
             console.log("ok finally");
           });
         
+    }
+
+    function generateFakePassword()
+    {
+        var passwd = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!?#._-";
+
+        for( var i=0; i < 15; i++ )
+          passwd += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return passwd;
     }
   }
 
