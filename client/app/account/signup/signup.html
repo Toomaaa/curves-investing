@@ -3,7 +3,7 @@
     <div class="col-sm-12">
       <h1>Enregistrement</h1>
     </div>
-    <div class="col-sm-12">
+    <div class="col-sm-12" ng-show="clubSubmitted == false">
       <uib-tabset active="activeJustified">
         <uib-tab index="0" heading="Compte individuel">
           <br />
@@ -149,6 +149,9 @@
                   <p class="help-block" ng-show="clubForm.creationDate.$error.required && vm.submitted">
                     La date de création du club est requise
                   </p>
+                  <p class="help-block" ng-show="clubForm.creationDate.$error.date && vm.submitted">
+                    Le format de date n'est pas valide
+                  </p>
                 </div>
               </div>
             </div>
@@ -159,8 +162,11 @@
                                                     'has-error': clubForm.initialAmount.$invalid && vm.submitted }">
                   <label>Montant du versement initial</label>
 
-                  <input type="number" name="initialAmount" class="form-control" ng-model="vm.club.initialAmount"
-                         required />
+                  <div class="input-group">
+                    <input type="number" name="initialAmount" class="form-control" ng-model="vm.club.initialAmount"
+                           required />
+                    <span class="input-group-addon">€</span>
+                  </div>
                   <p class="help-block" ng-show="clubForm.initialAmount.$error.required && vm.submitted">
                     Le montant du versement initial est requis
                   </p>
@@ -175,8 +181,11 @@
                                                     'has-error': clubForm.monthlyAmount.$invalid && vm.submitted }">
                   <label>Montant du versement mensuel</label>
 
-                  <input type="number" name="monthlyAmount" class="form-control" ng-model="vm.club.monthlyAmount"
-                         required />
+                  <div class="input-group">
+                    <input type="number" name="monthlyAmount" class="form-control" ng-model="vm.club.monthlyAmount"
+                           required />
+                    <span class="input-group-addon">€</span>
+                  </div>
                   <p class="help-block" ng-show="clubForm.monthlyAmount.$error.required && vm.submitted">
                     Le montant du versement mensuel est requis
                   </p>
@@ -191,8 +200,11 @@
                                                     'has-error': clubForm.shareAmount.$invalid && vm.submitted }">
                   <label>Montant de la part</label>
 
-                  <input type="number" name="shareAmount" class="form-control" ng-model="vm.club.shareAmount"
-                         required />
+                  <div class="input-group">
+                    <input type="number" name="shareAmount" class="form-control" ng-model="vm.club.shareAmount"
+                           required />
+                    <span class="input-group-addon">€</span>
+                  </div>
                   <p class="help-block" ng-show="clubForm.shareAmount.$error.required && vm.submitted">
                     Le montant de la part est requis
                   </p>
@@ -207,8 +219,11 @@
                                                     'has-error': clubForm.exitPercentage.$invalid && vm.submitted }">
                   <label>Pourcentage de frais de démission</label>
 
-                  <input type="number" name="exitPercentage" class="form-control" ng-model="vm.club.exitPercentage"
+                  <div class="input-group">
+                    <input type="number" name="exitPercentage" class="form-control" ng-model="vm.club.exitPercentage"
                          required />
+                    <span class="input-group-addon">%</span>
+                  </div>
                   <p class="help-block" ng-show="clubForm.exitPercentage.$error.required && vm.submitted">
                     Le pourcentage de frais de démission est requis
                   </p>
@@ -297,6 +312,12 @@
 
             </div>
 
+            <div class="row">
+              <div class="col-sm-12 text-center club-finalize-status">
+                Pour terminer l'inscription du club d'investissement et bénéficier de Curves gratuitement, merci d'envoyer une copie de vos statuts à <a href="mailto:club@curves-app.com?subject=Statuts du club {{vm.club.clubName}}">club@curves-app.com</a>
+              </div>
+            </div>
+
             <div>
               <button class="btn btn-inverse btn-lg btn-register" type="submit"> <!--  ng-click="$ctrl.registerClub()"> -->
                 S'enregistrer
@@ -308,9 +329,18 @@
 
           </form>
 
-
         </uib-tab>
       </uib-tabset>
+    </div>
+    <div class="col-sm-12" ng-show="clubSubmitted == true">
+      <br /><br />
+      Merci pour votre inscription.<br />
+      <br />
+      Dès que les statuts auront été reçus et traités par notre équipe, chaque membre du club recevra un email pour activer gratuitement son compte personnel.<br />
+      <br />
+      (Pour rappel, pour terminer l'inscription du club d'investissement et bénéficier de Curves gratuitement, merci d'envoyer une copie de vos statuts à <a href="mailto:club@curves-app.com?subject=Statuts du club {{vm.club.clubName}}">club@curves-app.com</a>)<br />
+      <br />
+      Merci pour votre confiance !
     </div>
   </div>
   <hr>

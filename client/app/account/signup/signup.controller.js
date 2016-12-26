@@ -29,25 +29,15 @@ export default class SignupController {
     ];
 
     this.$scope.addMember = function() {
-      if($scope.members.length < 20) $scope.members.push({ firstName: '', lastName: '', function: 'Membre', email: '' });
+      if($scope.members.length < 20) $scope.members.push({ firstName: '', lastName: '', function: 'member', email: '' });
     };
 
     this.$scope.removeMember = function(i) {
       $scope.members.splice(i,1);
-      if($scope.members.length < 5) { $scope.members.push({ firstName: '', lastName: '', function: 'Membre', email: '' }); }
+      if($scope.members.length < 5) { $scope.members.push({ firstName: '', lastName: '', function: 'member', email: '' }); }
     };
 
-
-
-    
-
-
-
-
-
-
-
-
+    this.$scope.clubSubmitted = false;
 
 
   }
@@ -97,7 +87,7 @@ export default class SignupController {
       members.splice(members.indexOf(treasurer),1);
 
 
-      generateClubCode(this.$http, this.club, function(clubCode, api, club) {
+      generateClubCode(this.$http, this.$scope, this.club, function(clubCode, api, scope, club) {
         api.post('/api/clubs', {
           clubCode: clubCode,
           clubName: club.clubName,
@@ -113,6 +103,7 @@ export default class SignupController {
         })
           .then(function(response) {
             console.log('then : '+response.data);
+            scope.clubSubmitted = true;
           })
           .catch(function(response) {
             console.log('catch : '+response.data);
@@ -124,14 +115,14 @@ export default class SignupController {
     }
     
 
-    
+
     function findPresident(element) {
       return element.function == 'president';
     }
     function findTreasurer(element) {
       return element.function == 'treasurer';
     }
-    function generateClubCode(api, clubData, callback)
+    function generateClubCode(api, scope, clubData, callback)
     {
         var code = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -141,10 +132,10 @@ export default class SignupController {
 
         api.get('/api/clubs/clubCode/'+code)
           .then(function(response) {
-            if(response.status === 200) { console.log("200"); generateClubCode(api, clubData, callback); }
+            if(response.status === 200) { console.log("200"); generateClubCode(api, scope, clubData, callback); }
           })
           .catch(function(response) {
-            if(response.status === 404) { console.log("404"); callback(code, api, clubData); }
+            if(response.status === 404) { console.log("404"); callback(code, api, scope, clubData); }
           })
           .finally(function() {
             console.log("ok finally");

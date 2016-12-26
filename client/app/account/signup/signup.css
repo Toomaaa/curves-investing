@@ -18,3 +18,9 @@
 .signup-members-trash i {
 	cursor: pointer;
 }
+
+.club-finalize-status {
+	font-size: 16px;
+	margin-top: 20px;
+	margin-bottom: 30px;
+}
