@@ -106,16 +106,21 @@ export default class SignupController {
             scope.members.forEach(function(member) {
 
               // generateFakePassword(function(fakePassword) {
-                api.post('/api/users', {
-                  isActivated: false,
+                api.post('/api/pendings', {
+                  // isActivated: false,
+                  // firstName: member.firstName,
+                  // lastName: member.lastName,
+                  // email: member.email,
+                  // password: generateFakePassword(),
+                  // isPasswordSet: false,
+                  // individualAccount: false,
+                  // isPartOfClub: true,
+                  // club: [ { clubCode: clubCode, status: 'Approved', function: member.function } ]
                   firstName: member.firstName,
                   lastName: member.lastName,
                   email: member.email,
-                  password: generateFakePassword(),
-                  isPasswordSet: false,
-                  individualAccount: false,
-                  isPartOfClub: true,
-                  club: [ { clubCode: clubCode, status: 'Approved', function: member.function } ]
+                  club: [ { clubCode: clubCode, function: member.function } ],
+                  activationCode: generateActivationCode()
                 })
                   .then(function(response) {
                     console.log("then post 2 : ");
@@ -171,6 +176,18 @@ export default class SignupController {
           .finally(function() {
             console.log("ok finally");
           });
+        
+    }
+
+    function generateActivationCode()
+    {
+        var code = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+        for( var i=0; i < 20; i++ )
+          code += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return code;
         
     }
 

@@ -35,11 +35,8 @@ export default function routes($stateProvider) {
       authenticate: true
     })
     .state('finalize', {
-      url: '/finalize/:memberID',
+      url: '/finalize/:email/:activationCode',
       template: require('./finalize/finalize.html'),
-      // controller: function ($stateParams) {
-      //   console.log($stateParams);
-      // },
       controller: 'FinalizeController',
       controllerAs: 'vm'
     });

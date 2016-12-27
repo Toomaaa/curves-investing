@@ -20,34 +20,35 @@ export default class FinalizeController {
     this.$http = $http;
     this.$scope = $scope;
 
-    console.log($stateParams);
+    this.$stateParams = $stateParams;
 
-    this.$scope.members = [
-      { firstName: '', lastName: '', function: 'president', email: '' },
-      { firstName: '', lastName: '', function: 'treasurer', email: '' },
-      { firstName: '', lastName: '', function: 'member', email: '' },
-      { firstName: '', lastName: '', function: 'member', email: '' },
-      { firstName: '', lastName: '', function: 'member', email: '' },
-    ];
+    this.user.email = $stateParams.email;
+    this.user.activationCode = $stateParams.activationCode;
 
-    this.$scope.addMember = function() {
-      if($scope.members.length < 20) $scope.members.push({ firstName: '', lastName: '', function: 'member', email: '' });
-    };
+    $http.get('/api/pendings/'+this.user.email+'/'+this.user.activationCode)
+      .then(response => {
+        this.user = response.data;
 
-    this.$scope.removeMember = function(i) {
-      $scope.members.splice(i,1);
-      if($scope.members.length < 5) { $scope.members.push({ firstName: '', lastName: '', function: 'member', email: '' }); }
-    };
+        console.log(this.user);
+      })
+      .catch(function(e) {
+        console.log("got an error in initial processing",e);
+        throw e; // rethrow to not marked as handled, 
+                 // in $q it's better to `return $q.reject(e)` here
+      });
 
-    this.$scope.clubSubmitted = false;
+
 
 
   }
 
-  registerUser(form) {
+  finalizeUser(form) {
     this.submitted = true;
 
     if(form.$valid) {
+
+
+
       return this.Auth.createUser({
         isActivated: true,
         firstName: this.user.firstName,
@@ -56,9 +57,15 @@ export default class FinalizeController {
         password: this.user.password,
         isPasswordSet: true,
         individualAccount: false,
-        isPartOfClub: false
+        isPartOfClub: true,
+        club: this.user.club
       })
         .then(() => {
+
+          // Remove the user of the pending base
+          this.$http.delete('/api/pendings/'+this.user._id);
+
+
           // Account created, redirect to home
           this.$state.go('main');
         })
@@ -75,118 +82,6 @@ export default class FinalizeController {
   }
 
 
-
-
-  registerClub(form) {
-    this.submitted = true;
-
-    if(form.$valid) {
-      var members = angular.copy(this.$scope.members);
-
-      var president = members.find(findPresident);
-      members.splice(members.indexOf(president),1);
-      var treasurer = members.find(findTreasurer);
-      members.splice(members.indexOf(treasurer),1);
-
-
-      generateClubCode(this.$http, this.$scope, this.club, function(clubCode, api, scope, club) {
-        api.post('/api/clubs', {
-          clubCode: clubCode,
-          clubName: club.clubName,
-          initialAmount: club.initialAmount,
-          monthlyAmount: club.monthlyAmount,
-          shareAmount: club.shareAmount,
-          creationDate: club.creationDate,
-          exitPercentage: club.exitPercentage,
-          members: members,
-          president: president,
-          treasurer: treasurer,
-          pendingApproval: []
-        })
-          .then(function(response) {
-            
-            scope.members.forEach(function(member) {
-
-              // generateFakePassword(function(fakePassword) {
-                api.post('/api/users', {
-                  isActivated: false,
-                  firstName: member.firstName,
-                  lastName: member.lastName,
-                  email: member.email,
-                  password: generateFakePassword(),
-                  isPasswordSet: false,
-                  individualAccount: false,
-                  isPartOfClub: true,
-                  club: [ { clubCode: clubCode, status: 'Approved', function: member.function } ]
-                })
-                  .then(function(response) {
-                    console.log("then post 2 : ");
-                    console.log(response);
-                  })
-                  .catch(function(response) {
-
-                    console.log("catch post 2 : ");
-                    console.log(response);
-                  })
-                  .finally(function() {
-                    console.log("finally 2");
-                  });
-              // });
-
-              
-            });
-              
-            scope.clubSubmitted = true;
-          })
-          .catch(function(response) {
-            console.log('catch : '+response.data);
-          })
-          .finally(function() {
-            console.log('finally post');
-          });
-      });
-    }
-    
-
-
-    function findPresident(element) {
-      return element.function == 'president';
-    }
-    function findTreasurer(element) {
-      return element.function == 'treasurer';
-    }
-    function generateClubCode(api, scope, clubData, callback)
-    {
-        var code = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-        for( var i=0; i < 5; i++ )
-          code += possible.charAt(Math.floor(Math.random() * possible.length));
-
-        api.get('/api/clubs/clubCode/'+code)
-          .then(function(response) {
-            if(response.status === 200) { console.log("200"); generateClubCode(api, scope, clubData, callback); }
-          })
-          .catch(function(response) {
-            if(response.status === 404) { console.log("404"); callback(code, api, scope, clubData); }
-          })
-          .finally(function() {
-            console.log("ok finally");
-          });
-        
-    }
-
-    function generateFakePassword()
-    {
-        var passwd = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!?#._-";
-
-        for( var i=0; i < 15; i++ )
-          passwd += possible.charAt(Math.floor(Math.random() * possible.length));
-
-        return passwd;
-    }
-  }
 
 
 
