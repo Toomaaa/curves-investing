@@ -59,7 +59,7 @@ describe('Login View', function() {
           `Didn't find .hero-unit after 5s`
         ).then(() => {
           expect(browser.getCurrentUrl()).to.eventually.equal(config.baseUrl + '/');
-          expect(navbar.navbarAccountGreeting.getText()).to.eventually.equal('Hello ' + testUser.name);
+          expect(navbar.navbarAccountGreeting.getText()).to.eventually.equal('Hello ' + testUser.firstName + ' ' + testUser.lastName);
         });
       });
     });

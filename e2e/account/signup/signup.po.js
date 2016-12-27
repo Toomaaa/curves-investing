@@ -7,7 +7,8 @@
 
 var SignupPage = function() {
   var form = this.form = element(by.css('.form'));
-  form.name = form.element(by.model('vm.user.name'));
+  form.firstName = form.element(by.model('vm.user.firstName'));
+  form.lastName = form.element(by.model('vm.user.lastName'));
   form.email = form.element(by.model('vm.user.email'));
   form.password = form.element(by.model('vm.user.password'));
   form.confirmPassword = form.element(by.model('vm.user.confirmPassword'));

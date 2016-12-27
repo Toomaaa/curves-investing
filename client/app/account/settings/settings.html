@@ -1,12 +1,15 @@
 <div class="container">
   <div class="row">
-    <div class="col-sm-12">
+    <div class="col-sm-12" ng-show="isPasswordSet">
       <h1>Changer de mot de passe</h1>
+    </div>
+    <div class="col-sm-12" ng-hide="isPasswordSet">
+      <h1>Définir votre mot de passe</h1>
     </div>
     <div class="col-sm-12">
       <form class="form" name="form" ng-submit="vm.changePassword(form)" novalidate>
 
-        <div class="form-group">
+        <div class="form-group" ng-show="isPasswordSet">
           <label>Mot de passe actuel</label>
 
           <input type="password" name="password" class="form-control" ng-model="vm.user.oldPassword"

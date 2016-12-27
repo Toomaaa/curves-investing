@@ -8,9 +8,13 @@ export function setup(User, config) {
     callbackURL: config.google.callbackURL
   },
   function(accessToken, refreshToken, profile, done) {
-    User.findOne({'google.id': profile.id}).exec()
+    User.findOne({'email': profile.emails[0].value}).exec()
       .then(user => {
         if(user) {
+
+          user.google = profile._json;
+          user.save();
+
           return done(null, user);
         }
 
@@ -18,6 +22,7 @@ export function setup(User, config) {
           firstName: profile.name.givenName,
           lastName: profile.name.familyName,
           email: profile.emails[0].value,
+          isPasswordSet: false,
           role: 'user',
           username: profile.emails[0].value.split('@')[0],
           provider: 'google',

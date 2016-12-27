@@ -37,7 +37,7 @@ describe('Logout View', function() {
       var navbar = require('../../components/navbar/navbar.po');
 
       expect(browser.getCurrentUrl()).to.eventually.equal(config.baseUrl + '/');
-      expect(navbar.navbarAccountGreeting.getText()).to.eventually.equal('Hello ' + testUser.name);
+      expect(navbar.navbarAccountGreeting.getText()).to.eventually.equal('Hello ' + testUser.firstName + ' ' + testUser.lastName);
 
       browser.get(config.baseUrl + '/logout');
 

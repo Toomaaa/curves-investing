@@ -1,0 +1,347 @@
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1>Enregistrement</h1>
+    </div>
+    <div class="col-sm-12" ng-show="clubSubmitted == false">
+      <uib-tabset active="activeJustified">
+        <uib-tab index="0" heading="Compte individuel">
+          <br />
+          <form class="form" name="userForm" ng-submit="vm.registerUser(userForm)" novalidate>
+
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group" ng-class="{ 'has-success': userForm.firstName.$valid && vm.submitted,
+                                                    'has-error': userForm.firstName.$invalid && vm.submitted }">
+                  <label>Prénom</label>
+
+                  <input type="text" name="firstName" class="form-control" ng-model="vm.user.firstName"
+                         required autofocus />
+                  <p class="help-block" ng-show="userForm.firstName.$error.required && vm.submitted">
+                    Votre prénom est requis
+                  </p>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <div class="form-group" ng-class="{ 'has-success': userForm.lastName.$valid && vm.submitted,
+                                                    'has-error': userForm.lastName.$invalid && vm.submitted }">
+                  <label>Nom</label>
+
+                  <input type="text" name="lastName" class="form-control" ng-model="vm.user.lastName"
+                         required/>
+                  <p class="help-block" ng-show="userForm.lastName.$error.required && vm.submitted">
+                    Votre nom est requis
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-success': userForm.email.$valid && vm.submitted,
+                                                'has-error': userForm.email.$invalid && vm.submitted }">
+              <label>Email</label>
+
+              <input type="email" name="email" class="form-control" ng-model="vm.user.email"
+                     required
+                     mongoose-error/>
+              <p class="help-block" ng-show="userForm.email.$error.email && vm.submitted">
+                Cela ne semble pas être une adresse email valide.
+              </p>
+              <p class="help-block" ng-show="userForm.email.$error.required && vm.submitted">
+                Quelle est votre adresse email ?
+              </p>
+              <p class="help-block" ng-show="userForm.email.$error.mongoose">
+                {{ vm.errors.email }}
+              </p>
+            </div>
+
+
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group" ng-class="{ 'has-success': userForm.password.$valid && vm.submitted,
+                                                    'has-error': userForm.password.$invalid && vm.submitted }">
+                  <label>Mot de passe</label>
+
+                  <input type="password" name="password" class="form-control" ng-model="vm.user.password"
+                         ng-minlength="3"
+                         required
+                         mongoose-error/>
+                  <p class="help-block"
+                     ng-show="(userForm.password.$error.minlength || userForm.password.$error.required) && vm.submitted">
+                    Le mot de passe doit être d'au moins 3 caractères.
+                  </p>
+                  <p class="help-block" ng-show="userForm.password.$error.mongoose">
+                    {{ vm.errors.password }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <div class="form-group" ng-class="{ 'has-success': userForm.confirmPassword.$valid && vm.submitted,
+                                                    'has-error': userForm.confirmPassword.$invalid && vm.submitted }">
+                  <label>Confirmer le mot de passe</label>
+                  <input type="password" name="confirmPassword" class="form-control" ng-model="vm.user.confirmPassword"
+                         match="vm.user.password"
+                         ng-minlength="3" required/>
+                  <p class="help-block"
+                     ng-show="userForm.confirmPassword.$error.match && vm.submitted">
+                    Les mots de passe doivent être identiques.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-success': userForm.userClubCode.$valid && vm.submitted,
+                                                'has-error': userForm.userClubCode.$invalid && vm.submitted }">
+              <label>Si vous faites partie d'un club d'investissement, entrez son code</label>
+
+                                                                      <!-- ng-model="vm.user.firstName" -->
+              <input type="text" name="clubCode" class="form-control" 
+                      />
+              <!-- <p class="help-block" ng-show="userForm.clubCode.$error.required && vm.submitted">
+                Votre prénom est requis
+              </p> -->
+            </div>
+
+            <div>
+              <button class="btn btn-inverse btn-lg btn-register" type="submit">
+                S'enregistrer
+              </button>
+              <a class="btn btn-default btn-lg btn-login" ui-sref="login">
+                Connexion
+              </a>
+            </div>
+
+            <hr/>
+            <div class="row">
+              <div class="col-sm-4 col-md-3">
+                <oauth-buttons classes="btn-block"></oauth-buttons>
+              </div>
+            </div>
+          </form>
+        </uib-tab>
+        <uib-tab index="1" heading="Club d'investissement" disable="tab.disabled">
+
+          <br />
+          <form class="form" name="clubForm" ng-submit="vm.registerClub(clubForm)" novalidate>
+
+            <div class="row">
+              <div class="col-sm-7">
+                <div class="form-group" ng-class="{ 'has-success': clubForm.clubName.$valid && vm.submitted,
+                                                    'has-error': clubForm.clubName.$invalid && vm.submitted }">
+                  <label>Nom du club d'investissement</label>
+
+                  <input type="text" name="clubName" class="form-control" ng-model="vm.club.clubName"
+                         required />
+                  <p class="help-block" ng-show="clubForm.clubName.$error.required && vm.submitted">
+                    Le nom du club est requis
+                  </p>
+                </div>
+              </div>
+
+              <div class="col-sm-5">
+                <div class="form-group" ng-class="{ 'has-success': clubForm.creationDate.$valid && vm.submitted,
+                                                    'has-error': clubForm.creationDate.$invalid && vm.submitted }">
+                  <label>Date de création du club</label>
+
+                  <input type="date" name="creationDate" class="form-control" ng-model="vm.club.creationDate"
+                         required />
+                  <p class="help-block" ng-show="clubForm.creationDate.$error.required && vm.submitted">
+                    La date de création du club est requise
+                  </p>
+                  <p class="help-block" ng-show="clubForm.creationDate.$error.date && vm.submitted">
+                    Le format de date n'est pas valide
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-3">
+                <div class="form-group" ng-class="{ 'has-success': clubForm.initialAmount.$valid && vm.submitted,
+                                                    'has-error': clubForm.initialAmount.$invalid && vm.submitted }">
+                  <label>Montant du versement initial</label>
+
+                  <div class="input-group">
+                    <input type="number" name="initialAmount" class="form-control" ng-model="vm.club.initialAmount"
+                           required />
+                    <span class="input-group-addon">€</span>
+                  </div>
+                  <p class="help-block" ng-show="clubForm.initialAmount.$error.required && vm.submitted">
+                    Le montant du versement initial est requis
+                  </p>
+                  <p class="help-block" ng-show="clubForm.initialAmount.$error.number && vm.submitted">
+                    Entrez un nombre
+                  </p>
+                </div>
+              </div>
+
+              <div class="col-sm-3">
+                <div class="form-group" ng-class="{ 'has-success': clubForm.monthlyAmount.$valid && vm.submitted,
+                                                    'has-error': clubForm.monthlyAmount.$invalid && vm.submitted }">
+                  <label>Montant du versement mensuel</label>
+
+                  <div class="input-group">
+                    <input type="number" name="monthlyAmount" class="form-control" ng-model="vm.club.monthlyAmount"
+                           required />
+                    <span class="input-group-addon">€</span>
+                  </div>
+                  <p class="help-block" ng-show="clubForm.monthlyAmount.$error.required && vm.submitted">
+                    Le montant du versement mensuel est requis
+                  </p>
+                  <p class="help-block" ng-show="clubForm.monthlyAmount.$error.number && vm.submitted">
+                    Entrez un nombre
+                  </p>
+                </div>
+              </div>
+
+              <div class="col-sm-3">
+                <div class="form-group" ng-class="{ 'has-success': clubForm.shareAmount.$valid && vm.submitted,
+                                                    'has-error': clubForm.shareAmount.$invalid && vm.submitted }">
+                  <label>Montant de la part</label>
+
+                  <div class="input-group">
+                    <input type="number" name="shareAmount" class="form-control" ng-model="vm.club.shareAmount"
+                           required />
+                    <span class="input-group-addon">€</span>
+                  </div>
+                  <p class="help-block" ng-show="clubForm.shareAmount.$error.required && vm.submitted">
+                    Le montant de la part est requis
+                  </p>
+                  <p class="help-block" ng-show="clubForm.shareAmount.$error.number && vm.submitted">
+                    Entrez un nombre
+                  </p>
+                </div>
+              </div>
+
+              <div class="col-sm-3">
+                <div class="form-group" ng-class="{ 'has-success': clubForm.exitPercentage.$valid && vm.submitted,
+                                                    'has-error': clubForm.exitPercentage.$invalid && vm.submitted }">
+                  <label>Pourcentage de frais de démission</label>
+
+                  <div class="input-group">
+                    <input type="number" name="exitPercentage" class="form-control" ng-model="vm.club.exitPercentage"
+                         required />
+                    <span class="input-group-addon">%</span>
+                  </div>
+                  <p class="help-block" ng-show="clubForm.exitPercentage.$error.required && vm.submitted">
+                    Le pourcentage de frais de démission est requis
+                  </p>
+                  <p class="help-block" ng-show="clubForm.exitPercentage.$error.number && vm.submitted">
+                    Entrez un nombre
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="row">
+
+              <div class="col-sm-12">
+                <br />
+                <div class="text-center">
+
+                  <label>Membres</label>
+                  <br /><br />
+
+                  <div class="row">
+                    <div class="col-sm-offset-2 col-sm-2">
+                      <b>Prénom</b>
+                    </div>
+                    <div class="col-sm-2">
+                      <b>Nom</b>
+                    </div>
+                    <div class="col-sm-2">
+                      <b>Fonction</b>
+                    </div>
+                    <div class="col-sm-2">
+                      <b>Email</b>
+                    </div>
+                  </div>
+
+                  <div class="row" ng-repeat="(i, member) in members track by $index">
+                    <div class="col-sm-offset-2 col-sm-2" ng-class="{ 'has-success': clubForm.firstName{{i}}.$valid && vm.submitted,
+                                                    'has-error': clubForm.firstName{{i}}.$invalid && vm.submitted }">
+                      <input class="form-control" type="text" name="firstName{{i}}" ng-model="member.firstName" required />
+                      <p class="help-block" ng-show="clubForm.firstName{{i}}.$error.required && vm.submitted">
+                        Prénom requis
+                      </p>
+                    </div>
+                    <div class="col-sm-2" ng-class="{ 'has-success': clubForm.lastName{{i}}.$valid && vm.submitted,
+                                                    'has-error': clubForm.lastName{{i}}.$invalid && vm.submitted }">
+                      <input class="form-control" type="text" name="lastName{{i}}" ng-model="member.lastName" required />
+                      <p class="help-block" ng-show="clubForm.lastName{{i}}.$error.required && vm.submitted">
+                        Nom requis
+                      </p>
+                    </div>
+                    <div class="col-sm-2">
+                      <select class="form-control select-text-center" name="function" ng-model="member.function" />
+                        <option value="president">Président</option>
+                        <option value="treasurer">Trésorier</option>
+                        <option value="member">Membre</option>
+                      </select>
+                    </div>
+                    <div class="col-sm-2" ng-class="{ 'has-success': clubForm.email{{i}}.$valid && vm.submitted,
+                                                    'has-error': clubForm.email{{i}}.$invalid && vm.submitted }">
+                      <input class="form-control" type="email" name="email{{i}}" ng-model="member.email" required />
+                      <p class="help-block" ng-show="clubForm.email{{i}}.$error.email && vm.submitted">
+                        Email non valide
+                      </p>
+                      <p class="help-block" ng-show="clubForm.email{{i}}.$error.required && vm.submitted">
+                        Email requis
+                      </p>
+                      <p class="help-block" ng-show="clubForm.email{{i}}.$error.mongoose">
+                        {{ vm.errors.email }}
+                      </p>
+                    </div>
+                    <div class="col-sm-1 signup-members-trash">
+                      <i class="fa fa-trash" aria-hidden="true" ng-click="removeMember(i)"></i>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-12 signup-members-plus text-center" ng-show="members.length < 20">
+                      <i class="fa fa-plus-circle" aria-hidden="true" ng-click="addMember()"></i>
+                    </div>
+                    <div class="col-sm-12 text-center" ng-show="members.length >= 20">
+                      <br />Un club d'investissement ne peut légalement contenir que 20 membres au maximum.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="row">
+              <div class="col-sm-12 text-center club-finalize-status">
+                Pour terminer l'inscription du club d'investissement et bénéficier de Curves gratuitement, merci d'envoyer une copie de vos statuts à <a href="mailto:club@curves-app.com?subject=Statuts du club {{vm.club.clubName}}">club@curves-app.com</a>
+              </div>
+            </div>
+
+            <div>
+              <button class="btn btn-inverse btn-lg btn-register" type="submit"> <!--  ng-click="$ctrl.registerClub()"> -->
+                S'enregistrer
+              </button>
+              <a class="btn btn-default btn-lg btn-login" ui-sref="login">
+                Connexion
+              </a>
+            </div>
+
+          </form>
+
+        </uib-tab>
+      </uib-tabset>
+    </div>
+    <div class="col-sm-12" ng-show="clubSubmitted == true">
+      <br /><br />
+      Merci pour votre inscription.<br />
+      <br />
+      Dès que les statuts auront été reçus et traités par notre équipe, chaque membre du club recevra un email pour activer gratuitement son compte personnel.<br />
+      <br />
+      (Pour rappel, pour terminer l'inscription du club d'investissement et bénéficier de Curves gratuitement, merci d'envoyer une copie de vos statuts à <a href="mailto:club@curves-app.com?subject=Statuts du club {{vm.club.clubName}}">club@curves-app.com</a>)<br />
+      <br />
+      Merci pour votre confiance !
+    </div>
+  </div>
+  <hr>
+</div>

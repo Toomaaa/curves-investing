@@ -33,5 +33,14 @@ export default function routes($stateProvider) {
       controller: 'SettingsController',
       controllerAs: 'vm',
       authenticate: true
+    })
+    .state('finalize', {
+      url: '/finalize/:memberID',
+      template: require('./finalize/finalize.html'),
+      // controller: function ($stateParams) {
+      //   console.log($stateParams);
+      // },
+      controller: 'FinalizeController',
+      controllerAs: 'vm'
     });
 }

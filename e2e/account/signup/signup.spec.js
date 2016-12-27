@@ -29,8 +29,10 @@ describe('Signup View', function() {
   });
 
   it('should include signup form with correct inputs and submit button', function() {
-    expect(page.form.name.getAttribute('type')).to.eventually.equal('text');
-    expect(page.form.name.getAttribute('name')).to.eventually.equal('name');
+    expect(page.form.firstName.getAttribute('type')).to.eventually.equal('text');
+    expect(page.form.firstName.getAttribute('name')).to.eventually.equal('firstName');
+    expect(page.form.lastName.getAttribute('type')).to.eventually.equal('text');
+    expect(page.form.lastName.getAttribute('name')).to.eventually.equal('lastName');
     expect(page.form.email.getAttribute('type')).to.eventually.equal('email');
     expect(page.form.email.getAttribute('name')).to.eventually.equal('email');
     expect(page.form.password.getAttribute('type')).to.eventually.equal('password');
@@ -60,7 +62,7 @@ describe('Signup View', function() {
       var navbar = require('../../components/navbar/navbar.po');
 
       expect(browser.getCurrentUrl()).to.eventually.equal(config.baseUrl + '/');
-      expect(navbar.navbarAccountGreeting.getText()).to.eventually.equal('Hello ' + testUser.name);
+      expect(navbar.navbarAccountGreeting.getText()).to.eventually.equal('Hello ' + testUser.firstName + ' ' + testUser.lastName);
     });
 
     describe('and invalid credentials', function() {

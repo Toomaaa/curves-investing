@@ -58,7 +58,8 @@ UserSchema
     return {
       firstName: this.firstName,
       lastName: this.lastName,
-      role: this.role
+      role: this.role,
+      email: this.email
     };
   });
 
