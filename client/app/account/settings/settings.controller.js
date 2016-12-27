@@ -30,7 +30,6 @@ export default class SettingsController {
       this.Auth.changePassword(this.user.oldPassword, this.user.newPassword)
         .then(() => {
           this.message = 'Mot de passe mis à jour.';
-          // voir pour rediriger vers la page d'accueil ?
         })
         .catch(() => {
           form.password.$setValidity('mongoose', false);
