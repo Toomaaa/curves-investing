@@ -6,6 +6,8 @@
 'use strict';
 import Thing from '../api/thing/thing.model';
 import User from '../api/user/user.model';
+import Club from '../api/club/club.model';
+import Pending from '../api/pending/pending.model';
 
 Thing.find({}).remove()
   .then(() => {
@@ -57,5 +59,98 @@ User.find({}).remove()
     })
     .then(() => {
       console.log('finished populating users');
+    });
+  });
+
+
+Club.find({}).remove()
+  .then(() => {
+    Club.create({
+      clubCode : "43W0K", 
+      clubName : "BIC", 
+      initialAmount : 0, 
+      monthlyAmount : 100, 
+      shareAmount : 1, 
+      creationDate : "2016-09-01T22:00:00Z", 
+      exitPercentage : 2, 
+      president : { 
+        email : "test@test.fr", 
+        function : "president", 
+        lastName : "P", 
+        firstName : "P" 
+      }, 
+      treasurer : { 
+        email : "test@test.fr2", 
+        function : "treasurer", 
+        lastName : "T", 
+        firstName : "T" 
+      }, 
+      pendingApproval : [ ], 
+      members : [ 
+        { 
+          email : "test@test.fr3", 
+          function : "member", 
+          lastName : "M", 
+          firstName : "M" 
+        }, { 
+          email : "test@test.fr4", 
+          function : "member", 
+          lastName : "M", 
+          firstName : "M" 
+        }, { 
+          email : "test@test.fr5", 
+          function : "member", 
+          lastName : "M", 
+          firstName : "M" 
+        } 
+      ]
+    })
+    .then(() => {
+      console.log('finished populating clubs');
+    });
+  });
+
+
+Pending.find({}).remove()
+  .then(() => {
+    Pending.create({ 
+      "firstName" : "T", 
+      "lastName" : "T", 
+      "email" : "test@test.fr2", 
+      "activationCode" : "QBZHSYDR35VLEWDMZRIB", 
+      "club" : [ { 
+        "function" : "treasurer", 
+        "clubCode" : "43W0K" 
+      } ] 
+    }, { 
+      "firstName" : "M", 
+      "lastName" : "M", 
+      "email" : "test@test.fr3", 
+      "activationCode" : "4BBESS49FHA2FY1NFCLB", 
+      "club" : [ { 
+        "function" : "member", 
+        "clubCode" : "43W0K" 
+      } ] 
+    }, { 
+      "firstName" : "M", 
+      "lastName" : "M", 
+      "email" : "test@test.fr4", 
+      "activationCode" : "SKP9VRSA613HEJZGNGJO", 
+      "club" : [ { 
+        "function" : "member", 
+        "clubCode" : "43W0K" 
+      } ] 
+    }, { 
+      "firstName" : "M", 
+      "lastName" : "M", 
+      "email" : "test@test.fr5", 
+      "activationCode" : "CWDRBJ17GEOMXKCOE7V6", 
+      "club" : [ { 
+        "function" : "member", 
+        "clubCode" : "43W0K" 
+      } ] 
+    })
+    .then(() => {
+      console.log('finished populating pendings users');
     });
   });
