@@ -29,7 +29,22 @@
       <ul class="nav navbar-nav navbar-right">
         <li ng-hide="$ctrl.isLoggedIn()" ui-sref-active="active"><a ui-sref="signup">S'enregistrer</a></li>
         <li ng-hide="$ctrl.isLoggedIn()" ui-sref-active="active"><a ui-sref="login">Connexion</a></li>
-        <li ng-show="$ctrl.isLoggedIn()"><p class="navbar-text">Bonjour {{ $ctrl.getCurrentUser().firstName }} {{ $ctrl.getCurrentUser().lastName }}</p> </li>
+        <li ng-show="$ctrl.isLoggedIn()"><p class="navbar-text">Bonjour {{ $ctrl.getCurrentUser().firstName }} {{ $ctrl.getCurrentUser().lastName }}&nbsp;&nbsp;-</p> </li>
+        <li ng-show="$ctrl.isLoggedIn() && $ctrl.getCurrentUser().club.length + ($ctrl.getCurrentUser().individualAccount ? 1 : 0) > 1" class="dropdown" uib-dropdown>
+          <a class="dropdown-toggle" uib-dropdown-toggle data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            Compte : {{ $ctrl.accountSelected.type == 'club' ? 'Club ' + $ctrl.accountSelected.clubName : 'Individuel' }} <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="choice in $ctrl.accountChoices" 
+                        ng-hide="(choice.type == $ctrl.accountSelected.type && choice.type == 'individual') || choice.clubName == $ctrl.accountSelected.clubName">
+              <a ng-show="choice.type == 'club'" ng-click="$ctrl.setAccount('club', choice.clubCode)">Club {{choice.clubName}}</a>
+              <a ng-show="choice.type == 'individual'" ng-click="$ctrl.setAccount('individual')">Individuel</a>
+            </li>
+          </ul>
+        </li>
+        <li ng-show="$ctrl.isLoggedIn() && $ctrl.getCurrentUser().club.length + ($ctrl.getCurrentUser().individualAccount ? 1 : 0) <= 1">
+            <p class="navbar-text">Compte : {{ $ctrl.accountSelected.type == 'club' ? 'Club ' + $ctrl.accountSelected.clubName : 'Individuel' }}</p>
+        </li>
         <li ng-show="$ctrl.isLoggedIn()" ui-sref-active="active"><a ui-sref="settings"><span class="glyphicon glyphicon-cog"></span></a></li>
         <li ng-show="$ctrl.isLoggedIn()"><a ui-sref="logout"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Déconnexion</a></li>
       </ul>

@@ -56,6 +56,25 @@ User.find({}).remove()
       lastName: 'Admin',
       email: 'admin@example.com',
       password: 'admin'
+    }, {
+      isActivated: true,
+      firstName: 'P',
+      lastName: 'P',
+      email: 'test@test.fr',
+      role: 'user',
+      password: 'test',
+      isPasswordSet: true,
+      individualAccount: true,
+      isPartOfClub: true,
+      club: [ {
+        clubCode: '43W0K',
+        clubName: 'BIC',
+        function: 'president'
+      } , {
+        clubCode: 'AAAAA',
+        clubName: 'TRUC',
+        function: 'member'
+      } ]
     })
     .then(() => {
       console.log('finished populating users');

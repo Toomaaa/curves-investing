@@ -38,7 +38,7 @@ var UserSchema = new Schema({
   },
   isPasswordSet: Boolean,
   individualAccount: Boolean,
-  isPartofClub: Boolean,
+  isPartOfClub: Boolean,
   club: Array,
   provider: String,
   salt: String,
