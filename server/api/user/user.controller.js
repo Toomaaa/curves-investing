@@ -128,3 +128,38 @@ export function me(req, res, next) {
 export function authCallback(req, res) {
   res.redirect('/');
 }
+
+
+/**
+ * Set the account selected
+ */
+export function setAccountSelected(req, res, next) {
+  var userId = req.user._id;
+
+  return User.update({ _id: userId }, { $set : { accountSelected : req.body.accountSelected } }).exec()
+    .then(user => { // don't ever give out the password or salt
+      if(!user) {
+        return res.status(401).end();
+      }
+      res.json({ ok: true });
+    })
+    .catch(err => next(err));
+}
+
+
+/**
+ * Get the selected account
+ */
+export function getAccountSelected(req, res, next) {
+  var userId = req.user._id;
+
+  return User.findById(userId).exec()
+    .then(user => { // don't ever give out the password or salt
+      if(!user) {
+        return res.status(401).end();
+      }
+      console.log({ accountSelected: user.accountSelected });
+      res.json({ accountSelected: user.accountSelected });
+    })
+    .catch(err => next(err));
+}

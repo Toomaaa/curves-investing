@@ -11,38 +11,72 @@ export class NavbarComponent {
 
   isCollapsed = true;
 
-  constructor(Auth, $state) {
+  constructor(Auth, $scope, $state, $http, userSelection) {
     'ngInject';
 
     this.isLoggedIn = Auth.isLoggedInSync;
     this.isAdmin = Auth.isAdminSync;
     this.getCurrentUser = Auth.getCurrentUserSync;
-    this.accountSelected = {
+    $scope.accountSelected = {
       type: '',
       clubCode: '',
       clubName: '',
       function: ''
     };
-    this.accountChoices = [];
 
-    Auth.getCurrentUser(currentUser => {
-      this.accountSelected.type = 'club';
-      this.accountSelected.clubCode = currentUser.club[0].clubCode;
-      this.accountSelected.clubName = currentUser.club[0].clubName;
-      this.accountSelected.function = currentUser.club[0].function;
+    $scope.$watch(this.isLoggedIn, function() {
 
-      if(currentUser.individualAccount) this.accountChoices.push({type: 'individual'});
-      if(currentUser.isPartOfClub) {
-        currentUser.club.forEach(club => {
-          this.accountChoices.push({type: 'club', clubCode: club.clubCode, clubName: club.clubName, function: club.function});
-        });
-      }
+      Auth.getCurrentUser(currentUser => {
+
+        $http.get('/api/users/accountSelected')
+          .then(response => {
+            userSelection.set('accountSelected', response.data.accountSelected);
+            $scope.accountSelected = response.data.accountSelected;
+
+            if(response.data.accountSelected) $scope.accountSelected = response.data.accountSelected;
+            else if(currentUser.isPartOfClub) {
+              $scope.accountSelected = {
+                type: 'club',
+                clubCode: currentUser.club[0].clubCode,
+                clubName: currentUser.club[0].clubName,
+                function: currentUser.club[0].function
+              };
+            }
+            else {
+              $scope.accountSelected = {
+                type: 'individual',
+                clubCode: '',
+                clubName: '',
+                function: ''
+              };
+            }
+            setAccountSelectedInBdd($scope.accountSelected);
+          })
+          .catch(err => {
+            console.log(err);
+
+            $scope.accountSelected.type = 'club';
+            $scope.accountSelected.clubCode = currentUser.club[0].clubCode;
+            $scope.accountSelected.clubName = currentUser.club[0].clubName;
+            $scope.accountSelected.function = currentUser.club[0].function;
+          });
+
+        $scope.accountChoices = [];
+        if(currentUser.individualAccount) $scope.accountChoices.push({type: 'individual'});
+        if(currentUser.isPartOfClub) {
+          currentUser.club.forEach(club => {
+            $scope.accountChoices.push({type: 'club', clubCode: club.clubCode, clubName: club.clubName, function: club.function});
+          });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
     });
-
 
     this.setAccount = function(type, clubCode) {
       if(type == 'individual') {
-        this.accountSelected = {
+        $scope.accountSelected = {
           type: 'individual',
           clubCode: '',
           clubName: '',
@@ -50,15 +84,21 @@ export class NavbarComponent {
         };
       }
       else if(type == 'club') {
-        this.accountChoices.forEach(accountChoice => {
+        $scope.accountChoices.forEach(accountChoice => {
           if(accountChoice.clubCode == clubCode) {
-            this.accountSelected.type = 'club';
-            this.accountSelected.clubCode = clubCode;
-            this.accountSelected.clubName = accountChoice.clubName;
-            this.accountSelected.function = accountChoice.function;
+            $scope.accountSelected.type = 'club';
+            $scope.accountSelected.clubCode = clubCode;
+            $scope.accountSelected.clubName = accountChoice.clubName;
+            $scope.accountSelected.function = accountChoice.function;
           }
         });
       }
+      userSelection.set('accountSelected', $scope.accountSelected);
+      setAccountSelectedInBdd($scope.accountSelected);
+    }
+
+    function setAccountSelectedInBdd(accountSelected) {
+      $http.post('/api/users/accountSelected', { accountSelected: accountSelected });
     }
   }
 

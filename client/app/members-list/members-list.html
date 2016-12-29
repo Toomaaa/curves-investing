@@ -1,91 +1,44 @@
 <div class="container">
 
-	<% if( role != "pending" ) { %>
 
 	<div class="row">
-		<div class="col-lg-12 text-center">
-			<h1>Liste des membres</h1>
+		<div class="col-sm-12 text-center">
+			<h1>Liste des membres du club {{ club.clubName }}</h1>
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-lg-12">
+		<div class="col-sm-12">
 
 			<div class="row">
-				<div class="col-lg-offset-2 col-lg-2 text-center"><b>Prénom</b></div>
-				<div class="col-lg-2 text-center"><b>Nom</b></div>
-				<div class="col-lg-1 text-center"><b>Fonction</b></div>
-				<div class="col-lg-3 text-center"><b>Email</b></div>
+				<div class="col-sm-offset-2 col-sm-2 text-center"><b>Prénom</b></div>
+				<div class="col-sm-2 text-center"><b>Nom</b></div>
+				<div class="col-sm-1 text-center"><b>Fonction</b></div>
+				<div class="col-sm-3 text-center"><b>Email</b></div>
 			</div>
 
 			<div class="row">
-				<div class="col-lg-offset-2 col-lg-2 text-center"><%= club.president.firstName %></div>
-				<div class="col-lg-2 text-center"><%= club.president.lastName %></div>
-				<div class="col-lg-1 text-center">Président</div>
-				<div class="col-lg-3 text-center"><%= club.president.email %></div>
+				<div class="col-sm-offset-2 col-sm-2 text-center">{{ club.president.firstName }}</div>
+				<div class="col-sm-2 text-center">{{ club.president.lastName }}</div>
+				<div class="col-sm-1 text-center">Président</div>
+				<div class="col-sm-3 text-center">{{ club.president.email }}</div>
 			</div>
 
 			<div class="row">
-				<div class="col-lg-offset-2 col-lg-2 text-center"><%= club.treasurer.firstName %></div>
-				<div class="col-lg-2 text-center"><%= club.treasurer.lastName %></div>
-				<div class="col-lg-1 text-center">Trésorier</div>
-				<div class="col-lg-3 text-center"><%= club.treasurer.email %></div>
+				<div class="col-sm-offset-2 col-sm-2 text-center">{{ club.treasurer.firstName }}</div>
+				<div class="col-sm-2 text-center">{{ club.treasurer.lastName }}</div>
+				<div class="col-sm-1 text-center">Trésorier</div>
+				<div class="col-sm-3 text-center">{{ club.treasurer.email }}</div>
 			</div>
 
-			<% club.members.forEach(function(member) {	%>
-			<div class="row">
-				<div class="col-lg-offset-2 col-lg-2 text-center"><%= member.firstName %></div>
-				<div class="col-lg-2 text-center"><%= member.lastName %></div>
-				<div class="col-lg-1 text-center">Membre</div>
-				<div class="col-lg-3 text-center"><%= member.email %></div>
+			<div class="row" ng-repeat="member in club.members">
+				<div class="col-sm-offset-2 col-sm-2 text-center">{{ member.firstName }}</div>
+				<div class="col-sm-2 text-center">{{ member.lastName }}</div>
+				<div class="col-sm-1 text-center">Membre</div>
+				<div class="col-sm-3 text-center">{{ member.email }}</div>
 			</div>
-			<% }); %>
-
 
 		</div>
 	</div>
 
-	<% 
-	} else {
-	%>
-	<div class="row">
-		<div class="col-lg-12 text-center">
-			<h4>Vous n'êtes pas encore approuvé par le président ou le trésorier du club <%= club.clubName %>.</h4>
-		</div>
-	</div>
-	<% } %>
-	<% if( role == "president" || role == "treasurer" ) { %>
-
-	<div class="row">
-		<div class="col-lg-12 text-center">
-			<h1>En attente d'approbation</h1>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-12">
-
-			<div class="row">
-				<div class="col-lg-offset-2 col-lg-2 text-center"><b>Prénom</b></div>
-				<div class="col-lg-2 text-center"><b>Nom</b></div>
-				<div class="col-lg-2 text-center"><b>Email</b></div>
-				<div class="col-lg-2 text-center"><b>Approuver ?</b></div>
-			</div>
-
-			<% var i=0;
-			club.pendingApproval.forEach(function(pending) {	%>
-			<div class="row">
-				<div class="col-lg-offset-2 col-lg-2 text-center"><%= pending.firstName %></div>
-				<div class="col-lg-2 text-center"><%= pending.lastName %></div>
-				<div class="col-lg-2 text-center"><%= pending.email %></div>
-				<div class="col-lg-2 text-center">
-					<a href="#" class="approve-link" id="approve#<%= i %>#<%= pending.userID %>"><font color="#00CC00"><span class="fa fa-check" aria-hidden="true"></span></font></a>
-					&nbsp;/&nbsp;
-					<a href="#" class="reject-link" id="reject#<%= i %>#<%= pending.userID %>"><font color="#CC0000"><span class="fa fa-times" aria-hidden="true"></span></div></font></a>
-			</div>
-			<% }); %>
-
-		</div>
-	</div>
-
-	<% } %>
 
 </div>

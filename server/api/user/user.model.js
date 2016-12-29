@@ -40,6 +40,7 @@ var UserSchema = new Schema({
   individualAccount: Boolean,
   isPartOfClub: Boolean,
   club: Array,
+  accountSelected: Object,
   provider: String,
   salt: String,
   facebook: {},

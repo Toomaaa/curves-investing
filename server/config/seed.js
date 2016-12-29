@@ -123,6 +123,45 @@ Club.find({}).remove()
           firstName : "M" 
         } 
       ]
+    } , {
+      clubCode : "AAAAA", 
+      clubName : "TRUC", 
+      initialAmount : 999, 
+      monthlyAmount : 999, 
+      shareAmount : 999, 
+      creationDate : "2016-09-01T22:00:00Z", 
+      exitPercentage : 999, 
+      president : { 
+        email : "test@aaaaa.fr", 
+        function : "president", 
+        lastName : "PAAAAA", 
+        firstName : "PAAAAA" 
+      }, 
+      treasurer : { 
+        email : "test@aaaaa.fr2", 
+        function : "treasurer", 
+        lastName : "TAAAAA", 
+        firstName : "TAAAAA" 
+      }, 
+      pendingApproval : [ ], 
+      members : [ 
+        { 
+          email : "test@aaaaa.fr3", 
+          function : "member", 
+          lastName : "MAAAAA", 
+          firstName : "MAAAAA" 
+        }, { 
+          email : "test@aaaaa.fr4", 
+          function : "member", 
+          lastName : "MAAAAA", 
+          firstName : "MAAAAA" 
+        }, { 
+          email : "test@aaaaa.fr5", 
+          function : "member", 
+          lastName : "MAAAAA", 
+          firstName : "MAAAAA" 
+        } 
+      ]
     })
     .then(() => {
       console.log('finished populating clubs');
