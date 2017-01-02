@@ -13,7 +13,8 @@ var ClubSchema = new mongoose.Schema({
   members: Array,
   president: Object,
   treasurer: Object,
-  pendingApproval: Array
+  pendingApproval: Array,
+  periods : Object
 });
 
 export default mongoose.model('Club', ClubSchema);

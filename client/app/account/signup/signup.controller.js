@@ -20,6 +20,31 @@ export default class SignupController {
     this.$http = $http;
     this.$scope = $scope;
 
+    this.club = {
+      creationDate: new Date(),
+      initialAmount: 1000,
+      monthlyAmount: 100,
+      shareAmount: 1,
+      exitPercentage: 2
+    };
+
+    this.club.periods = {
+      weekday : {
+        number : '1',
+        day: '1',
+        regularity: '1'
+      },
+      fixed : {
+        number : '1',
+        regularity: '1'
+      },
+      weekdayMode : true
+    };
+
+    this.club.endFirstPeriods = calculatePeriods({mode: "weekday", number: 1, day: 1, regularity: 1}, this.club.creationDate, 2);
+
+    this.club.endFirstPeriod = '0';
+
     this.$scope.members = [
       { firstName: '', lastName: '', function: 'president', email: '' },
       { firstName: '', lastName: '', function: 'treasurer', email: '' },
@@ -37,10 +62,118 @@ export default class SignupController {
       if($scope.members.length < 5) { $scope.members.push({ firstName: '', lastName: '', function: 'member', email: '' }); }
     };
 
+    this.$scope.changeMode = function(ctrl, mode) {
+      if(mode == 'weekday') ctrl.club.periods.weekdayMode = true;
+      else if(mode == 'fixed') ctrl.club.periods.weekdayMode = false;
+
+      var periods = { }
+      if(ctrl.club.periods.weekdayMode) {
+        periods.mode = "weekday";
+        periods.number = ctrl.club.periods.weekday.number;
+        periods.day = ctrl.club.periods.weekday.day;
+        periods.regularity = 1;
+      } else {
+        periods.mode = "fixed";
+        periods.number = ctrl.club.periods.fixed.number;
+        periods.regularity = 1;
+      }
+
+      if(mode == 'weekday') ctrl.club.endFirstPeriods = calculatePeriods(periods, ctrl.club.creationDate, parseInt(ctrl.club.periods.weekday.regularity)+1);
+      else if(mode == 'fixed') {
+        ctrl.club.endFirstPeriods = calculatePeriods(periods, ctrl.club.creationDate, parseInt(ctrl.club.periods.fixed.regularity)+1);
+      }
+    }
+
     this.$scope.clubSubmitted = false;
 
 
+
+
+    function calculatePeriods(periodsConfig, creationDate, limit, ctrl) {
+
+      var periodsDates = new Array();
+
+      console.log('1');
+
+      var creationDay = creationDate.getDate();
+      var creationMonth = creationDate.getMonth();
+      var creationYear = creationDate.getFullYear();
+
+      var cursorDate = new Date(creationDate);
+      var endDate = new Date(creationYear+10, creationMonth, creationDay);
+
+      console.log('2');
+
+      if(!limit) limit=999;
+      var count = 0;
+
+      console.log('3');
+
+      if(periodsConfig.mode == "weekday") {
+
+        console.log('a1');
+
+        cursorDate = new Date(cursorDate.getFullYear(), cursorDate.getMonth(), 1);
+
+        console.log('a2');
+
+        while(cursorDate <= endDate && count < limit) {
+
+          console.log('aa1'+' '+count+' < '+limit);
+
+          var firstDay = cursorDate.getDay();
+          var diff = parseInt(periodsConfig.day) - firstDay;
+          if(diff < 0) diff = diff+7;
+          var goodDay = diff + (parseInt(periodsConfig.number)-1)*7 + 1;
+
+          console.log('aa2'+' '+count+' < '+limit);
+
+          cursorDate = new Date(cursorDate.getFullYear(), cursorDate.getMonth(), goodDay);
+
+          console.log('aa3'+' '+count+' < '+limit);
+
+          if(cursorDate >= creationDate && cursorDate <= endDate) {
+            console.log('aa4'+' '+count+' < '+limit);
+            periodsDates.push(new Date(+cursorDate));
+            console.log('aa5'+' '+count+' < '+limit);
+            count++;
+          }
+
+          console.log('aa6'+' '+count+' < '+limit);
+          cursorDate = new Date(cursorDate.getFullYear(), cursorDate.getMonth()+parseInt(periodsConfig.regularity), 1);
+          console.log('aa7'+' '+count+' < '+limit);
+        }
+
+      }
+      else if(periodsConfig.mode == "fixed") {
+
+        // On fixe le jour du mois à celui demandé, et on regarde si on a pas basculé sur le mois suivant (par exemple pour un 31 février)
+        var currentMonth = cursorDate.getMonth();
+        cursorDate = new Date(cursorDate.getFullYear(), cursorDate.getMonth(), parseInt(periodsConfig.number));
+        if(cursorDate.getMonth() != currentMonth+1 && cursorDate.getMonth()!=0) cursorDate = new Date(cursorDate.getFullYear(), cursorDate.getMonth(), 0);
+
+        while(cursorDate <= endDate && count < limit) {
+
+          if(cursorDate >= creationDate && cursorDate <= endDate) {
+            periodsDates.push(new Date(+cursorDate));
+            count++;
+          }
+
+          currentMonth = cursorDate.getMonth();
+          cursorDate = new Date(cursorDate.getFullYear(), cursorDate.getMonth()+parseInt(periodsConfig.regularity), parseInt(periodsConfig.number));
+          if(cursorDate.getMonth() != currentMonth+parseInt(periodsConfig.regularity) && cursorDate.getMonth()!=0) cursorDate = new Date(cursorDate.getFullYear(), cursorDate.getMonth(), 0);
+        }
+
+      }
+
+      return periodsDates;
+    }
+
+    $scope.calculatePeriods = calculatePeriods;
+
+
   }
+
 
   registerUser(form) {
     this.submitted = true;
@@ -86,8 +219,20 @@ export default class SignupController {
       var treasurer = members.find(findTreasurer);
       members.splice(members.indexOf(treasurer),1);
 
+      var periods = { }
+      if(this.club.periods.weekdayMode) {
+        periods.mode = "weekday";
+        periods.number = this.club.periods.weekday.number;
+        periods.day = this.club.periods.weekday.day;
+        periods.regularity = this.club.periods.weekday.regularity;
+      } else {
+        periods.mode = "fixed";
+        periods.number = this.club.periods.fixed.number;
+        periods.regularity = this.club.periods.fixed.regularity;
+      }
 
       generateClubCode(this.$http, this.$scope, this.club, function(clubCode, api, scope, club) {
+
         api.post('/api/clubs', {
           clubCode: clubCode,
           clubName: club.clubName,
@@ -99,53 +244,29 @@ export default class SignupController {
           members: members,
           president: president,
           treasurer: treasurer,
-          pendingApproval: []
+          pendingApproval: [],
+          periods: periods
         })
           .then(function(response) {
+
+            api.post('/api/clubsPeriods', {
+              clubCode: clubCode,
+              periods: scope.calculatePeriods(periods, club.creationDate)
+            });
             
             scope.members.forEach(function(member) {
 
-              // generateFakePassword(function(fakePassword) {
-                api.post('/api/pendings', {
-                  // isActivated: false,
-                  // firstName: member.firstName,
-                  // lastName: member.lastName,
-                  // email: member.email,
-                  // password: generateFakePassword(),
-                  // isPasswordSet: false,
-                  // individualAccount: false,
-                  // isPartOfClub: true,
-                  // club: [ { clubCode: clubCode, status: 'Approved', function: member.function } ]
-                  firstName: member.firstName,
-                  lastName: member.lastName,
-                  email: member.email,
-                  club: [ { clubCode: clubCode, function: member.function } ],
-                  activationCode: generateActivationCode()
-                })
-                  .then(function(response) {
-                    console.log("then post 2 : ");
-                    console.log(response);
-                  })
-                  .catch(function(response) {
-
-                    console.log("catch post 2 : ");
-                    console.log(response);
-                  })
-                  .finally(function() {
-                    console.log("finally 2");
-                  });
-              // });
-
+              api.post('/api/pendings', {
+                firstName: member.firstName,
+                lastName: member.lastName,
+                email: member.email,
+                club: [ { clubCode: clubCode, function: member.function } ],
+                activationCode: generateActivationCode()
+              });
               
             });
               
             scope.clubSubmitted = true;
-          })
-          .catch(function(response) {
-            console.log('catch : '+response.data);
-          })
-          .finally(function() {
-            console.log('finally post');
           });
       });
     }
@@ -201,10 +322,17 @@ export default class SignupController {
 
         return passwd;
     }
+
+
+    
+
+
+
+
   }
 
 
 
-  
+
 
 }

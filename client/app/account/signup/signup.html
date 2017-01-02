@@ -175,15 +175,18 @@
               <div class="col-sm-3">
                 <div class="form-group" ng-class="{ 'has-success': clubForm.monthlyAmount.$valid && vm.submitted,
                                                     'has-error': clubForm.monthlyAmount.$invalid && vm.submitted }">
-                  <label>Montant du versement mensuel</label>
+                  <label>Montant du versement régulier</label>
 
                   <div class="input-group">
                     <input type="number" name="monthlyAmount" class="form-control" ng-model="vm.club.monthlyAmount"
                            required />
-                    <span class="input-group-addon">€</span>
+                    <span class="input-group-addon">€ / 
+                      <span ng-show="vm.club.periods.weekdayMode && vm.club.periods.weekday.regularity>1">{{vm.club.periods.weekday.regularity}}</span>
+                      <span ng-show="!vm.club.periods.weekdayMode && vm.club.periods.fixed.regularity>1">{{vm.club.periods.fixed.regularity}}</span>
+                       mois</span>
                   </div>
                   <p class="help-block" ng-show="clubForm.monthlyAmount.$error.required && vm.submitted">
-                    Le montant du versement mensuel est requis
+                    Le montant du versement régulier est requis
                   </p>
                   <p class="help-block" ng-show="clubForm.monthlyAmount.$error.number && vm.submitted">
                     Entrez un nombre
@@ -231,6 +234,74 @@
 
             </div>
 
+            <br />
+
+            <div class="signup-club-periods">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label>Périodes</label>
+                    <i> - Notre conseil : Définissez les périodes au même rythme que les réunions du club.</i><br />
+                    <div class="col-sm-offset-1 col-sm-5 text-right">
+                      <input id="periods-weekday" type="checkbox" ng-model="vm.club.periods.weekdayMode" ng-change="changeMode(vm, 'weekday')" />
+                      <label for="periods-weekday">
+                        <select class="input-periods" name="periods-weekday-number" ng-model="vm.club.periods.weekday.number" ng-change="changeMode(vm, 'weekday')">
+                          <option value="1">le 1er</option>
+                          <option value="2">le 2ème</option>
+                          <option value="3">le 3ème</option>
+                          <option value="4">le 4ème</option>
+                        </select>
+                        <select class="input-periods" name="periods-weekday-day" ng-model="vm.club.periods.weekday.day" ng-change="changeMode(vm, 'weekday')">
+                          <option value="1">lundi</option>
+                          <option value="2">mardi</option>
+                          <option value="3">mercredi</option>
+                          <option value="4">jeudi</option>
+                          <option value="5">vendredi</option>
+                          <option value="6">samedi</option>
+                          <option value="0">dimanche</option>
+                        </select>
+                        <select class="input-periods" name="periods-weekday-regularity" ng-model="vm.club.periods.weekday.regularity" ng-change="changeMode(vm, 'weekday')">
+                          <option value="1">de chaque mois</option>
+                          <option value="2">tous les 2 mois</option>
+                          <option value="3">tous les 3 mois</option>
+                          <option value="4">tous les 4 mois</option>
+                          <option value="5">tous les 5 mois</option>
+                          <option value="6">tous les 6 mois</option>
+                        </select>
+                      </label>
+                    </div>
+                    <div class="col-sm-1 text-center" style="margin-top: 6px">
+                      ou
+                    </div>
+                    <div class="col-sm-5">
+                      <input id="periods-fixed" type="checkbox" ng-model="vm.club.periods.weekdayMode" ng-true-value="false" ng-false-value="true" ng-change="changeMode(vm, 'fixed')">
+                      <label for="periods-fixed">
+                        <select class="input-periods" name="periods-fixed-number" ng-model="vm.club.periods.fixed.number" ng-change="changeMode(vm, 'fixed')">
+                          <option ng-repeat="i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]" value="{{i}}">le {{ i }}</option>
+                        </select>
+                        <select class="input-periods" name="periods-fixed-regularity" ng-model="vm.club.periods.fixed.regularity" ng-change="changeMode(vm, 'fixed')">
+                          <option value="1">de chaque mois</option>
+                          <option value="2">tous les 2 mois</option>
+                          <option value="3">tous les 3 mois</option>
+                          <option value="4">tous les 4 mois</option>
+                          <option value="5">tous les 5 mois</option>
+                          <option value="6">tous les 6 mois</option>
+                        </select>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-11 text-center">
+                  avec la première période du {{vm.club.creationDate | date : "dd/MM/yyyy"}} au&nbsp;
+                  <select class="input-periods" name="periods-fixed-regularity" ng-model="vm.club.endFirstPeriod">
+                    <option ng-repeat="endFP in vm.club.endFirstPeriods track by $index" value="{{$index}}">{{endFP | date : "dd/MM/yyyy"}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div class="row">
 
               <div class="col-sm-12">
@@ -238,7 +309,7 @@
                 <div class="text-center">
 
                   <label>Membres</label>
-                  <br /><br />
+                  <br />
 
                   <div class="row">
                     <div class="col-sm-offset-2 col-sm-2">
@@ -271,7 +342,7 @@
                       </p>
                     </div>
                     <div class="col-sm-2">
-                      <select class="form-control select-text-center" name="function" ng-model="member.function" />
+                      <select class="form-control select-text-center" name="function" ng-model="member.function">
                         <option value="president">Président</option>
                         <option value="treasurer">Trésorier</option>
                         <option value="member">Membre</option>

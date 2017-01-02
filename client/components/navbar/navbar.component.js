@@ -4,10 +4,12 @@
 import angular from 'angular';
 
 export class NavbarComponent {
-  menu = [{
-    title: 'Accueil',
-    state: 'main'
-  }];
+  menu = [
+  // {
+  //   title: 'Accueil',
+  //   state: 'main'
+  // }
+  ];
 
   isCollapsed = true;
 
@@ -28,45 +30,48 @@ export class NavbarComponent {
 
       Auth.getCurrentUser(currentUser => {
 
-        $http.get('/api/users/accountSelected')
-          .then(response => {
-            userSelection.set('accountSelected', response.data.accountSelected);
-            $scope.accountSelected = response.data.accountSelected;
+        if(currentUser._id && currentUser._id != '') {
 
-            if(response.data.accountSelected) $scope.accountSelected = response.data.accountSelected;
-            else if(currentUser.isPartOfClub) {
-              $scope.accountSelected = {
-                type: 'club',
-                clubCode: currentUser.club[0].clubCode,
-                clubName: currentUser.club[0].clubName,
-                function: currentUser.club[0].function
-              };
-            }
-            else {
-              $scope.accountSelected = {
-                type: 'individual',
-                clubCode: '',
-                clubName: '',
-                function: ''
-              };
-            }
-            setAccountSelectedInBdd($scope.accountSelected);
-          })
-          .catch(err => {
-            console.log(err);
+          $http.get('/api/users/accountSelected')
+            .then(response => {
+              userSelection.set('accountSelected', response.data.accountSelected);
+              $scope.accountSelected = response.data.accountSelected;
 
-            $scope.accountSelected.type = 'club';
-            $scope.accountSelected.clubCode = currentUser.club[0].clubCode;
-            $scope.accountSelected.clubName = currentUser.club[0].clubName;
-            $scope.accountSelected.function = currentUser.club[0].function;
-          });
+              if(response.data.accountSelected) $scope.accountSelected = response.data.accountSelected;
+              else if(currentUser.isPartOfClub) {
+                $scope.accountSelected = {
+                  type: 'club',
+                  clubCode: currentUser.club[0].clubCode,
+                  clubName: currentUser.club[0].clubName,
+                  function: currentUser.club[0].function
+                };
+              }
+              else {
+                $scope.accountSelected = {
+                  type: 'individual',
+                  clubCode: '',
+                  clubName: '',
+                  function: ''
+                };
+              }
+              setAccountSelectedInBdd($scope.accountSelected);
+            })
+            .catch(err => {
+              console.log(err);
 
-        $scope.accountChoices = [];
-        if(currentUser.individualAccount) $scope.accountChoices.push({type: 'individual'});
-        if(currentUser.isPartOfClub) {
-          currentUser.club.forEach(club => {
-            $scope.accountChoices.push({type: 'club', clubCode: club.clubCode, clubName: club.clubName, function: club.function});
-          });
+              $scope.accountSelected.type = 'club';
+              $scope.accountSelected.clubCode = currentUser.club[0].clubCode;
+              $scope.accountSelected.clubName = currentUser.club[0].clubName;
+              $scope.accountSelected.function = currentUser.club[0].function;
+            });
+
+          $scope.accountChoices = [];
+          if(currentUser.individualAccount) $scope.accountChoices.push({type: 'individual'});
+          if(currentUser.isPartOfClub) {
+            currentUser.club.forEach(club => {
+              $scope.accountChoices.push({type: 'club', clubCode: club.clubCode, clubName: club.clubName, function: club.function});
+            });
+          }
         }
       })
       .catch(err => {
