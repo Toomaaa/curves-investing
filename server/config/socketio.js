@@ -16,6 +16,8 @@ function onConnect(socket) {
   });
 
   // Insert sockets below
+  require('../api/trade/trade.socket').register(socket);
+  require('../api/subscription/subscription.socket').register(socket);
   require('../api/clubsPeriods/clubsPeriods.socket').register(socket);
   require('../api/pending/pending.socket').register(socket);
   require('../api/club/club.socket').register(socket);

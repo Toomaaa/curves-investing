@@ -41,6 +41,15 @@ var UserSchema = new Schema({
   isPartOfClub: Boolean,
   club: Array,
   accountSelected: Object,
+  //  {
+  //   type: Object,
+  //   default: {
+  //     type: '',
+  //     clubCode: '',
+  //     clubName: '',
+  //     function: ''
+  //   }
+  // },
   provider: String,
   salt: String,
   facebook: {},

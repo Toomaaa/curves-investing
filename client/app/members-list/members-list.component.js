@@ -21,6 +21,21 @@ export class MembersListComponent {
             .catch(err => {
               console.log(err);
             });
+
+          $http.get('/api/subscriptions/clubCode/'+$scope.accountSelected.clubCode)
+            .then(response => {
+              $scope.subscriptions = response.data;
+              // $scope.subscriptions = [{
+              //   email: 'guillaume.bruno@gmail.com',
+              //   clubCode: '43W0K',
+              //   period: new Date(),
+              //   amount: 100,
+              //   type: 'initial'
+              // }];
+            })
+            .catch(err => {
+              console.log(err);
+            });
         })
         .catch(err => {
           console.log(err);
@@ -37,6 +52,19 @@ export class MembersListComponent {
           console.log(err);
           throw err;
         })
+    }
+
+
+    $scope.isSubscriptionOk = function(email, type, amount, period) {
+      
+      if($scope.subscriptions) {
+        return $scope.subscriptions.find(filterInResults);
+
+        function filterInResults(element) {
+          return element.email == email && element.type == type && element.amount >= amount;
+        }
+      }
+
     }
     
 

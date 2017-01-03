@@ -20,7 +20,7 @@ export default class SignupController {
     this.$http = $http;
     this.$scope = $scope;
 
-    this.club = {
+    this.$scope.club = {
       creationDate: new Date(),
       initialAmount: 1000,
       monthlyAmount: 100,
@@ -28,7 +28,7 @@ export default class SignupController {
       exitPercentage: 2
     };
 
-    this.club.periods = {
+    this.$scope.club.periods = {
       weekday : {
         number : '1',
         day: '1',
@@ -41,9 +41,9 @@ export default class SignupController {
       weekdayMode : true
     };
 
-    this.club.endFirstPeriods = calculatePeriods({mode: "weekday", number: 1, day: 1, regularity: 1}, this.club.creationDate, 2);
+    this.$scope.club.endFirstPeriods = calculatePeriods({mode: "weekday", number: 1, day: 1, regularity: 1}, this.$scope.club.creationDate, 2);
 
-    this.club.endFirstPeriod = '0';
+    this.$scope.club.endFirstPeriod = '0';
 
     this.$scope.members = [
       { firstName: '', lastName: '', function: 'president', email: '' },
@@ -63,24 +63,24 @@ export default class SignupController {
     };
 
     this.$scope.changeMode = function(ctrl, mode) {
-      if(mode == 'weekday') ctrl.club.periods.weekdayMode = true;
-      else if(mode == 'fixed') ctrl.club.periods.weekdayMode = false;
+      if(mode == 'weekday') $scope.club.periods.weekdayMode = true;
+      else if(mode == 'fixed') $scope.club.periods.weekdayMode = false;
 
       var periods = { }
-      if(ctrl.club.periods.weekdayMode) {
+      if($scope.club.periods.weekdayMode) {
         periods.mode = "weekday";
-        periods.number = ctrl.club.periods.weekday.number;
-        periods.day = ctrl.club.periods.weekday.day;
+        periods.number = $scope.club.periods.weekday.number;
+        periods.day = $scope.club.periods.weekday.day;
         periods.regularity = 1;
       } else {
         periods.mode = "fixed";
-        periods.number = ctrl.club.periods.fixed.number;
+        periods.number = $scope.club.periods.fixed.number;
         periods.regularity = 1;
       }
 
-      if(mode == 'weekday') ctrl.club.endFirstPeriods = calculatePeriods(periods, ctrl.club.creationDate, parseInt(ctrl.club.periods.weekday.regularity)+1);
+      if(mode == 'weekday') $scope.club.endFirstPeriods = calculatePeriods(periods, $scope.club.creationDate, parseInt($scope.club.periods.weekday.regularity)+1);
       else if(mode == 'fixed') {
-        ctrl.club.endFirstPeriods = calculatePeriods(periods, ctrl.club.creationDate, parseInt(ctrl.club.periods.fixed.regularity)+1);
+        $scope.club.endFirstPeriods = calculatePeriods(periods, $scope.club.creationDate, parseInt($scope.club.periods.fixed.regularity)+1);
       }
     }
 
@@ -89,59 +89,45 @@ export default class SignupController {
 
 
 
-    function calculatePeriods(periodsConfig, creationDate, limit, ctrl) {
+    function calculatePeriods(periodsConfig, creationDate, limit, endFirstPeriod) {
+
+      
+      if(endFirstPeriod) {
+        endFirstPeriod = new Date($scope.club.endFirstPeriods[endFirstPeriod]);
+      }
 
       var periodsDates = new Array();
-
-      console.log('1');
 
       var creationDay = creationDate.getDate();
       var creationMonth = creationDate.getMonth();
       var creationYear = creationDate.getFullYear();
 
       var cursorDate = new Date(creationDate);
+      if(endFirstPeriod) periodsDates.push(cursorDate);
       var endDate = new Date(creationYear+10, creationMonth, creationDay);
-
-      console.log('2');
 
       if(!limit) limit=999;
       var count = 0;
 
-      console.log('3');
-
       if(periodsConfig.mode == "weekday") {
-
-        console.log('a1');
 
         cursorDate = new Date(cursorDate.getFullYear(), cursorDate.getMonth(), 1);
 
-        console.log('a2');
-
         while(cursorDate <= endDate && count < limit) {
-
-          console.log('aa1'+' '+count+' < '+limit);
 
           var firstDay = cursorDate.getDay();
           var diff = parseInt(periodsConfig.day) - firstDay;
           if(diff < 0) diff = diff+7;
           var goodDay = diff + (parseInt(periodsConfig.number)-1)*7 + 1;
 
-          console.log('aa2'+' '+count+' < '+limit);
-
           cursorDate = new Date(cursorDate.getFullYear(), cursorDate.getMonth(), goodDay);
 
-          console.log('aa3'+' '+count+' < '+limit);
-
-          if(cursorDate >= creationDate && cursorDate <= endDate) {
-            console.log('aa4'+' '+count+' < '+limit);
+          if(((endFirstPeriod && cursorDate >= endFirstPeriod) || (endFirstPeriod===undefined && cursorDate >= creationDate)) && cursorDate <= endDate) {
             periodsDates.push(new Date(+cursorDate));
-            console.log('aa5'+' '+count+' < '+limit);
             count++;
           }
 
-          console.log('aa6'+' '+count+' < '+limit);
           cursorDate = new Date(cursorDate.getFullYear(), cursorDate.getMonth()+parseInt(periodsConfig.regularity), 1);
-          console.log('aa7'+' '+count+' < '+limit);
         }
 
       }
@@ -154,7 +140,7 @@ export default class SignupController {
 
         while(cursorDate <= endDate && count < limit) {
 
-          if(cursorDate >= creationDate && cursorDate <= endDate) {
+          if(((endFirstPeriod && cursorDate >= endFirstPeriod) || (endFirstPeriod===undefined && cursorDate >= creationDate)) && cursorDate <= endDate) {
             periodsDates.push(new Date(+cursorDate));
             count++;
           }
@@ -220,18 +206,18 @@ export default class SignupController {
       members.splice(members.indexOf(treasurer),1);
 
       var periods = { }
-      if(this.club.periods.weekdayMode) {
+      if(this.$scope.club.periods.weekdayMode) {
         periods.mode = "weekday";
-        periods.number = this.club.periods.weekday.number;
-        periods.day = this.club.periods.weekday.day;
-        periods.regularity = this.club.periods.weekday.regularity;
+        periods.number = this.$scope.club.periods.weekday.number;
+        periods.day = this.$scope.club.periods.weekday.day;
+        periods.regularity = this.$scope.club.periods.weekday.regularity;
       } else {
         periods.mode = "fixed";
-        periods.number = this.club.periods.fixed.number;
-        periods.regularity = this.club.periods.fixed.regularity;
+        periods.number = this.$scope.club.periods.fixed.number;
+        periods.regularity = this.$scope.club.periods.fixed.regularity;
       }
 
-      generateClubCode(this.$http, this.$scope, this.club, function(clubCode, api, scope, club) {
+      generateClubCode(this.$http, this.$scope, this.$scope.club, function(clubCode, api, scope, club) {
 
         api.post('/api/clubs', {
           clubCode: clubCode,
@@ -251,7 +237,7 @@ export default class SignupController {
 
             api.post('/api/clubsPeriods', {
               clubCode: clubCode,
-              periods: scope.calculatePeriods(periods, club.creationDate)
+              periods: scope.calculatePeriods(periods, club.creationDate, 999, club.endFirstPeriod)
             });
             
             scope.members.forEach(function(member) {
@@ -262,6 +248,14 @@ export default class SignupController {
                 email: member.email,
                 club: [ { clubCode: clubCode, function: member.function } ],
                 activationCode: generateActivationCode()
+              });
+
+              if(club.initialAmount == 0) api.post('/api/subscriptions', {
+                email: member.email,
+                clubCode: clubCode,
+                period: club.creationDate,
+                amount: club.initialAmount,
+                type: 'initial'
               });
               
             });

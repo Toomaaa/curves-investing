@@ -10,31 +10,31 @@
 		<div class="col-sm-12">
 			<br />
 			<div class="row">
-				<div class="col-sm-offset-2 col-sm-2 text-center"><b>Prénom</b></div>
-				<div class="col-sm-2 text-center"><b>Nom</b></div>
+				<div class="col-sm-offset-3 col-sm-2 text-center"><b>Nom</b></div>
 				<div class="col-sm-1 text-center"><b>Fonction</b></div>
 				<div class="col-sm-3 text-center"><b>Email</b></div>
+				<div class="col-sm-2 text-center"><b>Versements</b></div>
 			</div>
 
 			<div class="row">
-				<div class="col-sm-offset-2 col-sm-2 text-center">{{ club.president.firstName }}</div>
-				<div class="col-sm-2 text-center">{{ club.president.lastName }}</div>
+				<div class="col-sm-offset-3 col-sm-2 text-center">{{ club.president.firstName }} {{ club.president.lastName }}</div>
 				<div class="col-sm-1 text-center">Président</div>
 				<div class="col-sm-3 text-center">{{ club.president.email }}</div>
+				<div class="col-sm-2 text-center">{{ isSubscriptionOk(club.president.email, 'initial', club.initialAmount) ? 'initial OK' : 'initial non versé' }}</div>
 			</div>
 
 			<div class="row">
-				<div class="col-sm-offset-2 col-sm-2 text-center">{{ club.treasurer.firstName }}</div>
-				<div class="col-sm-2 text-center">{{ club.treasurer.lastName }}</div>
+				<div class="col-sm-offset-3 col-sm-2 text-center">{{ club.treasurer.firstName }} {{ club.treasurer.lastName }}</div>
 				<div class="col-sm-1 text-center">Trésorier</div>
 				<div class="col-sm-3 text-center">{{ club.treasurer.email }}</div>
+				<div class="col-sm-2 text-center">{{ isSubscriptionOk(club.treasurer.email, 'initial', club.initialAmount) ? 'initial OK' : 'initial non versé' }}</div>
 			</div>
 
 			<div class="row" ng-repeat="member in club.members">
-				<div class="col-sm-offset-2 col-sm-2 text-center">{{ member.firstName }}</div>
-				<div class="col-sm-2 text-center">{{ member.lastName }}</div>
+				<div class="col-sm-offset-3 col-sm-2 text-center">{{ member.firstName }} {{ member.lastName }}</div>
 				<div class="col-sm-1 text-center">Membre</div>
 				<div class="col-sm-3 text-center">{{ member.email }}</div>
+				<div class="col-sm-2 text-center">{{ isSubscriptionOk(member.email, 'initial', club.initialAmount) ? 'initial OK' : 'initial non versé' }}</div>
 			</div>
 
 		</div>
