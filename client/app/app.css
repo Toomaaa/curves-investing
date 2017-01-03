@@ -47,6 +47,7 @@
 @import 'account/finalize/finalize.css';
 @import 'account/signup/signup.css';
 @import 'admin/admin.css';
+@import 'buysell/buysell.css';
 @import 'main/main.css';
 @import 'members-list/members-list.css';
 @import '../components/footer/footer.css';

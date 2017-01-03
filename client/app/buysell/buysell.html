@@ -1,0 +1,28 @@
+<div class="container">
+	<form class="form" name="buysellForm">
+		<div class="row">
+			<div class="col-sm-offset-3 col-sm-6 text-center">
+				
+				<div class="form-group searchBox">
+					<label>Entrez le nom ou le code de la valeur recherchée</label>
+					<input type="text" name="valueName" class="form-control" ng-model="valueName" ng-change="getValues()" />
+					<div class="autocompleteBox text-left">
+						<div class="row" ng-repeat="valueAC in result track by $index" ng-click="selectValue($index)">
+							<div class="col-sm-9 overflow-hidden"><span class="flag flag-{{valueAC.value.exch}}"></span> {{valueAC.name}}</div>
+							<div class="col-sm-3 overflow-hidden">{{valueAC.value.symbol}}</div>
+						</div>
+					</div>
+				</div>
+
+				
+				
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12">
+				{{selectedValue.name}}
+			</div>
+		</div>
+		
+	</form>
+</div>
