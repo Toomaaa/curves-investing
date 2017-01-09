@@ -3,6 +3,13 @@
 	white-space:nowrap;
 }
 
+.success {
+	color: #00BB00;
+	font-weight: bold;
+	font-size: 16px;
+	margin-bottom: 30px;
+}
+
 .searchBox {
 	position:relative;
 }
@@ -24,6 +31,11 @@
 .autocompleteBox > .row:hover {
 	cursor: pointer;
 	background-color: #eee;
+}
+
+.label-input {
+	height: 34px;
+	line-height: 34px;
 }
 
 

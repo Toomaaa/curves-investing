@@ -63,6 +63,8 @@ export class NavbarComponent {
               $scope.accountSelected.clubCode = currentUser.club[0].clubCode;
               $scope.accountSelected.clubName = currentUser.club[0].clubName;
               $scope.accountSelected.function = currentUser.club[0].function;
+
+              userSelection.set('accountSelected', $scope.accountSelected);
             });
 
           $scope.accountChoices = [];

@@ -1,5 +1,19 @@
 <div class="container">
 	<form class="form" name="buysellForm">
+
+		<div class="row">
+			<div class="col-sm-12 text-center">
+				<h1>Achat / Vente de valeur</h1><br /><br />
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12 text-center success" ng-show="orderValidated">
+				{{ orderText }}{{ orderTextDate | date : 'dd/MM/yyyy' }}
+			</div>
+		</div>
+
+
 		<div class="row">
 			<div class="col-sm-offset-3 col-sm-6 text-center">
 				
@@ -18,9 +32,138 @@
 				
 			</div>
 		</div>
-		<div class="row">
+
+		<!-- <div class="row">
 			<div class="col-sm-12">
-				{{selectedValue.name}}
+				{{selectedValue.name}} - {{selectedValue.symbol}}
+			</div>
+			<div class="col-sm-12">
+
+			</div>
+		</div> -->
+
+		<div class="row" ng-show="selectedValue">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right"><label>Type</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input type="radio" name="buyOrSell" ng-model="buyOrSell" value="buy"> Achat
+				</div>
+				<div class="col-sm-2">
+					<input type="radio" name="buyOrSell" ng-model="buyOrSell" value="sell"> Vente
+				</div>
+			</div>
+		</div>
+
+		<div class="row" ng-show="buyOrSell">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right"><label>Effectué ?</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input type="radio" name="orderDone" ng-model="orderDone" value="true"> {{ buyOrSell=='buy' ? 'Achat effectué' : 'Vente effectuée' }}
+				</div>
+				<div class="col-sm-2">
+					<input type="radio" name="orderDone" ng-model="orderDone" value="false"> Ordre passé en carnet
+				</div>
+			</div>
+		</div>
+
+		<div class="row" ng-show="orderDone == 'false'">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Type d'ordre</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<select name="orderType" ng-model="orderType" class="form-control">
+						<option value="ACL">A cours limité</option>
+						<option value="OAM">Au marché</option>
+						<option value="APM">A la meilleure limite</option>
+						<option value="ASD">A seuil de déclenchement</option>
+						<option value="APD">A plage de déclenchement</option>
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12">&nbsp;</div>
+		</div>
+
+		<div class="row" ng-show="orderDone != undefined">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Quantité</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input class="form-control text-center" type="number" step=1 name="quantity" ng-model="quantity" />
+				</div>
+			</div>
+		</div>
+
+		<div class="row" ng-show="orderDone != undefined && orderType == 'ACL'">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Prix</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input class="form-control text-center" type="number" step="any" name="price" ng-model="price" />
+				</div>
+				<div class="col-sm-2 label-input" ng-show="quantity && price">
+					= {{ quantity*price | number:2 }} €
+				</div>
+			</div>
+		</div>
+
+		<div class="row" ng-show="orderDone != undefined && (orderType == 'OAM' || orderType == 'APM')">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Prix</label></div>
+				<div class="col-sm-offset-1 col-sm-2 label-input">
+					actuellement {{actualPrice}} €
+				</div>
+				<div class="col-sm-2 label-input" ng-show="quantity">
+					= {{ quantity*actualPrice | number:2 }} €
+				</div>
+			</div>
+		</div>
+
+		<div class="row" ng-show="orderDone != undefined && (orderType == 'ASD' || orderType == 'APD')">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Limite{{ orderType == 'APD' ? ' 1' : '' }}</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input class="form-control text-center" type="number" step="any" name="limit1" ng-model="limit1" />
+				</div>
+				<div class="col-sm-2 label-input" ng-show="quantity && limit1">
+					= {{ quantity*limit1 | number:2 }} €
+				</div>
+			</div>
+		</div>
+
+		<div class="row" ng-show="orderDone != undefined && orderType == 'APD'">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Limite 2</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input class="form-control text-center" type="number" step="any" name="limit2" ng-model="limit2" />
+				</div>
+			</div>
+		</div>
+
+		<div class="row" ng-show="orderDone != undefined">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Frais</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input class="form-control text-center" type="number" step="any" name="fees" ng-model="fees" />
+				</div>
+				<div class="col-sm-2 label-input" ng-show="quantity && (orderType == 'ACL' ? price : orderType == 'OAM' || orderType == 'APM' ? actualPrice : limit1) && fees">
+					= {{ quantity*(orderType == 'ACL' ? price : orderType == 'OAM' || orderType == 'APM' ? actualPrice : limit1)+fees | number:2 }} €
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12">&nbsp;</div>
+		</div>
+
+		<div class="row" ng-show="orderDone != undefined">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Date</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input class="form-control text-center" type="date" name="orderDate" ng-model="orderDate" />
+				</div>
+				<div class="col-sm-2">
+					<button class="btn btn-success form-control" ng-click="formValidation()">Enregistrer</button>
+				</div>
 			</div>
 		</div>
 		
