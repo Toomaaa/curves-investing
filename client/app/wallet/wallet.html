@@ -1,0 +1,311 @@
+<div class="container">
+	<div class="row">
+		<div class="col-sm-12 text-center">
+			<h1>Portefeuille</h1>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col-sm-12">
+			<h4>Titres en portefeuille</h4>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-3 wallet-table-wrap wallet-table-title">
+			<div class="wallet-title-text">
+				<label>Titre</label>
+			</div>
+		</div>
+		<div class="col-sm-4 wallet-table-wrap">
+			<div class="col-sm-4 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Quantité</label>
+				</div>
+			</div>
+			<div class="col-sm-4 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Prix de revient unitaire</label>
+				</div>
+			</div>
+			<div class="col-sm-4 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Valeur totale</label>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-5 wallet-table-wrap">
+			<div class="col-sm-3 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Cours actuel</label>
+				</div>
+			</div>
+			<div class="col-sm-3 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Valeur actuelle totale</label>
+				</div>
+			</div>
+			<div class="col-sm-3 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>+/- value</label>
+				</div>
+			</div>
+			<div class="col-sm-3 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Performance</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="row" ng-repeat="equity in wallet.equities">
+		<div class="col-sm-3 wallet-table-wrap wallet-table-content wallet-table-quotename">
+			{{equity._id}}
+		</div>
+		<div class="col-sm-4 wallet-table-wrap">
+			<div class="col-sm-4 text-center wallet-table-content">
+				{{ equity.quantity }}
+			</div>
+			<div class="col-sm-4 text-center wallet-table-content">
+				{{ equity.totalPrice/equity.quantity | number:2 }} €
+			</div>
+			<div class="col-sm-4 text-center wallet-table-content">
+				{{ equity.totalPrice | number:2 }} €
+			</div>
+		</div>
+		<div class="col-sm-5 wallet-table-wrap">
+			<div class="col-sm-3 text-center wallet-table-content">
+				99.99 €
+			</div>
+			<div class="col-sm-3 text-center wallet-table-content">
+				{{ equity.quantity*equity.actualPrice | number:2 }} €
+			</div>
+			<div class="col-sm-3 text-center wallet-table-content" ng-class="equity.plusmoins >=0 ? 'positive' : 'negative'">
+				{{ equity.plusmoins > 0 ? '+' : '' }}{{ equity.plusmoins | number:2 }} €
+			</div>
+			<div class="col-sm-3 text-center wallet-table-content" ng-class="equity.performance >=0 ? 'positive' : 'negative'">
+				{{ equity.performance > 0 ? '+' : '' }}{{ equity.performance | number:2 }} %
+			</div>
+		</div>
+	</div>
+
+	<div class="row wallet-table-total">
+		<div class="col-sm-3 wallet-table-wrap">
+			Total
+		</div>
+		<div class="col-sm-4 wallet-table-wrap">
+			<div class="col-sm-4 text-center">
+				
+			</div>
+			<div class="col-sm-4 text-center">
+				
+			</div>
+			<div class="col-sm-4 text-center">
+				{{ wallet.total.bought | number:2 }} €
+			</div>
+		</div>
+		<div class="col-sm-5 wallet-table-wrap">
+			<div class="col-sm-3 text-center">
+				
+			</div>
+			<div class="col-sm-3 text-center">
+				{{ wallet.total.actual | number:2 }} €
+			</div>
+			<div class="col-sm-3 text-center" ng-class="wallet.total.plusmoins >=0 ? 'positive' : 'negative'">
+				{{ wallet.total.plusmoins > 0 ? '+' : '' }}{{ wallet.total.plusmoins | number:2 }} €
+			</div>
+			<div class="col-sm-3 text-center" ng-class="wallet.total.performance >=0 ? 'positive' : 'negative'">
+				{{ wallet.total.performance > 0 ? '+' : '' }}{{ wallet.total.performance | number:2 }} %
+			</div>
+		</div>
+	</div>
+
+	<br /><br />
+
+	<div class="row">
+		<div class="col-sm-12">
+			<h4>Ordres en carnet en attente</h4>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-6 wallet-table-wrap">
+			<div class="col-sm-2 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Date</label>
+				</div>
+			</div>
+			<div class="col-sm-6 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Titre</label>
+				</div>
+			</div>
+			<div class="col-sm-4 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Type</label>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6 wallet-table-wrap">
+			<div class="col-sm-2 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Quantité</label>
+				</div>
+			</div>
+			<div class="col-sm-3 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Prix / Limites</label>
+				</div>
+			</div>
+			<div class="col-sm-2 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Cours actuel</label>
+				</div>
+			</div>
+			<div class="col-sm-1 wallet-table-title">
+				<div class="wallet-title-text">
+					<label>Frais</label>
+				</div>
+			</div>
+			<div class="col-sm-4 wallet-table-title">
+				<div class="wallet-title-text">
+					<label></label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="row" ng-repeat="order in orders track by $index">
+		<div class="col-sm-6 wallet-table-wrap">
+			<div class="col-sm-2 text-center wallet-table-content" ng-switch on="orderValidation[$index]">
+				<div class="wallet-title-text" ng-switch-default>
+					{{ order.date | date: 'dd/MM/yyyy' }}
+				</div>
+				<div class="wallet-title-text" ng-switch-when="validate|edit" ng-switch-when-separator="|">
+					<input class="buyDate-input form-control" type="date" ng-model="edit.date[$index]" required />
+				</div>
+			</div>
+			<div class="col-sm-6 wallet-table-content wallet-table-quotename">
+				<div class="wallet-title-text">
+					{{ order.symbol }}
+				</div>
+			</div>
+			<div class="col-sm-4 text-center wallet-table-content" ng-switch on="orderValidation[$index]">
+				<div class="wallet-title-text" ng-switch on="order.orderType" ng-switch-default>
+					<div ng-switch-when="ACL">A cours limité</div>
+					<div ng-switch-when="OAM">Au marché</div>
+					<div ng-switch-when="APM">A la meilleure limite</div>
+					<div ng-switch-when="ASD">A seuil de déclenchement</div>
+					<div ng-switch-when="APD">A plage de déclenchement</div>
+					<div ng-switch-default>&nbsp;</div>
+				</div>
+				<div class="wallet-title-text" ng-switch-when="edit">
+					<select class="form-control buyOrderType-input" ng-model="edit.orderType[$index]">
+						<option value="ACL">A cours limité</option>
+						<option value="OAM">Au marché</option>
+						<option value="APM">A la meilleure limite</option>
+						<option value="ASD">A seuil de déclenchement</option>
+						<option value="APD">A plage de déclenchement</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6 wallet-table-wrap">
+			<div class="col-sm-2 text-center wallet-table-content" ng-switch on="orderValidation[$index]">
+				<div class="wallet-title-text" ng-switch-default>
+					{{ order.quantity }}
+				</div>
+				<div class="wallet-title-text" ng-switch-when="validate|edit" ng-switch-when-separator="|">
+					<input class="buyQuantity-input form-control" type="number" step="any" ng-model="edit.quantity[$index]" />
+				</div>
+			</div>
+			<div class="col-sm-3 text-center wallet-table-content" ng-switch on="orderValidation[$index]">
+				<div class="wallet-title-text" ng-switch-default>
+					{{ (order.price || order.limit1 | number:2) || '&nbsp;' }}{{ order.price || order.limit1 ? ' €' : '' }}
+					{{ order.limit2 ? ' / '+(order.limit2 | number:2) : ' ' }}{{ order.limit2 ? ' €' : '' }}
+				</div>
+				<div class="wallet-title-text" ng-switch-when="edit" ng-switch on="edit.orderType[$index]">
+					<div class="input-group" ng-switch-when="ACL">
+						<input class="buyPrice-input form-control" type="number" step="any" ng-model="edit.price[$index]" />
+						<span class="input-group-addon">€</span>
+					</div>
+					<div ng-switch-when="OAM|APM" ng-switch-when-separator="|">&nbsp;</div>
+					<div class="input-group" ng-switch-when="ASD">
+						<input class="buyLimit1-input form-control" type="number" step="any" ng-model="edit.limit1[$index]" />
+						<span class="input-group-addon">€</span>
+					</div>
+					<div ng-switch-when="APD">
+						<div class="col-sm-6 no-side-padding">
+							<div class="input-group">
+								<input class="buyLimit2-input form-control" type="number" step="any" ng-model="edit.limit1[$index]" placeholder="Lim1" />
+								<span class="input-group-addon">€</span>
+							</div>
+						</div>
+						<div class="col-sm-6 no-side-padding">
+							<div class="input-group">
+								<input class="buyLimit2-input form-control" type="number" step="any" ng-model="edit.limit2[$index]" placeholder="Lim2" />
+								<span class="input-group-addon">€</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-2 text-center wallet-table-content">
+				<div class="wallet-title-text">
+					99.99 €
+				</div>
+			</div>
+			<div class="col-sm-1 text-center wallet-table-content" ng-switch on="orderValidation[$index]">
+				<div class="wallet-title-text" ng-switch-default>
+					{{ order.fees | number:2 }} €
+				</div>
+				<div class="wallet-title-text" ng-switch-when="validate|edit" ng-switch-when-separator="|">
+					<div class="input-group fees-input-group">
+						<input class="buyFees-input form-control" type="number" step="any" ng-model="edit.fees[$index]" />
+						<span class="input-group-addon">€</span>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-4 text-center wallet-table-content" ng-switch on="orderValidation[$index]">
+				<div class="wallet-title-text" ng-switch-default>
+					<a class="order-check" ng-click="validateOrder($index)"><span class="fa fa-check fa-lg"></span></a>
+					&nbsp;&nbsp;-&nbsp;&nbsp;
+					<a class="order-pencil" ng-click="editOrder($index)"><span class="fa fa-pencil fa-lg"></span></a>
+					&nbsp;&nbsp;-&nbsp;&nbsp;
+					<a class="order-trash" ng-click="deleteOrder($index)"><span class="fa fa-trash fa-lg"></span></a>
+				</div>
+				<div class="wallet-title-text" ng-switch-when="validate">	
+					<div class="col-sm-4 buyPrice-text">Prix d'achat</div>
+					<div class="col-sm-6 buyPrice-input-wrap">
+						<div class="input-group">
+							<input class="buyPrice-input form-control" type="number" step="any" ng-model="edit.newPrice[$index]" />
+							<span class="input-group-addon">€</span>
+						</div>
+					</div>
+					<div class="col-sm-2 buyPrice-button">
+						<a class="order-check" ng-click="validateOrder($index, true)"><span class="fa fa-check fa-lg"></span></a>
+					</div>
+				</div>
+				<div class="wallet-title-text" ng-switch-when="edit">
+					<div class="col-sm-12 text-center">
+						<a class="order-check" ng-click="editOrder($index, true)"><span class="fa fa-check fa-lg"></span></a>
+						&nbsp;&nbsp;-&nbsp;&nbsp;
+						<a class="order-trash" ng-click="resetValidation($index)"><span class="fa fa-times fa-lg"></span></a>
+					</div>
+				</div>
+				<div class="wallet-title-text" ng-switch-when="delete">
+					<div class="col-sm-12 text-center">
+						Etes-vous sûr ? 
+						<a class="order-check" ng-click="deleteOrder($index, true)"><span class="fa fa-check fa-lg"></span></a>
+						&nbsp;-&nbsp;
+						<a class="order-trash" ng-click="resetValidation($index)"><span class="fa fa-times fa-lg"></span></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</div>

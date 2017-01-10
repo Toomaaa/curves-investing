@@ -1,0 +1,141 @@
+.wallet-table-wrap {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.wallet-table-title {
+	padding-left: 0px;
+	padding-right: 0px;
+	border: 1px solid #ddd;
+	height: 40px;
+	position: relative;
+}
+
+.wallet-table-title > .wallet-title-text {
+	position: absolute;
+	width: 100%;
+	height: 40px;
+	display: table;
+}
+
+.wallet-table-title > .wallet-title-text > label {
+	vertical-align: middle;
+	text-align: center;
+	display: table-cell;
+}
+
+.wallet-table-content {
+	padding-left: 0px;
+	padding-right: 0px;
+	border: 1px solid #ddd;
+	height: 28px;
+	line-height: 28px;
+}
+
+.wallet-table-quotename {
+	padding-left: 15px;
+	padding-right: 15px;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	white-space:nowrap;
+}
+
+.wallet-table-total {
+	border: 1px solid #ddd;
+	font-weight: bold;
+}
+
+.positive {
+	color: #090;
+}
+
+.negative {
+	color: #b00;
+}
+
+.order-check {
+	color: #090;
+	cursor: pointer;
+}
+
+.order-pencil {
+	color: #006;
+	cursor: pointer;
+}
+
+.order-trash {
+	color: #b00;
+	cursor: pointer;
+}
+
+.buyPrice-text {
+	text-align: center;
+	height: 28px;
+	line-height: 14px;
+	font-size: 13px;
+	font-weight: bold;
+	padding-left: 3px;
+	padding-right: 1px;
+}
+
+.buyPrice-input-wrap {
+	padding-left: 3px;
+	padding-right: 3px;
+	text-align: center;
+}
+
+.buyPrice-input, .buyFees-input, .buyQuantity-input, .buyDate-input, .buyOrderType-input, .buyLimit1-input, .buyLimit2-input {
+	height: 24px;
+	width: 100%;
+	text-align: center;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.buyPrice-input-wrap > .input-group > .input-group-addon,
+.buyPrice-input + .input-group-addon,
+.buyLimit1-input + .input-group-addon {
+	padding: 4px 12px;
+}
+
+.buyLimit2-input + .input-group-addon {
+	padding: 4px 6px;
+}
+
+
+.buyPrice-button {
+	padding-left: 3px;
+}
+
+
+
+
+
+.buyDate-input::-webkit-inner-spin-button,
+.buyDate-input::-webkit-calendar-picker-indicator {
+	-webkit-appearance: none;
+    display: none;
+}
+
+.buyOrderType-input {
+	padding-top: 0px;
+	padding-bottom: 0px;
+	text-align: center;
+}
+
+
+.fees-input-group > input {
+	font-size: 12px;
+}
+
+.fees-input-group > input::-webkit-inner-spin-button,
+.fees-input-group > input::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+.fees-input-group > .input-group-addon {
+	padding: 4px 3px;
+}

@@ -12,6 +12,9 @@
 
 import jsonpatch from 'fast-json-patch';
 import Trade from './trade.model';
+import User from '../user/user.model';
+
+
 
 function respondWithResult(res, statusCode) {
   statusCode = statusCode || 200;
@@ -114,4 +117,80 @@ export function destroy(req, res) {
     .then(handleEntityNotFound(res))
     .then(removeEntity(res))
     .catch(handleError(res));
+}
+
+
+export function wallet(req, res, next) {
+  var userId = req.user._id;
+
+  return User.findOne({ _id: userId }, '-salt -password').exec()
+    .then(user => { // don't ever give out the password or salt
+      if(!user || !user.accountSelected.clubCode) {
+        return res.status(401).end();
+      }
+
+      Trade.aggregate( 
+        [ 
+          { 
+            $match : { 
+              clubCode : "43W0K", 
+              orderDone: true 
+            } 
+          }, { 
+            $group : { 
+              _id : "$symbol", 
+              quantity: { 
+                $sum : "$quantity" 
+              }, 
+              totalPrice: { 
+                $sum: { 
+                  $sum: [ 
+                    {
+                      $multiply: [ "$quantity", "$price" ]
+                    }, 
+                    "$fees"
+                  ] 
+                } 
+              }
+            } 
+          } 
+        ], function(err, result) {
+
+          if(err) {
+            console.log(err);
+            return res.status(404).end();
+          }
+
+          res.json(result);
+
+        }
+      )
+    })
+    .catch(err => next(err));
+}
+
+
+
+export function orders(req, res, next) {
+  var userId = req.user._id;
+
+  return User.findOne({ _id: userId }, '-salt -password').exec()
+    .then(user => { // don't ever give out the password or salt
+      if(!user || !user.accountSelected.clubCode) {
+        return res.status(401).end();
+      }
+
+      Trade.find({ clubCode : "43W0K", orderDone: false }, function(err, result) {
+
+          if(err) {
+            console.log(err);
+            return res.status(404).end();
+          }
+
+          res.json(result);
+
+        }
+      )
+    })
+    .catch(err => next(err));
 }

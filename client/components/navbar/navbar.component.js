@@ -34,10 +34,11 @@ export class NavbarComponent {
 
           $http.get('/api/users/accountSelected')
             .then(response => {
-              userSelection.set('accountSelected', response.data.accountSelected);
-              $scope.accountSelected = response.data.accountSelected;
 
-              if(response.data.accountSelected) $scope.accountSelected = response.data.accountSelected;
+              if(response.data.accountSelected) {
+                userSelection.set('accountSelected', response.data.accountSelected);
+                $scope.accountSelected = response.data.accountSelected;
+              }
               else if(currentUser.isPartOfClub) {
                 $scope.accountSelected = {
                   type: 'club',
@@ -45,6 +46,7 @@ export class NavbarComponent {
                   clubName: currentUser.club[0].clubName,
                   function: currentUser.club[0].function
                 };
+                userSelection.set('accountSelected', $scope.accountSelected);
               }
               else {
                 $scope.accountSelected = {

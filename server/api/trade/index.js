@@ -1,9 +1,14 @@
 'use strict';
 
+import * as auth from '../../auth/auth.service';
+
 var express = require('express');
 var controller = require('./trade.controller');
 
 var router = express.Router();
+
+router.get('/wallet', auth.isAuthenticated(), controller.wallet);
+router.get('/orders', auth.isAuthenticated(), controller.orders);
 
 router.get('/', controller.index);
 router.get('/:id', controller.show);

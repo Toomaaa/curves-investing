@@ -98,7 +98,10 @@
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Prix</label></div>
 				<div class="col-sm-offset-1 col-sm-2">
-					<input class="form-control text-center" type="number" step="any" name="price" ng-model="price" />
+					<div class="input-group">
+						<input class="form-control text-center" type="number" step="any" name="price" ng-model="price" />
+						<span class="input-group-addon">€</span>
+					</div>
 				</div>
 				<div class="col-sm-2 label-input" ng-show="quantity && price">
 					= {{ quantity*price | number:2 }} €
@@ -122,7 +125,10 @@
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Limite{{ orderType == 'APD' ? ' 1' : '' }}</label></div>
 				<div class="col-sm-offset-1 col-sm-2">
-					<input class="form-control text-center" type="number" step="any" name="limit1" ng-model="limit1" />
+					<div class="input-group">
+						<input class="form-control text-center" type="number" step="any" name="limit1" ng-model="limit1" />
+						<span class="input-group-addon">€</span>
+					</div>
 				</div>
 				<div class="col-sm-2 label-input" ng-show="quantity && limit1">
 					= {{ quantity*limit1 | number:2 }} €
@@ -134,7 +140,10 @@
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Limite 2</label></div>
 				<div class="col-sm-offset-1 col-sm-2">
-					<input class="form-control text-center" type="number" step="any" name="limit2" ng-model="limit2" />
+					<div class="input-group">
+						<input class="form-control text-center" type="number" step="any" name="limit2" ng-model="limit2" />
+						<span class="input-group-addon">€</span>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -143,7 +152,10 @@
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Frais</label></div>
 				<div class="col-sm-offset-1 col-sm-2">
-					<input class="form-control text-center" type="number" step="any" name="fees" ng-model="fees" />
+					<div class="input-group">
+						<input class="form-control text-center" type="number" step="any" name="fees" ng-model="fees" />
+						<span class="input-group-addon">€</span>
+					</div>
 				</div>
 				<div class="col-sm-2 label-input" ng-show="quantity && (orderType == 'ACL' ? price : orderType == 'OAM' || orderType == 'APM' ? actualPrice : limit1) && fees">
 					= {{ quantity*(orderType == 'ACL' ? price : orderType == 'OAM' || orderType == 'APM' ? actualPrice : limit1)+fees | number:2 }} €
