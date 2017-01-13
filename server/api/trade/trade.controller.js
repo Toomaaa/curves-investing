@@ -138,7 +138,8 @@ export function wallet(req, res, next) {
             } 
           }, { 
             $group : { 
-              _id : "$symbol", 
+              _id : "$symbol",
+              name: { "$first": "$name" },
               quantity: { 
                 $sum : "$quantity" 
               }, 

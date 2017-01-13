@@ -52,7 +52,7 @@
 			</div>
 			<div class="col-sm-3 wallet-table-title">
 				<div class="wallet-title-text">
-					<label>Performance</label>
+					<label>Performance en cours</label>
 				</div>
 			</div>
 		</div>
@@ -61,7 +61,7 @@
 
 	<div class="row" ng-repeat="equity in wallet.equities">
 		<div class="col-sm-3 wallet-table-wrap wallet-table-content wallet-table-quotename">
-			{{equity._id}}
+			{{equity.name}}
 		</div>
 		<div class="col-sm-4 wallet-table-wrap">
 			<div class="col-sm-4 text-center wallet-table-content">
@@ -76,7 +76,7 @@
 		</div>
 		<div class="col-sm-5 wallet-table-wrap">
 			<div class="col-sm-3 text-center wallet-table-content">
-				99.99 €
+				{{ equity.actualPrice }} €
 			</div>
 			<div class="col-sm-3 text-center wallet-table-content">
 				{{ equity.quantity*equity.actualPrice | number:2 }} €

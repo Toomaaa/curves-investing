@@ -7,42 +7,15 @@ import routes from './buysell.routes';
 
 export class BuysellComponent {
   /*@ngInject*/
-  constructor($scope, $http, userSelection, $sce, $q, $log) {
+  constructor($scope, $http, userSelection, $sce, $q, $log, quotesName, quotes) {
     
     $scope.result = [];
 
     $scope.getValues = function() {
-
-      var YAHOO = window.YAHOO = {Finance: {SymbolSuggest: {}}};
-      YAHOO.Finance.SymbolSuggest.ssCallback = function (data) 
-      {
-          $scope.result = [];
-          
-          angular.forEach(data.ResultSet.Result, function(stock)
-          {
-              $scope.result.push({
-                  name : stock.name,
-                  tooltip : stock.name + ' (' + stock.symbol + ', ' + stock.exchDisp + ')',
-                  value : stock
-              });
-          });
-                          
-          dfd.resolve($scope.result);
-      }; // YAHOO.Finance success
-
-      var url = 'http://autoc.finance.yahoo.com/autoc?query='+encodeURI($scope.valueName)+'&region=FR&lang=fr';
-      
-      var dfd = $q.defer();
-      $http.jsonp($sce.trustAsResourceUrl(url), { jsonpCallbackParam: 'callback=YAHOO.Finance.SymbolSuggest.ssCallback&test=' })
-      .then(YAHOO.Finance.SymbolSuggest.ssCallback, function(data) {
-          dfd.reject(data);
-      }).catch(err => {
-
-        console.log(err);
-          dfd.reject(err);
-      });
-      return dfd.promise;
-    
+      quotesName.getName($scope.valueName)
+        .then(result => {
+          $scope.result = result;
+        });        
     };
 
 
@@ -64,44 +37,13 @@ export class BuysellComponent {
     function getValueDetails(symbol) {
 
       $scope.price = 99.99;
-
-
-      var YAHOO = window.YAHOO = {Finance: {SymbolSuggest: {}}};
-      YAHOO.Finance.SymbolSuggest.ssCallback = function (data) 
-      {
-          console.log(data);
-          
-          // angular.forEach(data.ResultSet.Result, function(stock)
-          // {
-          //     $scope.result.push({
-          //         name : stock.name,
-          //         tooltip : stock.name + ' (' + stock.symbol + ', ' + stock.exchDisp + ')',
-          //         value : stock
-          //     });
-          // });
-                          
-          dfd.resolve($scope.result);
-      }; // YAHOO.Finance success
-
-
-      var url = 'http://query.yahooapis.com/v1/public/yql';
-      // var url = 'http://autoc.finance.yahoo.com/autoc?query='+encodeURI($scope.valueName)+'&region=FR&lang=fr';
-      var data = encodeURIComponent("select * from yahoo.finance.quotes where symbol='" + symbol + "'");
-
-      
-      var dfd = $q.defer();
-      // $http.jsonp($sce.trustAsResourceUrl(url))
-      $http.jsonp($sce.trustAsResourceUrl(url), { jsonpCallbackParam: 'q='+data+'&format=json&callback=YAHOO.Finance.SymbolSuggest.ssCallback&test=' })
-      .then(YAHOO.Finance.SymbolSuggest.ssCallback, function(data) {
-          dfd.reject(data);
-          // console.log(data);
-      }).catch(err => {
-
-        console.log(err);
-          dfd.reject(err);
-      });
-      return dfd.promise;
-
+      quotes.getQuote(symbol)
+        .then(result => {
+          $scope.price = parseFloat(result.LastTradePriceOnly);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
 
 
@@ -128,6 +70,7 @@ export class BuysellComponent {
         clubCode: club.clubCode,
         date: $scope.orderDate,
         symbol: $scope.selectedValue.symbol,
+        name: $scope.selectedValue.name,
         buyOrSell: $scope.buyOrSell,
         orderDone: $scope.orderDone,
         orderType: ($scope.orderDone == 'false' ? $scope.orderType : undefined),
@@ -202,7 +145,7 @@ export class BuysellComponent {
 
 
 
-BuysellComponent.$inject = ["$scope", "$http", "userSelection", "$sce", "$q", "$log"];
+BuysellComponent.$inject = ["$scope", "$http", "userSelection", "$sce", "$q", "$log", "quotesName", "quotes"];
 
 export default angular.module('curvesInvestingApp.buysell', [uiRouter])
   .config(routes)

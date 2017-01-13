@@ -23,6 +23,8 @@ import MembersListComponent from './members-list/members-list.component';
 import BuysellComponent from './buysell/buysell.component';
 import WalletComponent from './wallet/wallet.component';
 import userSelection from './userSelection/userSelection.service';
+import quotesName from './yahoo/quotesName/quotesName.service';
+import quotes from './yahoo/quotes/quotes.service';
 import admin from './admin';
 import navbar from '../components/navbar/navbar.component';
 import footer from '../components/footer/footer.component';
@@ -34,7 +36,7 @@ import socket from '../components/socket/socket.service';
 import './app.css';
 
 angular.module('curvesInvestingApp', [ngCookies, ngResource, ngSanitize, 'btford.socket-io',
-  uiRouter, uiBootstrap, _Auth, account, MembersListComponent, BuysellComponent, WalletComponent, userSelection, admin, navbar, footer, main, constants, socket, util
+  uiRouter, uiBootstrap, _Auth, account, MembersListComponent, BuysellComponent, WalletComponent, userSelection, quotesName, quotes, admin, navbar, footer, main, constants, socket, util
 ])
   .config(routeConfig)
   .run(function($rootScope, $location, Auth) {

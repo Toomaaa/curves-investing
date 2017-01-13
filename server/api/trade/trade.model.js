@@ -6,6 +6,7 @@ var TradeSchema = new mongoose.Schema({
   clubCode: String,
   date: Date,
   symbol: String,
+  name: String,
   buyOrSell: String,
   orderDone: Boolean,
   orderType: String,
