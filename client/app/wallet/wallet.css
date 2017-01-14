@@ -28,8 +28,21 @@
 	padding-left: 0px;
 	padding-right: 0px;
 	border: 1px solid #ddd;
-	height: 28px;
-	line-height: 28px;
+	height: 50px;
+	line-height: 50px;
+}
+
+.wallet-table-actualPrice {
+	height: 50px;
+	line-height: 45px;
+}
+
+.wallet-lastTradeDate {
+	display: inline-block;
+	font-size: 9px;
+	font-style: italic;
+	position: relative;
+	top: -29px;
 }
 
 .wallet-table-quotename {

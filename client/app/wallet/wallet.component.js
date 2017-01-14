@@ -32,6 +32,7 @@ export class WalletComponent {
 
 
     $scope.next=0;
+    $scope.valueDetailsDone = false;
 
     function getValueDetails() {
       
@@ -40,6 +41,7 @@ export class WalletComponent {
       quotes.getQuote(equity._id)
         .then(result => {
           equity.actualPrice = result.LastTradePriceOnly;
+          equity.lastTradeDate = result.LastTradeDate;
 
           equity.plusmoins = (equity.quantity*equity.actualPrice) - equity.totalPrice;
           equity.performance = (equity.plusmoins / equity.totalPrice)*100;
@@ -54,55 +56,15 @@ export class WalletComponent {
           if($scope.next < $scope.wallet.equities.length) getValueDetails();
           else { 
             $scope.next=0;
+            $scope.valueDetailsDone = true;
+            console.log("details Done");
             return true;
           }
         })
         .catch(err => {
           console.log(err);
         });
-
-      // var YAHOO = window.YAHOO = {Finance: {SymbolSuggest: {}}};
-      // YAHOO.Finance.SymbolSuggest.ssCallback = function (data) 
-      // {
-
-      //     equity.actualPrice = data.query.results.quote.LastTradePriceOnly;
-
-      //     equity.plusmoins = (equity.quantity*equity.actualPrice) - equity.totalPrice;
-      //     equity.performance = (equity.plusmoins / equity.totalPrice)*100;
-
-      //     $scope.wallet.total.bought += equity.totalPrice;
-      //     $scope.wallet.total.actual += equity.quantity*equity.actualPrice;
-
-      //     $scope.wallet.total.plusmoins = $scope.wallet.total.actual - $scope.wallet.total.bought;
-      //     $scope.wallet.total.performance = ($scope.wallet.total.plusmoins / $scope.wallet.total.bought)*100;
-                          
-      //     dfd.resolve($scope.result);
-          
-      //     $scope.next++;
-      //     if($scope.next < $scope.wallet.equities.length) getValueDetails();
-      //     else { 
-      //       $scope.next=0;
-      //       return true;
-      //     }
-      // }; // YAHOO.Finance success
-
-      // var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%3D%22'+encodeURI(equity._id)+'%22&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&format=json';
-      
-      // var dfd = $q.defer();
-      // $http.jsonp($sce.trustAsResourceUrl(url), { jsonpCallbackParam: 'callback=YAHOO.Finance.SymbolSuggest.ssCallback&test=' })
-      // .then(YAHOO.Finance.SymbolSuggest.ssCallback, function(data) {
-      //     dfd.reject(data);
-      // }).catch(err => {
-
-      //   console.log(err);
-      //     dfd.reject(err);
-      // });
-      // // return dfdequity.promise;
     }
-
-
-
-
 
     function getEquities() {
     
@@ -110,28 +72,6 @@ export class WalletComponent {
         .then(response => {
 
           $scope.wallet.equities = response.data;
-
-          // $scope.wallet.equities.forEach(function(equity) {
-
-          //   quotes.getQuote(equity._id)
-          //     .then(result => {
-          //       equity.actualPrice = result.LastTradePriceOnly;
-
-          //       equity.plusmoins = (equity.quantity*equity.actualPrice) - equity.totalPrice;
-          //       equity.performance = (equity.plusmoins / equity.totalPrice)*100;
-
-          //       $scope.wallet.total.bought += equity.totalPrice;
-          //       $scope.wallet.total.actual += equity.quantity*equity.actualPrice;
-
-          //       $scope.wallet.total.plusmoins = $scope.wallet.total.actual - $scope.wallet.total.bought;
-          //       $scope.wallet.total.performance = ($scope.wallet.total.plusmoins / $scope.wallet.total.bought)*100;
-          //     })
-          //     .catch(err => {
-          //       console.log(err);
-          //     });
-
-
-          // });
             
           getValueDetails();
 
@@ -148,6 +88,37 @@ export class WalletComponent {
       $http.get('/api/trades/orders')
         .then(response => {
           $scope.orders = response.data;
+          getOrdersDetails();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+
+
+    $scope.nextOrder=0;
+
+    function getOrdersDetails() {
+
+      console.log($scope.valueDetailsDone);
+      if(!$scope.valueDetailsDone) {
+        setTimeout(getOrdersDetails, 500);
+        return false;
+      }
+
+      var order = $scope.orders[$scope.nextOrder];
+
+      quotes.getQuote(order.symbol)
+        .then(result => {
+          order.actualPrice = result.LastTradePriceOnly;
+          order.lastTradeDate = result.LastTradeDate;
+
+          $scope.nextOrder++;
+          if($scope.nextOrder < $scope.orders.length) getOrdersDetails();
+          else { 
+            $scope.nextOrder=0;
+            return true;
+          }
         })
         .catch(err => {
           console.log(err);
@@ -178,7 +149,6 @@ export class WalletComponent {
 
         $http.put('/api/trades/'+orderId, order)
           .then(response => {
-            console.log(response);
 
             getEquities();
             getOrders();
@@ -218,7 +188,6 @@ export class WalletComponent {
 
         $http.put('/api/trades/'+orderId, order)
           .then(response => {
-            console.log(response);
 
             getOrders();
 

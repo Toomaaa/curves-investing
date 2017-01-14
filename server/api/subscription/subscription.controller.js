@@ -12,6 +12,9 @@
 
 import jsonpatch from 'fast-json-patch';
 import Subscription from './subscription.model';
+import ClubsPeriods from '../clubsPeriods/clubsPeriods.model';
+import Club from '../club/club.model';
+import User from '../user/user.model';
 
 function respondWithResult(res, statusCode) {
   statusCode = statusCode || 200;
@@ -79,11 +82,128 @@ export function show(req, res) {
 }
 
 // Gets all subscriptions from the DB by clubCode
-export function showByClubCode(req, res) {
-  return Subscription.find({ clubCode: req.params.clubCode }).exec()
-    .then(handleEntityNotFound(res))
-    .then(respondWithResult(res))
-    .catch(handleError(res));
+export function showByClubCode(req, res, next) {
+
+  var userId = req.user._id;
+
+  var dateNow = new Date();
+  var numberSubscriptionResults = 0;
+
+  return User.findOne({ _id: userId }, '-salt -password').exec()
+    .then(user => { // don't ever give out the password or salt
+
+      if(!user || !user.accountSelected.clubCode) {
+        return res.status(401).end();
+      }
+
+      Club.findOne({ clubCode: user.accountSelected.clubCode })
+        .then (clubRes => {
+          ClubsPeriods.findOne({ clubCode: user.accountSelected.clubCode })
+            .then(periodsRes => {
+
+              var members = [];
+              var result = [];
+
+              members.push(clubRes.president, clubRes.treasurer);
+              members = members.concat(clubRes.members);
+
+              members.forEach(member => {
+
+                var newLength = result.push({ email: member.email, unpaid: [] });
+                var index = newLength-1;
+
+                var entryDate = new Date(member.entryDate);
+                var memberPeriodsDues = [];
+
+                periodsRes.periods.forEach(period => {
+                  var periodCursor = new Date(period);
+                  if(periodCursor >= entryDate && periodCursor <= dateNow) {
+                    memberPeriodsDues.push(period);
+                  }
+                });
+
+                var memberPeriodsUnpaid = [];
+
+                Subscription.find({ clubCode: user.accountSelected.clubCode, email: member.email, type: 'initial' })
+                  .then(response => {
+                    if(response.length == 0) result[index].initial = false;
+                    else result[index].initial = true;
+
+
+                    // Subscription.find({ clubCode: user.accountSelected.clubCode, email: member.email })
+                    Subscription.aggregate([ 
+                      { 
+                        $match : { 
+                          clubCode : user.accountSelected.clubCode, 
+                          email: member.email,
+                          type: 'recurrent' 
+                        } 
+                      }, { 
+                        $group : { 
+                          _id : "$period",
+                          email: { "$first": "$email" },
+                          clubCode : { "$first": "$clubCode" },
+                          amount: { 
+                            $sum : "$amount" 
+                          }
+                        } 
+                      } 
+                    ])
+                      .then(subscriptionsRes => {
+
+                        numberSubscriptionResults++;
+
+                        memberPeriodsDues.forEach(memberPeriod => {
+
+                          function findSubscription(element) {
+                            return element._id.getTime() == new Date(memberPeriod).getTime();
+                          }
+
+                          var found = subscriptionsRes.findIndex(findSubscription);
+
+                          if(found == -1) {
+                            result[index].unpaid.push({
+                              startPeriod: memberPeriod,
+                              endPeriod: periodsRes.periods[periodsRes.periods.indexOf(memberPeriod)+1],
+                              amountDue: clubRes.monthlyAmount
+                            });
+                          }
+                          else if(subscriptionsRes[found].amount < clubRes.monthlyAmount) {
+                            result[index].unpaid.push({
+                              startPeriod: memberPeriod,
+                              endPeriod: periodsRes.periods[periodsRes.periods.indexOf(memberPeriod)+1],
+                              amountDue: clubRes.monthlyAmount-subscriptionsRes[found].amount
+                            });                    
+                          }
+                          
+                        });
+
+                        if(new Date(result[index].unpaid[0].endPeriod).getTime() < dateNow.getTime()) result[index].warning = true;
+                        else result[index].warning = false;
+
+                        if(numberSubscriptionResults == members.length) res.json(result);
+
+                      });
+
+
+
+                  })
+                  .catch(err => {
+                    result[index].unpaid.push({type: 'initial'});
+                  });
+
+                
+
+              });
+
+            });
+
+        });
+
+
+    })
+    .catch(err => next(err));
+
 }
 
 // Creates a new Subscription in the DB

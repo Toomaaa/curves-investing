@@ -75,8 +75,9 @@
 			</div>
 		</div>
 		<div class="col-sm-5 wallet-table-wrap">
-			<div class="col-sm-3 text-center wallet-table-content">
-				{{ equity.actualPrice }} €
+			<div class="col-sm-3 text-center wallet-table-content wallet-table-actualPrice">
+				{{ equity.actualPrice }} €<br />
+				<div class="wallet-lastTradeDate">{{ equity.lastTradeDate | date : 'dd/MM/yyyy - HH:mm' }}</div>
 			</div>
 			<div class="col-sm-3 text-center wallet-table-content">
 				{{ equity.quantity*equity.actualPrice | number:2 }} €
@@ -188,7 +189,7 @@
 			</div>
 			<div class="col-sm-6 wallet-table-content wallet-table-quotename">
 				<div class="wallet-title-text">
-					{{ order.symbol }}
+					{{ order.name }}
 				</div>
 			</div>
 			<div class="col-sm-4 text-center wallet-table-content" ng-switch on="orderValidation[$index]">
@@ -252,8 +253,9 @@
 				</div>
 			</div>
 			<div class="col-sm-2 text-center wallet-table-content">
-				<div class="wallet-title-text">
-					99.99 €
+				<div class="wallet-title-text wallet-table-actualPrice">
+					{{ order.actualPrice }} €
+					<div class="wallet-lastTradeDate">{{ order.lastTradeDate | date : 'dd/MM/yyyy - HH:mm' }}</div>
 				</div>
 			</div>
 			<div class="col-sm-1 text-center wallet-table-content" ng-switch on="orderValidation[$index]">

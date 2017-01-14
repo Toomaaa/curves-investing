@@ -133,7 +133,7 @@ export function wallet(req, res, next) {
         [ 
           { 
             $match : { 
-              clubCode : "43W0K", 
+              clubCode : user.accountSelected.clubCode, 
               orderDone: true 
             } 
           }, { 
@@ -165,7 +165,7 @@ export function wallet(req, res, next) {
           res.json(result);
 
         }
-      )
+      );
     })
     .catch(err => next(err));
 }
@@ -181,7 +181,7 @@ export function orders(req, res, next) {
         return res.status(401).end();
       }
 
-      Trade.find({ clubCode : "43W0K", orderDone: false }, function(err, result) {
+      Trade.find({ clubCode : user.accountSelected.clubCode, orderDone: false }, function(err, result) {
 
           if(err) {
             console.log(err);

@@ -10,31 +10,64 @@
 		<div class="col-sm-12">
 			<br />
 			<div class="row">
-				<div class="col-sm-offset-3 col-sm-2 text-center"><b>Nom</b></div>
+				<div class="col-sm-offset-2 col-sm-2 text-center"><b>Nom</b></div>
 				<div class="col-sm-1 text-center"><b>Fonction</b></div>
 				<div class="col-sm-3 text-center"><b>Email</b></div>
-				<div class="col-sm-2 text-center"><b>Versements</b></div>
+				<div class="col-sm-3 text-center"><b>Versement dû</b></div>
 			</div>
 
 			<div class="row">
-				<div class="col-sm-offset-3 col-sm-2 text-center">{{ club.president.firstName }} {{ club.president.lastName }}</div>
+				<div class="col-sm-offset-2 col-sm-2 text-center">{{ club.president.firstName }} {{ club.president.lastName }}</div>
 				<div class="col-sm-1 text-center">Président</div>
 				<div class="col-sm-3 text-center">{{ club.president.email }}</div>
-				<div class="col-sm-2 text-center">{{ isSubscriptionOk(club.president.email, 'initial', club.initialAmount) ? 'initial OK' : 'initial non versé' }}</div>
+				<div class="col-sm-3 text-center" ng-show="!club.president.initial" ng-class="{warning: club.president.warning}">
+					versement initial {{ club.initialAmount }} € 
+					<a class="subscription-validate" ng-click="validateSubscription(club.president.email)"><span class="fa fa-check fa-lg"></span></a>
+				</div>
+				<div class="col-sm-3 text-center" ng-show="club.president.unpaid.length > 0 && club.president.initial">
+					{{ club.president.unpaid[0].amountDue }} € 
+					<span ng-class="{warning: club.president.warning}">du {{ club.president.unpaid[0].startPeriod | date: 'dd/MM' }} au {{ club.president.unpaid[0].endPeriod | date: 'dd/MM' }}</span>
+					<a class="subscription-validate" ng-click="validateSubscription(club.president.email)"><span class="fa fa-check fa-lg"></span></a>
+				</div>
+				<div class="col-sm-3 text-center" ng-show="club.president.unpaid.length == 0">
+					A jour
+				</div>
 			</div>
 
 			<div class="row">
-				<div class="col-sm-offset-3 col-sm-2 text-center">{{ club.treasurer.firstName }} {{ club.treasurer.lastName }}</div>
+				<div class="col-sm-offset-2 col-sm-2 text-center">{{ club.treasurer.firstName }} {{ club.treasurer.lastName }}</div>
 				<div class="col-sm-1 text-center">Trésorier</div>
 				<div class="col-sm-3 text-center">{{ club.treasurer.email }}</div>
-				<div class="col-sm-2 text-center">{{ isSubscriptionOk(club.treasurer.email, 'initial', club.initialAmount) ? 'initial OK' : 'initial non versé' }}</div>
+				<div class="col-sm-3 text-center" ng-show="!club.treasurer.initial" ng-class="{warning: club.treasurer.warning}">
+					versement initial {{ club.initialAmount }} € 
+					<a class="subscription-validate" ng-click="validateSubscription(club.treasurer.email)"><span class="fa fa-check fa-lg"></span></a>
+				</div>
+				<div class="col-sm-3 text-center" ng-show="club.treasurer.unpaid.length > 0 && club.treasurer.initial">
+					{{ club.treasurer.unpaid[0].amountDue }} € 
+					<span ng-class="{warning: club.treasurer.warning}">du {{ club.treasurer.unpaid[0].startPeriod | date: 'dd/MM' }} au {{ club.treasurer.unpaid[0].endPeriod | date: 'dd/MM' }}</span>
+					<a class="subscription-validate" ng-click="validateSubscription(club.treasurer.email)"><span class="fa fa-check fa-lg"></span></a>
+				</div>
+				<div class="col-sm-3 text-center" ng-show="club.treasurer.unpaid.length == 0">
+					A jour
+				</div>
 			</div>
 
 			<div class="row" ng-repeat="member in club.members">
-				<div class="col-sm-offset-3 col-sm-2 text-center">{{ member.firstName }} {{ member.lastName }}</div>
+				<div class="col-sm-offset-2 col-sm-2 text-center">{{ member.firstName }} {{ member.lastName }}</div>
 				<div class="col-sm-1 text-center">Membre</div>
 				<div class="col-sm-3 text-center">{{ member.email }}</div>
-				<div class="col-sm-2 text-center">{{ isSubscriptionOk(member.email, 'initial', club.initialAmount) ? 'initial OK' : 'initial non versé' }}</div>
+				<div class="col-sm-3 text-center" ng-show="!member.initial" ng-class="{warning: member.warning}">
+					versement initial {{ club.initialAmount }} € 
+					<a class="subscription-validate" ng-click="validateSubscription(member.email)"><span class="fa fa-check fa-lg"></span></a>
+				</div>
+				<div class="col-sm-3 text-center" ng-show="member.unpaid.length > 0 && member.initial">
+					{{ member.unpaid[0].amountDue }} € 
+					<span ng-class="{warning: member.warning}">du {{ member.unpaid[0].startPeriod | date: 'dd/MM' }} au {{ member.unpaid[0].endPeriod | date: 'dd/MM' }}</span>
+					<a class="subscription-validate" ng-click="validateSubscription(member.email)"><span class="fa fa-check fa-lg"></span></a>
+				</div>
+				<div class="col-sm-3 text-center" ng-show="member.unpaid.length == 0">
+					A jour
+				</div>
 			</div>
 
 		</div>

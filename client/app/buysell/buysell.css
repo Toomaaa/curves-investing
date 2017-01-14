@@ -39,6 +39,28 @@
 }
 
 
+.buySell-lastTradeDate {
+	margin-top: 10px;
+	margin-bottom: 30px;
+	font-style: italic;
+	height: 30px;
+	line-height: 30px;
+	text-align: right;
+}
+
+.buySell-lastTradePrice {
+	margin-top: 10px;
+	margin-bottom: 30px;
+	font-size: 16px;
+	font-weight: bold;	
+	height: 30px;
+	line-height: 30px;
+}
+
+
+
+
+
 .flag {
 	display: inline-block;
     width: 16px;

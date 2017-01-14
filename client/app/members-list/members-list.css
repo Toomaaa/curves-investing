@@ -1,0 +1,14 @@
+.subscripition-period {
+	display: inline-block;
+}
+
+.subscription-validate {
+	display: inline-block;
+	color: #090;
+	cursor: pointer;
+}
+
+.warning {
+	color: #c00;
+	font-weight: bold;
+}

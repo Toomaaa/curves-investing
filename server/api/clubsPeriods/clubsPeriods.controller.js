@@ -12,6 +12,7 @@
 
 import jsonpatch from 'fast-json-patch';
 import ClubsPeriods from './clubsPeriods.model';
+import User from '../user/user.model';
 
 function respondWithResult(res, statusCode) {
   statusCode = statusCode || 200;
@@ -64,10 +65,44 @@ function handleError(res, statusCode) {
 }
 
 // Gets a list of ClubsPeriodss
-export function index(req, res) {
-  return ClubsPeriods.find().exec()
-    .then(respondWithResult(res))
-    .catch(handleError(res));
+export function index(req, res, next) {
+  var userId = req.user._id;
+
+  console.log("ok ici : "+userId);
+
+  return User.findOne({ _id: userId }, '-salt -password').exec()
+    .then(user => { // don't ever give out the password or salt
+
+      if(!user || !user.accountSelected.clubCode) {
+        return res.status(401).end();
+      }
+
+      ClubsPeriods.findOne({ clubCode: user.accountSelected.clubCode }, function (err, response) {
+
+        if(err) {
+          console.log(err);
+          return res.status(404).end();
+        }
+
+        var periods = [];
+
+        var index = 0;
+
+        for(var i=1; i<response.periods.length; i++) {
+          periods[i-1] = {
+            startPeriod : response.periods[i-1],
+            endPeriod : response.periods[i]
+          }
+        }
+
+        res.json(periods);
+
+      });
+      
+    })
+    .catch(err => next(err));
+
+  
 }
 
 // Gets a single ClubsPeriods from the DB

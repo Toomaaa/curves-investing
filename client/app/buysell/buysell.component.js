@@ -36,14 +36,17 @@ export class BuysellComponent {
 
     function getValueDetails(symbol) {
 
-      $scope.price = 99.99;
       quotes.getQuote(symbol)
         .then(result => {
-          $scope.price = parseFloat(result.LastTradePriceOnly);
+          console.log(result);
+          $scope.price = result.LastTradePriceOnly;
+          $scope.lastTradeDate = result.LastTradeDate;
+          console.log($scope.lastTradeDate);
         })
         .catch(err => {
           console.log(err);
         });
+
     }
 
 
@@ -56,8 +59,6 @@ export class BuysellComponent {
 
     $scope.orderDate = new Date();
     $scope.orderType = "ACL";
-    $scope.actualPrice = 99.99;
-    $scope.price = $scope.actualPrice;
 
 
     $scope.formValidation = function () {

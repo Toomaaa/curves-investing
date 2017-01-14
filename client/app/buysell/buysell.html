@@ -33,14 +33,14 @@
 			</div>
 		</div>
 
-		<!-- <div class="row">
-			<div class="col-sm-12">
-				{{selectedValue.name}} - {{selectedValue.symbol}}
+		<div class="row" ng-show="price">
+			<div class="col-sm-6 buySell-lastTradeDate">
+				Valeur au {{lastTradeDate | date : 'dd/MM/yyyy à HH:mm' }} :<br /><br />
 			</div>
-			<div class="col-sm-12">
-
+			<div class="col-sm-6 buySell-lastTradePrice">
+				{{price}} €
 			</div>
-		</div> -->
+		</div>
 
 		<div class="row" ng-show="selectedValue">
 			<div class="form-group">
