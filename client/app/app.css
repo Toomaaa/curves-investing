@@ -48,9 +48,9 @@
 @import 'account/signup/signup.css';
 @import 'admin/admin.css';
 @import 'buysell/buysell.css';
-@import 'wallet/wallet.css';
 @import 'main/main.css';
 @import 'members-list/members-list.css';
+@import 'wallet/wallet.css';
 @import '../components/footer/footer.css';
 @import '../components/modal/modal.css';
 @import '../components/navbar/navbar.css';

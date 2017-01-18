@@ -9,6 +9,7 @@ var router = express.Router();
 
 router.get('/wallet', auth.isAuthenticated(), controller.wallet);
 router.get('/orders', auth.isAuthenticated(), controller.orders);
+router.get('/treasury', auth.isAuthenticated(), controller.treasury);
 
 router.get('/', controller.index);
 router.get('/:id', controller.show);

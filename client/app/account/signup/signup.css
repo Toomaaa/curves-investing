@@ -54,21 +54,21 @@
 
 
 /* Base for label styling */
-[type="checkbox"]:not(:checked),
-[type="checkbox"]:checked {
+.signup-checkbox:not(:checked),
+.signup-checkbox:checked {
   position: absolute;
   left: -9999px;
 }
-[type="checkbox"]:not(:checked) + label,
-[type="checkbox"]:checked + label {
+.signup-checkbox:not(:checked) + label,
+.signup-checkbox:checked + label {
   position: relative;
   padding-left: 38px;
   cursor: pointer;
 }
 
 /* checkbox aspect */
-[type="checkbox"]:not(:checked) + label:before,
-[type="checkbox"]:checked + label:before {
+.signup-checkbox:not(:checked) + label:before,
+.signup-checkbox:checked + label:before {
   content: '';
   position: absolute;
   left:0; top: 2px;
@@ -80,8 +80,8 @@
   letter-spacing: 30px;
 }
 /* checked mark aspect */
-[type="checkbox"]:not(:checked) + label:after,
-[type="checkbox"]:checked + label:after {
+.signup-checkbox:not(:checked) + label:after,
+.signup-checkbox:checked + label:after {
   content: '✔';
   position: absolute;
   top: 3px; left: 4px;
@@ -91,7 +91,7 @@
   transition: all .2s;
 }
 /* checked mark aspect */
-[type="checkbox"]:not(:checked) + label:before {
+.signup-checkbox:not(:checked) + label:before {
   content: 'x';
   position: absolute;
   top: 2px; left: 0px;
@@ -102,30 +102,30 @@
   transition: all .2s;
 }
 /* checked mark aspect changes */
-[type="checkbox"]:not(:checked) + label:after {
+.signup-checkbox:not(:checked) + label:after {
   opacity: 0;
   transform: scale(0);
 }
-[type="checkbox"]:checked + label:after {
+.signup-checkbox:checked + label:after {
   opacity: 1;
   transform: scale(1);
 }
 /* disabled checkbox */
-[type="checkbox"]:disabled:not(:checked) + label:before,
-[type="checkbox"]:disabled:checked + label:before {
+.signup-checkbox:disabled:not(:checked) + label:before,
+.signup-checkbox:disabled:checked + label:before {
   box-shadow: none;
   border-color: #bbb;
   background-color: #ddd;
 }
-[type="checkbox"]:disabled:checked + label:after {
+.signup-checkbox:disabled:checked + label:after {
   color: #999;
 }
-[type="checkbox"]:disabled + label {
+.signup-checkbox:disabled + label {
   color: #aaa;
 }
 /* accessibility */
-[type="checkbox"]:checked:focus + label:before,
-[type="checkbox"]:not(:checked):focus + label:before {
+.signup-checkbox:checked:focus + label:before,
+.signup-checkbox:not(:checked):focus + label:before {
   border: 1px dotted blue;
 }
 
