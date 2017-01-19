@@ -46,10 +46,12 @@
 /* inject:css */
 @import 'account/finalize/finalize.css';
 @import 'account/signup/signup.css';
+@import 'accountHistory/accountHistory.css';
 @import 'admin/admin.css';
 @import 'buysell/buysell.css';
 @import 'main/main.css';
 @import 'members-list/members-list.css';
+@import 'treasury/treasury.css';
 @import 'wallet/wallet.css';
 @import '../components/footer/footer.css';
 @import '../components/modal/modal.css';

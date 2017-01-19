@@ -1,9 +1,13 @@
 'use strict';
 
+import * as auth from '../../auth/auth.service';
+
 var express = require('express');
 var controller = require('./club.controller');
 
 var router = express.Router();
+
+router.get('/weekProgress', auth.isAuthenticated(), controller.weekProgress);
 
 router.get('/', controller.index);
 router.get('/:id', controller.show);

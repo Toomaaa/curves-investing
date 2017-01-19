@@ -7,17 +7,36 @@
 
 
 	<div class="row">
-		<div class="col-sm-1 text-center">Date</div>
-		<div class="col-sm-4 text-center">Libellé</div>
-		<div class="col-sm-1 text-center">Quantité</div>
-		<div class="col-sm-1 text-center">Cours</div>
-		<div class="col-sm-1 text-center">Frais de courtage</div>
-		<div class="col-sm-1 text-center">TTF</div>
-		<div class="col-sm-1 text-center">Montant net</div>
-		<div class="col-sm-1 text-center">Soldes espèces</div>
-		<div class="col-sm-1 text-center">Apport espèces</div>
+		<div class="col-sm-12 text-right">
+			<input type="checkbox" ng-model="toggleSubscriptions" ng-click="toggleSubscriptionsView()" /> Regrouper les versements par période<br /><br />
+		</div>
 	</div>
 
+
+
+	<div class="row">
+		<div class="col-sm-1 text-center"><label>Date</label></div>
+		<div class="col-sm-4 text-center"><label>Libellé</label></div>
+		<div class="col-sm-1 text-center"><label>Quantité</label></div>
+		<div class="col-sm-1 text-center"><label>Cours</label></div>
+		<div class="col-sm-1 text-center"><label>Frais de courtage</label></div>
+		<div class="col-sm-1 text-center"><label>TTF</label></div>
+		<div class="col-sm-1 text-center"><label>Montant net</label></div>
+		<div class="col-sm-1 text-center"><label>Soldes espèces</label></div>
+		<div class="col-sm-1 text-center"><label>Apport espèces</label></div>
+	</div>
+
+	<div class="row" ng-repeat="move in accountHistory_moves track by $index" ng-show="move.amount != 0">
+		<div class="col-sm-1 text-left">{{ move.date | date: 'dd/MM/yyyy' }}</div>
+		<div class="col-sm-4 text-left">{{ move.wording }}</div>
+		<div class="col-sm-1 text-right">{{ move.quantity }}</div>
+		<div class="col-sm-1 text-right">{{ move.price | number:2 }}{{ move.price ? ' €' : '' }}</div>
+		<div class="col-sm-1 text-right">{{ move.fees | number:2 }}{{ move.fees ? ' €' : '' }}</div>
+		<div class="col-sm-1 text-center"></div>
+		<div class="col-sm-1 text-right no-side-padding">{{ move.amount | number:2 }} €</div>
+		<div class="col-sm-1 text-right no-side-padding">{{ (getCashBalance($index) | number:2)+' €' }}</div>
+		<div class="col-sm-1 text-right no-side-padding">{{ (getCashGiven($index) | number:2)+' €' }}</div>
+	</div>
 
 
 </div>

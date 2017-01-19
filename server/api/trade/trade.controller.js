@@ -232,7 +232,7 @@ export function treasury(req, res, next) {
                                     "$push": {
                                         "date": "$date",
                                         "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
-                                        "amount": { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: {$multiply: [-1, "$total"]}, else: "$total" } }
+                                        "amount": "$total" //{$multiply: [-1, "$total"]}
                                     }
                                 },
                                 "subs": {
@@ -332,6 +332,157 @@ export function treasury(req, res, next) {
             });
           });
 
+          
+
+        }
+      )
+    })
+    .catch(err => next(err));
+}
+
+
+
+
+
+
+
+
+
+export function accountHistory(req, res, next) {
+  var userId = req.user._id;
+
+  return User.findOne({ _id: userId }, '-salt -password').exec()
+    .then(user => { // don't ever give out the password or salt
+      if(!user || !user.accountSelected.clubCode) {
+        return res.status(401).end();
+      }
+
+      Trade.aggregate([
+                        {
+                            "$match" : {
+                                "clubCode" : user.accountSelected.clubCode
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                "from": "subscriptions",
+                                "localField": "clubCode",
+                                "foreignField": "clubCode",
+                                "as": "subs"
+                            }
+                        },
+                        { "$unwind": "$subs" },
+                        {
+                            "$group": {
+                                "_id": "$clubCode",
+                                "trades": {
+                                    "$push": {
+                                        "date": "$date",
+                                        "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
+                                        "quantity": "$quantity",
+                                        "price": "$price",
+                                        "fees": "$fees",
+                                        "amount": "$total" //{ $cond: { if: { $gte: [ "$quantity", 0 ] }, then: {$multiply: [-1, "$total"]}, else: "$total" } }
+                                    }
+                                },
+                                "subs": {
+                                    "$push": {
+                                        "date": "$subs.period",
+                                        "wording": { "$concat": ["Versement#", "$subs.email"] },
+                                        "period" : "$subs.period",
+                                        "amount": "$subs.amount"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$project": {
+                                "clubCode": "$_id",
+                                "_id": 0,
+                                "accountHistory_moves": { "$setUnion": ["$subs", "$trades"] }
+                            }
+                        },
+                        { "$unwind": "$accountHistory_moves" },
+                        { 
+                            "$sort" : { "accountHistory_moves.date" : 1 }
+                        },
+                        {
+                            "$group": {
+                                "_id": "$clubCode",
+                                "accountHistory_moves": {
+                                    "$push" : "$accountHistory_moves"
+                                }
+                            }
+                        },
+                        {
+                            "$project": {
+                                "clubCode": "$_id",
+                                "_id": 0,
+                                "accountHistory_moves": 1
+                            }
+                        }
+                    ], function(err, result) {
+
+          if(err) {
+            console.log(err);
+            return res.status(404).end();
+          }
+
+          var count=0;
+
+          result.forEach(resultOne => {
+            resultOne.accountHistory_moves.forEach(move => {
+              var split = move.wording.split("#");
+              if(split[0] == "Versement") {
+
+                ClubsPeriods.findOne({clubCode: resultOne.clubCode})
+                  .then(resultPeriods => {
+                    for(var i=0; i<resultPeriods.periods.length; i++) {
+                      if(new Date(resultPeriods.periods[i]).getTime() == new Date(move.period).getTime()) {
+                        move.period = new Date(move.period);
+                        move.periodEnd = new Date(resultPeriods.periods[i+1]);
+                      }
+                    }
+                  })
+                  .catch(err => {
+                    console.log(err);
+                  })
+
+                User.findOne({email: split[1]}, '-salt -password')
+                  .then(resultUser => {
+                    
+                    if(resultUser) {
+                      move.wording = "Versement "+resultUser.firstName+" "+resultUser.lastName;
+                      
+                      count++;
+                      if(count == result.length * resultOne.accountHistory_moves.length) res.json(result);
+                    }
+                    else {
+                      Pending.findOne({email: split[1]})
+                        .then(resultPending => {
+                          move.wording = "Versement "+resultPending.firstName+" "+resultPending.lastName;
+
+                          count++;
+                          if(count == result.length * resultOne.accountHistory_moves.length) res.json(result);
+                        })
+                        .catch(err => {
+                          console.log(err);
+                        })
+                    }
+
+                  })
+                  .catch(err => {
+                    console.log(err);
+                  })
+              } else {
+                count++;
+                if(count == result.length * resultOne.accountHistory_moves.length) res.json(result);
+              }
+
+            });
+          });
+
+          // res.json(result);
           
 
         }

@@ -64,9 +64,6 @@ export class TreasuryComponent {
           }
         }
 
-
-
-
       }
       else {
         $scope.treasury_moves = angular.copy($scope.saved_treasury_moves);

@@ -291,7 +291,20 @@ Subscriptions.find({}).remove()
       period: "2016-09-01T22:00:00Z",
       amount: 0,
       type: 'initial'
-    })
+    },
+    { "email" : "guillaume.bruno@gmail.com", "clubCode" : "43W0K", "period" : "2016-09-01T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 },
+    { "email" : "tanicotte@gmail.com", "clubCode" : "43W0K", "period" : "2016-09-01T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 },
+    { "email" : "julien@merchandising.io", "clubCode" : "43W0K", "period" : "2016-09-01T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 },
+    { "email" : "antoine@merchandising.io", "clubCode" : "43W0K", "period" : "2016-09-01T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 },
+    { "email" : "ringotmarc@gmail.com", "clubCode" : "43W0K", "period" : "2016-09-01T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 },
+    { "email" : "karim.bounab@gmail.com", "clubCode" : "43W0K", "period" : "2016-09-01T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 },
+    { "email" : "guillaume.bruno@gmail.com", "clubCode" : "43W0K", "period" : "2016-10-05T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 },
+    { "email" : "tanicotte@gmail.com", "clubCode" : "43W0K", "period" : "2016-10-05T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 },
+    { "email" : "julien@merchandising.io", "clubCode" : "43W0K", "period" : "2016-10-05T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 },
+    { "email" : "antoine@merchandising.io", "clubCode" : "43W0K", "period" : "2016-10-05T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 },
+    { "email" : "ringotmarc@gmail.com", "clubCode" : "43W0K", "period" : "2016-10-05T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 },
+    { "email" : "karim.bounab@gmail.com", "clubCode" : "43W0K", "period" : "2016-10-05T22:00:00Z", "amount" : 100, "type" : "recurrent", "__v" : 0 }
+    )
     .then(() => {
       console.log('finished populating user subscriptions');
     });

@@ -12,6 +12,9 @@
 
 import jsonpatch from 'fast-json-patch';
 import Club from './club.model';
+import User from '../user/user.model';
+import Subscription from '../subscription/subscription.model';
+import Trade from '../trade/trade.model';
 
 function respondWithResult(res, statusCode) {
   statusCode = statusCode || 200;
@@ -122,4 +125,151 @@ export function destroy(req, res) {
     .then(handleEntityNotFound(res))
     .then(removeEntity(res))
     .catch(handleError(res));
+}
+
+
+
+
+export function weekProgress(req, res, next) {
+  var userId = req.user._id;
+  var weeks = [];
+  var result = {};
+
+  return User.findOne({ _id: userId }, '-salt -password').exec()
+    .then(user => { // don't ever give out the password or salt
+      if(!user || !user.accountSelected.clubCode) {
+        return res.status(401).end();
+      }
+
+      result.clubCode = user.accountSelected.clubCode;
+
+      Club.findOne({ clubCode : user.accountSelected.clubCode })
+        .then(club => {
+          // find all end of weeks since the creation date
+          var creationDate = new Date(club.creationDate);
+          var dateNow = new Date();
+
+          var cursorDate = new Date(creationDate);
+          cursorDate.setHours(23);
+          cursorDate.setMinutes(59);
+          cursorDate.setSeconds(59);
+
+          // find the first friday after the creation date
+          var offsetToFriday = 5-creationDate.getDay();
+          if(offsetToFriday<0) offsetToFriday += 7;
+
+          cursorDate.setDate(creationDate.getDate()+offsetToFriday);
+
+          while(cursorDate <= dateNow) {
+            weeks.push({ date: new Date(cursorDate) });
+            cursorDate.setDate(cursorDate.getDate()+7);
+          }
+          weeks.push({date: dateNow});
+          result.weeks = weeks;
+
+
+          // Get all the subscriptions from the members
+          Subscription.find({clubCode : user.accountSelected.clubCode})
+            .then(subscriptions => {
+
+              Trade.find({clubCode : user.accountSelected.clubCode, orderDone: true})
+                .then(trades => {
+
+                  // for each week
+                  weeks.forEach(week => {
+
+                    console.log("==========================================");
+                    console.log("==========================================");
+                    console.log("NEW WEEK !");
+
+                    // console.log("trades :");
+                    // console.log(JSON.stringify(trades));
+                    // console.log("...");
+
+                    // find the cash Given
+                    week.cashGiven = 0;
+                    subscriptions.forEach(subscription => {
+                      if(new Date(subscription.period) <= new Date(week.date))
+                        week.cashGiven += subscription.amount;
+                    });
+
+                    // find the cash Balance
+                    week.cashBalance = week.cashGiven;
+                    trades.forEach(trade => {
+                      if(new Date(trade.date) <= new Date(week.date))
+                        week.cashBalance += trade.total;
+                    });
+
+
+                    // find the wallet
+                    week.wallet = [];
+
+
+                    
+
+                    for(var i=0; i<trades.length; i++) {
+
+                      if(new Date(trades[i].date) <= new Date(week.date)) {
+
+                        var index = week.wallet.length;
+                        for(var j=0; j<week.wallet.length; j++) {
+                          console.log(trades[i].symbol+" === "+week.wallet[j].symbol+" ==> "+(trades[i].symbol === week.wallet[j].symbol));
+                          if(trades[i].symbol === week.wallet[j].symbol) index=j;
+                          console.log(index);
+                        }
+
+                        if(index == week.wallet.length) {
+                          week.wallet[index] = {
+                            quantity: 0,
+                            total: 0,
+                            symbol: '',
+                            name : ''
+                          };
+                        }
+                        week.wallet[index].symbol = trades[i].symbol;
+                        week.wallet[index].name = trades[i].name;
+                        week.wallet[index].quantity += trades[i].quantity;
+                        week.wallet[index].total += trades[i].total;
+                        
+                      }
+
+                    }
+
+
+
+                  });
+
+
+
+                  res.json(weeks);
+
+                })
+                .catch(err => {
+                  console.log(err);
+                });
+            })
+            .catch(err => {
+              console.log(err);
+            });
+
+
+          
+
+
+
+          
+
+
+        })
+        .catch(err => {
+          console.log(err);
+        })
+
+      
+
+    })
+    .catch(err => {
+      console.log(err);
+    });
+
 }
