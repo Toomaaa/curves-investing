@@ -9,6 +9,7 @@ import path from 'path';
 
 export default function(app) {
   // Insert routes below
+  app.use('/api/yahooCaches', require('./api/yahooCache'));
   app.use('/api/trades', require('./api/trade'));
   app.use('/api/subscriptions', require('./api/subscription'));
   app.use('/api/clubsPeriods', require('./api/clubsPeriods'));

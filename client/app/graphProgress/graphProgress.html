@@ -1,76 +1,81 @@
-<div class="row">
-	<div class="col-sm-12 text-center no-side-padding">
-		<h1>Progression de la performance</h1>
+<div ng-show="showTable">
+	<div class="row">
+		<div class="col-sm-12 text-center no-side-padding">
+			<h1>Progression de la performance</h1>
+		</div>
+	</div>
+
+
+
+	<div class="row" style="padding-left: 30px; padding-right:30px">
+		<div class="col-sm-4 no-side-padding">
+			<div class="col-sm-2 text-center no-side-padding"><label>Date</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>Apport cumul</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>Soldes espèces</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>Valo Titre</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>Valo Total</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>Gain</label></div>
+		</div>
+		<div class="col-sm-3 no-side-padding">
+			<div class="col-sm-1 text-center no-side-padding"><label>2%</label></div>
+			<div class="col-sm-1 text-center no-side-padding"><label>4%</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>6%</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>8%</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>10%</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>CAC</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>ETF WD</label></div>
+		</div>
+		<div class="col-sm-5 no-side-padding">
+			<!-- <div class="col-sm-1 text-center no-side-padding"><label>1%</label></div> -->
+			<div class="col-sm-1 text-center no-side-padding"><label>2%</label></div>
+			<!-- <div class="col-sm-1 text-center no-side-padding"><label>3%</label></div> -->
+			<div class="col-sm-1 text-center no-side-padding"><label>4%</label></div>
+			<!-- <div class="col-sm-1 text-center no-side-padding"><label>5%</label></div> -->
+			<div class="col-sm-2 text-center no-side-padding"><label>6%</label></div>
+			<!-- <div class="col-sm-1 text-center no-side-padding"><label>7%</label></div> -->
+			<div class="col-sm-2 text-center no-side-padding"><label>8%</label></div>
+			<!-- <div class="col-sm-1 text-center no-side-padding"><label>9%</label></div> -->
+			<div class="col-sm-2 text-center no-side-padding"><label>10%</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>CAC</label></div>
+			<div class="col-sm-2 text-center no-side-padding"><label>ETF WD</label></div>
+		</div>
+	</div>
+
+
+	<div class="row" ng-repeat="week in weeks track by $index" style="padding-left: 30px; padding-right:30px">
+		<div class="col-sm-4 no-side-padding">
+			<div class="col-sm-2 text-center no-side-padding">{{ week.date | date: 'dd/MM/yy' }}</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.cashGiven | number:0 }}{{ week.cashGiven ? ' €' : '' }}</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.cashBalance | number:0 }}{{ week.cashGiven ? ' €' : '' }}</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ (walletValue[$index] | number: 0)+' €' }}</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.totalValue | number:0 }} €</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.win | number:0 }} €</div>
+		</div>
+		<div class="col-sm-3 no-side-padding">
+			<div class="col-sm-1 text-center no-side-padding">{{ week.pwin[2] | number:0 }} €</div>
+			<div class="col-sm-1 text-center no-side-padding">{{ week.pwin[4] | number:0 }} €</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.pwin[6] | number:0 }} €</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.pwin[8] | number:0 }} €</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.pwin[10] | number:0 }} €</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.pwinCAC | number:0 }} €</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.pwinETFWD | number:0 }} €</div>
+		</div>
+		<div class="col-sm-5 no-side-padding">
+			<!-- <div class="col-sm-1 text-center no-side-padding">{{ week.p[1] | number:0 }} €</div> -->
+			<div class="col-sm-1 text-center no-side-padding">{{ week.p[2] | number:0 }} €</div>
+			<!-- <div class="col-sm-1 text-center no-side-padding">{{ week.p[3] | number:0 }} €</div> -->
+			<div class="col-sm-1 text-center no-side-padding">{{ week.p[4] | number:0 }} €</div>
+			<!-- <div class="col-sm-1 text-center no-side-padding">{{ week.p[5] | number:0 }} €</div> -->
+			<div class="col-sm-2 text-center no-side-padding">{{ week.p[6] | number:0 }} €</div>
+			<!-- <div class="col-sm-1 text-center no-side-padding">{{ week.p[7] | number:0 }} €</div> -->
+			<div class="col-sm-2 text-center no-side-padding">{{ week.p[8] | number:0 }} €</div>
+			<!-- <div class="col-sm-1 text-center no-side-padding">{{ week.p[9] | number:0 }} €</div> -->
+			<div class="col-sm-2 text-center no-side-padding">{{ week.p[10] | number:0 }} €</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.pCAC | number:0 }} €</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.pETFWD | number:0 }} €</div>
+		</div>
 	</div>
 </div>
 
 
-
-<div class="row" style="padding-left: 30px; padding-right:30px">
-	<div class="col-sm-4 no-side-padding">
-		<div class="col-sm-2 text-center no-side-padding"><label>Date</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>Apport cumul</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>Soldes espèces</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>Valo Titre</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>Valo Total</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>Gain</label></div>
-	</div>
-	<div class="col-sm-3 no-side-padding">
-		<div class="col-sm-1 text-center no-side-padding"><label>2%</label></div>
-		<div class="col-sm-1 text-center no-side-padding"><label>4%</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>6%</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>8%</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>10%</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>CAC</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>ETF WD</label></div>
-	</div>
-	<div class="col-sm-5 no-side-padding">
-		<!-- <div class="col-sm-1 text-center no-side-padding"><label>1%</label></div> -->
-		<div class="col-sm-1 text-center no-side-padding"><label>2%</label></div>
-		<!-- <div class="col-sm-1 text-center no-side-padding"><label>3%</label></div> -->
-		<div class="col-sm-1 text-center no-side-padding"><label>4%</label></div>
-		<!-- <div class="col-sm-1 text-center no-side-padding"><label>5%</label></div> -->
-		<div class="col-sm-2 text-center no-side-padding"><label>6%</label></div>
-		<!-- <div class="col-sm-1 text-center no-side-padding"><label>7%</label></div> -->
-		<div class="col-sm-2 text-center no-side-padding"><label>8%</label></div>
-		<!-- <div class="col-sm-1 text-center no-side-padding"><label>9%</label></div> -->
-		<div class="col-sm-2 text-center no-side-padding"><label>10%</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>CAC</label></div>
-		<div class="col-sm-2 text-center no-side-padding"><label>ETF WD</label></div>
-	</div>
-</div>
-
-
-<div class="row" ng-repeat="week in weeks track by $index" style="padding-left: 30px; padding-right:30px">
-	<div class="col-sm-4 no-side-padding">
-		<div class="col-sm-2 text-center no-side-padding">{{ week.date | date: 'dd/MM/yy' }}</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ week.cashGiven | number:0 }}{{ week.cashGiven ? ' €' : '' }}</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ week.cashBalance | number:0 }}{{ week.cashGiven ? ' €' : '' }}</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ (walletValue[$index] | number: 0)+' €' }}</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ week.totalValue | number:0 }} €</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ week.win | number:0 }} €</div>
-	</div>
-	<div class="col-sm-3 no-side-padding">
-		<div class="col-sm-1 text-center no-side-padding">{{ week.pwin[2] | number:0 }} €</div>
-		<div class="col-sm-1 text-center no-side-padding">{{ week.pwin[4] | number:0 }} €</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ week.pwin[6] | number:0 }} €</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ week.pwin[8] | number:0 }} €</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ week.pwin[10] | number:0 }} €</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ week.pwinCAC | number:0 }} €</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ week.pwinETFWD | number:0 }} €</div>
-	</div>
-	<div class="col-sm-5 no-side-padding">
-		<!-- <div class="col-sm-1 text-center no-side-padding">{{ week.p[1] | number:0 }} €</div> -->
-		<div class="col-sm-1 text-center no-side-padding">{{ week.p[2] | number:0 }} €</div>
-		<!-- <div class="col-sm-1 text-center no-side-padding">{{ week.p[3] | number:0 }} €</div> -->
-		<div class="col-sm-1 text-center no-side-padding">{{ week.p[4] | number:0 }} €</div>
-		<!-- <div class="col-sm-1 text-center no-side-padding">{{ week.p[5] | number:0 }} €</div> -->
-		<div class="col-sm-2 text-center no-side-padding">{{ week.p[6] | number:0 }} €</div>
-		<!-- <div class="col-sm-1 text-center no-side-padding">{{ week.p[7] | number:0 }} €</div> -->
-		<div class="col-sm-2 text-center no-side-padding">{{ week.p[8] | number:0 }} €</div>
-		<!-- <div class="col-sm-1 text-center no-side-padding">{{ week.p[9] | number:0 }} €</div> -->
-		<div class="col-sm-2 text-center no-side-padding">{{ week.p[10] | number:0 }} €</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ week.pCAC | number:0 }} €</div>
-		<div class="col-sm-2 text-center no-side-padding">{{ week.pETFWD | number:0 }} €</div>
-	</div>
-</div>
+<div google-chart chart="myChartObject" style="height:600px; width:100%;"></div>
