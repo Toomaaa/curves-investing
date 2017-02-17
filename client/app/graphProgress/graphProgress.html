@@ -1,12 +1,13 @@
-<div ng-show="showTable">
-	<div class="row">
-		<div class="col-sm-12 text-center no-side-padding">
-			<h1>Progression de la performance</h1>
-		</div>
+<div class="row">
+	<div class="col-sm-12 text-center no-side-padding">
+		<h1>Progression de la performance</h1>
 	</div>
+</div>
 
+<div google-chart chart="myChartObject" style="height:600px; width:100%;"></div>
 
-
+<div ng-show="showTable">
+	
 	<div class="row" style="padding-left: 30px; padding-right:30px">
 		<div class="col-sm-4 no-side-padding">
 			<div class="col-sm-2 text-center no-side-padding"><label>Date</label></div>
@@ -76,6 +77,3 @@
 		</div>
 	</div>
 </div>
-
-
-<div google-chart chart="myChartObject" style="height:600px; width:100%;"></div>

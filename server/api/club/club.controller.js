@@ -150,9 +150,9 @@ export function weekProgress(req, res, next) {
           var dateNow = new Date();
 
           var cursorDate = new Date(creationDate);
-          cursorDate.setHours(23);
-          cursorDate.setMinutes(59);
-          cursorDate.setSeconds(59);
+          cursorDate.setHours(12);
+          cursorDate.setMinutes(0);
+          cursorDate.setSeconds(0);
 
           // find the first friday after the creation date
           var offsetToFriday = 5-creationDate.getDay();
@@ -197,7 +197,7 @@ export function weekProgress(req, res, next) {
                     week.cashBalance = week.cashGiven;
                     trades.forEach(trade => {
                       if(new Date(trade.date) <= new Date(week.date))
-                        week.cashBalance += trade.total;
+                        week.cashBalance -= trade.total;
                     });
 
 
@@ -230,6 +230,9 @@ export function weekProgress(req, res, next) {
                         week.wallet[index].name = trades[i].name;
                         week.wallet[index].quantity += trades[i].quantity;
                         week.wallet[index].total += trades[i].total;
+                        if(week.wallet[index].quantity === 0) {
+                          week.wallet.splice(week.wallet.indexOf(week.wallet[index]), 1);
+                        }
                         
                       }
 

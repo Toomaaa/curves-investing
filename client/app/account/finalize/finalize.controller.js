@@ -28,8 +28,6 @@ export default class FinalizeController {
     $http.get('/api/pendings/'+this.user.email+'/'+this.user.activationCode)
       .then(response => {
         this.user = response.data;
-
-        console.log(this.user);
       })
       .catch(function(e) {
         console.log("got an error in initial processing",e);

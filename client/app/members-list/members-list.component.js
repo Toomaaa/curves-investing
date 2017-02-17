@@ -110,7 +110,6 @@ export class MembersListComponent {
       
       $http.post('/api/subscriptions', data)
       .then(response => {
-        console.log(response);
         $scope.nextSubscriptions();
       })
       .catch(err => {

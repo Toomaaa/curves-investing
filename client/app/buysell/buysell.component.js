@@ -38,10 +38,8 @@ export class BuysellComponent {
 
       quotes.getQuote(symbol)
         .then(result => {
-          console.log(result);
           $scope.price = result.LastTradePriceOnly;
           $scope.lastTradeDate = result.LastTradeDate;
-          console.log($scope.lastTradeDate);
         })
         .catch(err => {
           console.log(err);
@@ -64,8 +62,6 @@ export class BuysellComponent {
     $scope.formValidation = function () {
 
       var club = userSelection.get('accountSelected');
-      console.log($scope.orderType);
-      console.log(($scope.orderDone == 'false' ? $scope.orderType : undefined));
 
       var data = {
         clubCode: club.clubCode,
@@ -80,7 +76,7 @@ export class BuysellComponent {
         limit1: ($scope.orderType == 'ASD' || $scope.orderType == 'APD' ? $scope.limit1 : undefined),
         limit2: ($scope.orderType == 'APD' ? $scope.limit2 : undefined),
         fees: $scope.fees,
-        total: Math.round(100*($scope.quantity * ($scope.orderType == 'ACL' ? $scope.price : $scope.orderType == 'OAM' || $scope.orderType == 'APM' ? $scope.actualPrice : $scope.limit1) + $scope.fees))/100
+        total: -1*Math.round(100*($scope.quantity * ($scope.orderType == 'ACL' ? $scope.price : $scope.orderType == 'OAM' || $scope.orderType == 'APM' ? $scope.actualPrice : $scope.limit1) + $scope.fees))/100
       };
 
 

@@ -12,17 +12,19 @@ export function quotesService($http, $sce, $q, yahooRequest) {
 	function getQuote (symbol) {
 
 		var dfd = $q.defer();
-		yahooRequest.doRequest('quotes', symbol, date)
+		yahooRequest.doRequest('quotes', symbol)
 			.then(data => {
 				var result = data.query.results.quote;
 
-				result.LastTradePriceOnly = parseFloat(result.LastTradePriceOnly);
-				var lastTradeDate = result.LastTradeDate.split('/');
-				var lastTradeTime = result.LastTradeTime.split(':');
-				lastTradeTime[2] = lastTradeTime[1].substr(lastTradeTime[1].length - 2);
-				lastTradeTime[1] = lastTradeTime[1].slice(0, -2);
-				if(lastTradeTime[2] == 'pm') lastTradeTime[0] = parseInt(lastTradeTime[0])+12;
-				result.LastTradeDate = new Date(parseInt(lastTradeDate[2]), parseInt(lastTradeDate[0])-1, parseInt(lastTradeDate[1]), lastTradeTime[0], lastTradeTime[1]);
+				if(result.LastTradePriceOnly) result.LastTradePriceOnly = parseFloat(result.LastTradePriceOnly);
+				if(result.LastTradeDate) {
+					var lastTradeDate = result.LastTradeDate.split('/');
+					var lastTradeTime = result.LastTradeTime.split(':');
+					lastTradeTime[2] = lastTradeTime[1].substr(lastTradeTime[1].length - 2);
+					lastTradeTime[1] = lastTradeTime[1].slice(0, -2);
+					if(lastTradeTime[2] == 'pm') lastTradeTime[0] = parseInt(lastTradeTime[0])+12;
+					result.LastTradeDate = new Date(parseInt(lastTradeDate[2]), parseInt(lastTradeDate[0])-1, parseInt(lastTradeDate[1]), lastTradeTime[0], lastTradeTime[1]);
+				}
 				              
 				dfd.resolve(result);
 			})

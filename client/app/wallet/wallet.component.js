@@ -57,7 +57,6 @@ export class WalletComponent {
           else { 
             $scope.next=0;
             $scope.valueDetailsDone = true;
-            console.log("details Done");
             return true;
           }
         })
@@ -100,7 +99,6 @@ export class WalletComponent {
 
     function getOrdersDetails() {
 
-      console.log($scope.valueDetailsDone);
       if(!$scope.valueDetailsDone) {
         setTimeout(getOrdersDetails, 500);
         return false;

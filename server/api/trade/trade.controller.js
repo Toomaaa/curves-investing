@@ -164,6 +164,11 @@ export function wallet(req, res, next) {
             return res.status(404).end();
           }
 
+          result.forEach(res => {
+            if(res.quantity === 0) {
+              result.splice(result.indexOf(res), 1);
+            }
+          });
           res.json(result);
 
         }
@@ -232,7 +237,7 @@ export function treasury(req, res, next) {
                                     "$push": {
                                         "date": "$date",
                                         "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
-                                        "amount": "$total" //{$multiply: [-1, "$total"]}
+                                        "amount": {$multiply: [-1, "$total"]}
                                     }
                                 },
                                 "subs": {
@@ -382,7 +387,7 @@ export function accountHistory(req, res, next) {
                                         "quantity": "$quantity",
                                         "price": "$price",
                                         "fees": "$fees",
-                                        "amount": "$total" //{ $cond: { if: { $gte: [ "$quantity", 0 ] }, then: {$multiply: [-1, "$total"]}, else: "$total" } }
+                                        "amount": {$multiply: [-1, "$total"]} //{ $cond: { if: { $gte: [ "$quantity", 0 ] }, then: {$multiply: [-1, "$total"]}, else: "$total" } }
                                     }
                                 },
                                 "subs": {

@@ -57,7 +57,6 @@ export function historicalQuotesService($http, $sce, $q, yahooRequest) {
 		else
 			var table = 'historicaldata';
 
-
 		var dfd = $q.defer();
 		yahooRequest.doRequest(table, symbols, date)
 		.then(data => {

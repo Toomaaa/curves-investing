@@ -11,7 +11,6 @@ export class TreasuryComponent {
     
     $http.get('/api/trades/treasury')
       .then(result => {
-        console.log(result);
         $scope.treasury_moves = result.data[0].treasury_moves;
       })
       .catch(err => {

@@ -283,13 +283,10 @@ export default class SignupController {
 
         api.get('/api/clubs/clubCode/'+code)
           .then(function(response) {
-            if(response.status === 200) { console.log("200"); generateClubCode(api, scope, clubData, callback); }
+            if(response.status === 200) { generateClubCode(api, scope, clubData, callback); }
           })
           .catch(function(response) {
-            if(response.status === 404) { console.log("404"); callback(code, api, scope, clubData); }
-          })
-          .finally(function() {
-            console.log("ok finally");
+            if(response.status === 404) { callback(code, api, scope, clubData); }
           });
         
     }

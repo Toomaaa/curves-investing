@@ -31,7 +31,6 @@ export function quotesNameService($http, $sce, $q) {
 
 
 		var url = 'http://autoc.finance.yahoo.com/autoc?query='+encodeURI(entry)+'&region=FR&lang=fr';
-		console.log(url);
 
 		var dfd = $q.defer();
 		$http.jsonp($sce.trustAsResourceUrl(url), { jsonpCallbackParam: 'callback=YAHOO.Finance.SymbolSuggest.ssCallback&test=' })
