@@ -14,6 +14,7 @@ export function historicalQuotesService($http, $sce, $q, yahooRequest) {
 
 	function getQuote (symbol, date) {
 
+
 		date = new Date(date);
 		if(date.getFullYear() === new Date().getFullYear() && date.getMonth() === new Date().getMonth() && date.getDate() === new Date().getDate())
 			var table = 'quotes';
@@ -133,6 +134,9 @@ export function historicalQuotesService($http, $sce, $q, yahooRequest) {
 	function getCACETFvalue (date) {
 
 		date = new Date(date);
+
+		if(date > new Date(2017,0,21))
+			date.setDate(date.getDate()-1);
 
 		if(date.getFullYear() === new Date().getFullYear() && date.getMonth() === new Date().getMonth() && date.getDate() === new Date().getDate())
 			var table = 'quotes';

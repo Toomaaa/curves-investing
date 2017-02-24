@@ -131,6 +131,7 @@ export function destroy(req, res) {
 
 
 export function weekProgress(req, res, next) {
+  
   var userId = req.user._id;
   var weeks = [];
   var result = {};
@@ -148,6 +149,9 @@ export function weekProgress(req, res, next) {
           // find all end of weeks since the creation date
           var creationDate = new Date(club.creationDate);
           var dateNow = new Date();
+          dateNow.setHours(11);
+          dateNow.setMinutes(0);
+          dateNow.setSeconds(0);
 
           var cursorDate = new Date(creationDate);
           cursorDate.setHours(12);
@@ -160,7 +164,8 @@ export function weekProgress(req, res, next) {
 
           cursorDate.setDate(creationDate.getDate()+offsetToFriday);
 
-          while(cursorDate <= dateNow) {
+          while(cursorDate < dateNow) {
+            console.log(cursorDate+' - '+dateNow);
             weeks.push({ date: new Date(cursorDate) });
             cursorDate.setDate(cursorDate.getDate()+7);
           }
@@ -177,14 +182,6 @@ export function weekProgress(req, res, next) {
 
                   // for each week
                   weeks.forEach(week => {
-
-                    console.log("==========================================");
-                    console.log("==========================================");
-                    console.log("NEW WEEK !");
-
-                    // console.log("trades :");
-                    // console.log(JSON.stringify(trades));
-                    // console.log("...");
 
                     // find the cash Given
                     week.cashGiven = 0;
@@ -213,9 +210,7 @@ export function weekProgress(req, res, next) {
 
                         var index = week.wallet.length;
                         for(var j=0; j<week.wallet.length; j++) {
-                          console.log(trades[i].symbol+" === "+week.wallet[j].symbol+" ==> "+(trades[i].symbol === week.wallet[j].symbol));
                           if(trades[i].symbol === week.wallet[j].symbol) index=j;
-                          console.log(index);
                         }
 
                         if(index == week.wallet.length) {

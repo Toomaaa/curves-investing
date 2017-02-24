@@ -64,88 +64,70 @@ export class GraphProgressComponent {
         getCACETFvalue();
 
 
+        $scope.myChartObject = {};
+    
+        $scope.myChartObject.type = "ComboChart";
+
+        $scope.myChartObject.data = {"cols": [
+            {id: "t", label: "Date", type: "string"},
+            {id: "s", label: "Gain", type: "number"},
+            {id: "s", label: "2%", type: "number"},
+            {id: "s", label: "4%", type: "number"},
+            {id: "s", label: "6%", type: "number"},
+            {id: "s", label: "8%", type: "number"},
+            {id: "s", label: "10%", type: "number"},
+            {id: "s", label: "CAC", type: "number"},
+            {id: "s", label: "ETF WD", type: "number"},
+        ], "rows": []};
 
 
-
-
-
-
-                    $scope.myChartObject = {};
-                
-                    $scope.myChartObject.type = "ComboChart";
-
-                    $scope.myChartObject.data = {"cols": [
-                        {id: "t", label: "Date", type: "string"},
-                        {id: "s", label: "Gain", type: "number"},
-                        {id: "s", label: "2%", type: "number"},
-                        {id: "s", label: "4%", type: "number"},
-                        {id: "s", label: "6%", type: "number"},
-                        {id: "s", label: "8%", type: "number"},
-                        {id: "s", label: "10%", type: "number"},
-                        {id: "s", label: "CAC", type: "number"},
-                        {id: "s", label: "ETF WD", type: "number"},
-                    ], "rows": []};
-
-
-                    $scope.myChartObject.options = {
-                        'title': 'Evolution de la performance',
-                        seriesType: 'line',
-                        curveType: 'function',
-                        width: '1500',
-                        hAxis : { 
-                          textStyle : {
-                              fontSize: 12
-                          },
-                          slantedText:true, 
-                          slantedTextAngle:45
-                        },
-                        series: {
-                          0: {
-                            type: 'bars',
-                            color: '#000000'
-                          },
-                          1: {
-                            type: 'line',
-                            color: '#37731d'
-                          },
-                          2: {
-                            type: 'line',
-                            color: '#4c8c31'
-                          },
-                          3: {
-                            type: 'line',
-                            color: '#66a64b'
-                          },
-                          4: {
-                            type: 'line',
-                            color: '#83bf69'
-                          },
-                          5: {
-                            type: 'line',
-                            color: '#a4d98d'
-                          },
-                          6: {
-                            type: 'line',
-                            color: '#6d9eeb'
-                          },
-                          7: {
-                            type: 'line',
-                            color: '#e06666'
-                          }
-                        }
-                    };
-
-
-
-
-
-
-
-
-
-
-
-
+        $scope.myChartObject.options = {
+            'title': 'Evolution de la performance',
+            seriesType: 'line',
+            curveType: 'function',
+            width: '1500',
+            hAxis : { 
+              textStyle : {
+                  fontSize: 12
+              },
+              slantedText:true, 
+              slantedTextAngle:45
+            },
+            series: {
+              0: {
+                type: 'bars',
+                color: '#000000'
+              },
+              1: {
+                type: 'line',
+                color: '#37731d'
+              },
+              2: {
+                type: 'line',
+                color: '#4c8c31'
+              },
+              3: {
+                type: 'line',
+                color: '#66a64b'
+              },
+              4: {
+                type: 'line',
+                color: '#83bf69'
+              },
+              5: {
+                type: 'line',
+                color: '#a4d98d'
+              },
+              6: {
+                type: 'line',
+                color: '#6d9eeb'
+              },
+              7: {
+                type: 'line',
+                color: '#e06666'
+              }
+            }
+        };
 
 
 
@@ -222,6 +204,21 @@ export class GraphProgressComponent {
 
             $scope.nextCAC++;
             if($scope.nextCAC < $scope.weeks.length) getCACETFvalue();
+            else {
+              // poster dans base graphProgress
+              var params = {
+                startDate: $scope.weeks[0].date,
+                endDate: $scope.weeks[$scope.weeks.length-1].date,
+                weeks: $scope.weeks
+              };
+              $http.post('/api/graphProgress', params)
+                .then(function(result) {
+                  console.log('ok '+result);
+                })
+                .catch(function(err) {
+                  console.log('erreur : '+err);
+                });
+            }
           })
           .catch(err => {
             console.log(err);
