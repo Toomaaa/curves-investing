@@ -7,7 +7,7 @@ var controller = require('./graphProgress.controller');
 
 var router = express.Router();
 
-router.get('/', controller.index);
+router.post('/getCache', auth.isAuthenticated(), controller.getCache);
 router.get('/:id', controller.show);
 router.post('/', auth.isAuthenticated(), controller.create);
 router.put('/:id', controller.upsert);

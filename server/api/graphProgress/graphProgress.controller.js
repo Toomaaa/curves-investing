@@ -65,8 +65,11 @@ function handleError(res, statusCode) {
 }
 
 // Gets a list of GraphProgresss
-export function index(req, res) {
-  return GraphProgress.find().exec()
+export function getCache(req, res) {
+  console.log("===========================");
+  console.log('.find({startDate: {$eq: '+req.body.startDate+'}, endDate: {$lte: '+req.body.endDate+'}})');
+  console.log("===========================");
+  return GraphProgress.find({startDate: {$eq: req.body.startDate}, endDate: {$lte: req.body.endDate}}).exec()
     .then(respondWithResult(res))
     .catch(handleError(res));
 }

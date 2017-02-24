@@ -20,49 +20,30 @@ export class GraphProgressComponent {
       .then(result => {
         $scope.weeks = result.data;
 
-        getWalletValue();
+        console.log($scope.weeks);
+
+        var params = {
+          startDate: new Date($scope.weeks[0].date),
+          endDate: new Date($scope.weeks[$scope.weeks.length-1].date)
+        };
+        console.log(params);
+        $http.post('/api/graphProgress/getCache', params)
+          .then(resCache => {
+
+            if(resCache.data.length == 0) getWalletValue();
+            else {
+              $scope.weeks = resCache.data[0].weeks;
+              generateChart();
+            }
+
+          });
       })
       .catch(err => {
         console.log(err);
       });
 
 
-      $scope.walletValue = [];
-      $scope.next = 0;
-
-      function getWalletValue() {
-
-        var week = $scope.weeks[$scope.next];
-
-        if(week.wallet.length > 0) {
-          historicalQuotes.getWallet(week.wallet, week.date)
-            .then(walletValue => {
-              $scope.walletValue[$scope.next] = walletValue;
-              $scope.next++;           
-              if($scope.next < $scope.weeks.length) getWalletValue();
-              else finishCalculation();
-            })
-            .catch (err => {
-              console.log(err);
-            });
-        }
-        else {
-          $scope.walletValue[$scope.next] = 0;
-          $scope.next++;           
-          if($scope.next < $scope.weeks.length) getWalletValue();
-          else finishCalculation();
-        }
-
-      }
-
-
-
-      function finishCalculation() {
-
-        var countWeek = 0;
-
-        getCACETFvalue();
-
+      function generateChart() {
 
         $scope.myChartObject = {};
     
@@ -129,6 +110,139 @@ export class GraphProgressComponent {
             }
         };
 
+        $scope.weeks.forEach(week => {
+
+          var date = new Date(week.date);
+            
+          var formatDate = date.getDate() <10 ? '0'+date.getDate() : date.getDate();
+          formatDate += '/';
+          formatDate += (date.getMonth()+1) < 10 ? '0'+(date.getMonth()+1) : (date.getMonth()+1);
+          formatDate += '/';
+          formatDate += date.getFullYear();
+
+          $scope.myChartObject.data.rows.push({c: [
+              {v: formatDate},
+              {v: week.win},
+              {v: week.pwin[2]},
+              {v: week.pwin[4]},
+              {v: week.pwin[6]},
+              {v: week.pwin[8]},
+              {v: week.pwin[10]},
+              {v: week.pwinCAC},
+              {v: week.pwinETFWD},
+          ]});
+
+        });
+
+        
+
+
+
+      }
+
+
+      $scope.walletValue = [];
+      $scope.next = 0;
+
+      function getWalletValue() {
+
+        var week = $scope.weeks[$scope.next];
+
+        if(week.wallet.length > 0) {
+          historicalQuotes.getWallet(week.wallet, week.date)
+            .then(walletValue => {
+              $scope.walletValue[$scope.next] = walletValue;
+              $scope.next++;           
+              if($scope.next < $scope.weeks.length) getWalletValue();
+              else finishCalculation();
+            })
+            .catch (err => {
+              console.log(err);
+            });
+        }
+        else {
+          $scope.walletValue[$scope.next] = 0;
+          $scope.next++;           
+          if($scope.next < $scope.weeks.length) getWalletValue();
+          else finishCalculation();
+        }
+
+      }
+
+
+
+      function finishCalculation() {
+
+        var countWeek = 0;
+
+        getCACETFvalue();
+
+
+        // $scope.myChartObject = {};
+    
+        // $scope.myChartObject.type = "ComboChart";
+
+        // $scope.myChartObject.data = {"cols": [
+        //     {id: "t", label: "Date", type: "string"},
+        //     {id: "s", label: "Gain", type: "number"},
+        //     {id: "s", label: "2%", type: "number"},
+        //     {id: "s", label: "4%", type: "number"},
+        //     {id: "s", label: "6%", type: "number"},
+        //     {id: "s", label: "8%", type: "number"},
+        //     {id: "s", label: "10%", type: "number"},
+        //     {id: "s", label: "CAC", type: "number"},
+        //     {id: "s", label: "ETF WD", type: "number"},
+        // ], "rows": []};
+
+
+        // $scope.myChartObject.options = {
+        //     'title': 'Evolution de la performance',
+        //     seriesType: 'line',
+        //     curveType: 'function',
+        //     width: '1500',
+        //     hAxis : { 
+        //       textStyle : {
+        //           fontSize: 12
+        //       },
+        //       slantedText:true, 
+        //       slantedTextAngle:45
+        //     },
+        //     series: {
+        //       0: {
+        //         type: 'bars',
+        //         color: '#000000'
+        //       },
+        //       1: {
+        //         type: 'line',
+        //         color: '#37731d'
+        //       },
+        //       2: {
+        //         type: 'line',
+        //         color: '#4c8c31'
+        //       },
+        //       3: {
+        //         type: 'line',
+        //         color: '#66a64b'
+        //       },
+        //       4: {
+        //         type: 'line',
+        //         color: '#83bf69'
+        //       },
+        //       5: {
+        //         type: 'line',
+        //         color: '#a4d98d'
+        //       },
+        //       6: {
+        //         type: 'line',
+        //         color: '#6d9eeb'
+        //       },
+        //       7: {
+        //         type: 'line',
+        //         color: '#e06666'
+        //       }
+        //     }
+        // };
+
 
 
 
@@ -179,25 +293,25 @@ export class GraphProgressComponent {
               $scope.weeks[$scope.nextCAC].pwinETFWD = $scope.weeks[$scope.nextCAC].pETFWD - $scope.weeks[$scope.nextCAC].cashGiven;
             }
 
-            var date = new Date($scope.weeks[$scope.nextCAC].date);
+            // var date = new Date($scope.weeks[$scope.nextCAC].date);
             
-            var formatDate = date.getDate() <10 ? '0'+date.getDate() : date.getDate();
-            formatDate += '/';
-            formatDate += (date.getMonth()+1) < 10 ? '0'+(date.getMonth()+1) : (date.getMonth()+1);
-            formatDate += '/';
-            formatDate += date.getFullYear();
+            // var formatDate = date.getDate() <10 ? '0'+date.getDate() : date.getDate();
+            // formatDate += '/';
+            // formatDate += (date.getMonth()+1) < 10 ? '0'+(date.getMonth()+1) : (date.getMonth()+1);
+            // formatDate += '/';
+            // formatDate += date.getFullYear();
 
-            $scope.myChartObject.data.rows.push({c: [
-                {v: formatDate},
-                {v: $scope.weeks[$scope.nextCAC].win},
-                {v: $scope.weeks[$scope.nextCAC].pwin[2]},
-                {v: $scope.weeks[$scope.nextCAC].pwin[4]},
-                {v: $scope.weeks[$scope.nextCAC].pwin[6]},
-                {v: $scope.weeks[$scope.nextCAC].pwin[8]},
-                {v: $scope.weeks[$scope.nextCAC].pwin[10]},
-                {v: $scope.weeks[$scope.nextCAC].pwinCAC},
-                {v: $scope.weeks[$scope.nextCAC].pwinETFWD},
-            ]});
+            // $scope.myChartObject.data.rows.push({c: [
+            //     {v: formatDate},
+            //     {v: $scope.weeks[$scope.nextCAC].win},
+            //     {v: $scope.weeks[$scope.nextCAC].pwin[2]},
+            //     {v: $scope.weeks[$scope.nextCAC].pwin[4]},
+            //     {v: $scope.weeks[$scope.nextCAC].pwin[6]},
+            //     {v: $scope.weeks[$scope.nextCAC].pwin[8]},
+            //     {v: $scope.weeks[$scope.nextCAC].pwin[10]},
+            //     {v: $scope.weeks[$scope.nextCAC].pwinCAC},
+            //     {v: $scope.weeks[$scope.nextCAC].pwinETFWD},
+            // ]});
 
 
 
@@ -211,13 +325,7 @@ export class GraphProgressComponent {
                 endDate: $scope.weeks[$scope.weeks.length-1].date,
                 weeks: $scope.weeks
               };
-              $http.post('/api/graphProgress', params)
-                .then(function(result) {
-                  console.log('ok '+result);
-                })
-                .catch(function(err) {
-                  console.log('erreur : '+err);
-                });
+              $http.post('/api/graphProgress', params);
             }
           })
           .catch(err => {
