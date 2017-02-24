@@ -112,7 +112,6 @@ export function historicalQuotesService($http, $sce, $q, yahooRequest) {
 
 					if(!find) {
 						walletValue += save[equity.symbol]*equity.quantity;
-						console.log("utilisation de save pour "+equity.symbol+" le "+date);
 					}
 
 				});
