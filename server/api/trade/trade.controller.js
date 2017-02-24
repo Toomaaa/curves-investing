@@ -218,7 +218,8 @@ export function treasury(req, res, next) {
       Trade.aggregate([
                         {
                             "$match" : {
-                                "clubCode" : user.accountSelected.clubCode
+                                "clubCode" : user.accountSelected.clubCode,
+                                "orderDone" : true
                             }
                         },
                         {
@@ -365,7 +366,8 @@ export function accountHistory(req, res, next) {
       Trade.aggregate([
                         {
                             "$match" : {
-                                "clubCode" : user.accountSelected.clubCode
+                                "clubCode" : user.accountSelected.clubCode,
+                                "orderDone" : true
                             }
                         },
                         {

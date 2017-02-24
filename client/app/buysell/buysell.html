@@ -158,7 +158,7 @@
 					</div>
 				</div>
 				<div class="col-sm-2 label-input" ng-show="quantity && (orderType == 'ACL' ? price : orderType == 'OAM' || orderType == 'APM' ? actualPrice : limit1) && fees">
-					= {{ quantity*(orderType == 'ACL' ? price : orderType == 'OAM' || orderType == 'APM' ? actualPrice : limit1)+fees | number:2 }} €
+					= {{ quantity*(orderType == 'ACL' ? price : orderType == 'OAM' || orderType == 'APM' ? actualPrice : limit1)+(buyOrSell == 'buy' ? 1 : -1)*fees | number:2 }} €
 				</div>
 			</div>
 		</div>

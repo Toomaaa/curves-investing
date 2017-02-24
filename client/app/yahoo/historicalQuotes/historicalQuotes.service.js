@@ -1,5 +1,6 @@
 'use strict';
 const angular = require('angular');
+const save = [];
 
 /*@ngInject*/
 export function historicalQuotesService($http, $sce, $q, yahooRequest) {
@@ -42,7 +43,7 @@ export function historicalQuotesService($http, $sce, $q, yahooRequest) {
 
 	}
 
-
+	
 
 	function getWallet (wallet, date) {
 
@@ -63,21 +64,56 @@ export function historicalQuotesService($http, $sce, $q, yahooRequest) {
 			var results = [];
 		    var walletValue = 0;
 
+		 //    symbols.forEach(symb => {
+			//   	var find = false;
+
+			//   	if(data.query.results.quote.length>1) {
+			// 	  	data.query.results.quote.forEach(quote => {
+			// 	  	  	if(quote.Symbol.toUpperCase() === encodeURI(symb).toUpperCase() || encodeURI(quote.Symbol).toUpperCase() === encodeURI(symb).toUpperCase()) find=true;
+			// 	  	});
+			// 	  	if(!find) {
+			// 	  		var tmpDate = new Date(date);
+			// 	  		var newDate = new Date(tmpDate.getFullYear(), tmpDate.getMonth(), tmpDate.getDate()-1, 12, 0, 0);
+			// 	  		var newDateString = newDate.getFullYear()+'-';
+			// 	  		newDateString += (newDate.getMonth()+1) > 9 ? (newDate.getMonth()+1) : '0'+(newDate.getMonth()+1);
+			// 	  		newDateString += '-';
+			// 	  		newDateString += newDate.getDate() > 9 ? newDate.getDate() : '0'+newDate.getDate();
+			// 	  		// coreRequest(dfd, table, symb, newDateString);
+			// 	  	}
+			// 	}
+			// });
+
 		    if(data.query.count > 0) {
 		    	
 		    	if(data.query.count == 1) results[0] = data.query.results.quote;
 		      	else results = data.query.results.quote;
 
 		      	wallet.forEach(equity => {
+
+		      		var find=false;
+
 		      		results.forEach(result => {
 
 		      			if(equity.symbol === result.Symbol) {
 
-				      		if(date.getFullYear() === new Date().getFullYear() && date.getMonth() === new Date().getMonth() && date.getDate() === new Date().getDate())
+		      				find=true;
+
+				      		if(date.getFullYear() === new Date().getFullYear() && date.getMonth() === new Date().getMonth() && date.getDate() === new Date().getDate()) {
 		      					walletValue += parseFloat(result.LastTradePriceOnly)*equity.quantity;
-				      		else walletValue += parseFloat(result.Close)*equity.quantity;
+		      					save[equity.symbol] = parseFloat(result.LastTradePriceOnly);
+				      		}
+				      		else {
+				      			walletValue += parseFloat(result.Close)*equity.quantity;
+				      			save[equity.symbol] = parseFloat(result.Close);
+				      		}
 						}
 					});
+
+					if(!find) {
+						walletValue += save[equity.symbol]*equity.quantity;
+						console.log("utilisation de save pour "+equity.symbol+" le "+date);
+					}
+
 				});
 			}
 	          
