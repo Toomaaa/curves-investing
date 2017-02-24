@@ -131,7 +131,7 @@ export function destroy(req, res) {
 
 
 export function weekProgress(req, res, next) {
-  
+
   var userId = req.user._id;
   var weeks = [];
   var result = {};
@@ -152,11 +152,13 @@ export function weekProgress(req, res, next) {
           dateNow.setHours(11);
           dateNow.setMinutes(0);
           dateNow.setSeconds(0);
+          dateNow.setMilliseconds(0);
 
           var cursorDate = new Date(creationDate);
           cursorDate.setHours(12);
           cursorDate.setMinutes(0);
           cursorDate.setSeconds(0);
+          cursorDate.setMilliseconds(0);
 
           // find the first friday after the creation date
           var offsetToFriday = 5-creationDate.getDay();
@@ -165,7 +167,6 @@ export function weekProgress(req, res, next) {
           cursorDate.setDate(creationDate.getDate()+offsetToFriday);
 
           while(cursorDate < dateNow) {
-            console.log(cursorDate+' - '+dateNow);
             weeks.push({ date: new Date(cursorDate) });
             cursorDate.setDate(cursorDate.getDate()+7);
           }

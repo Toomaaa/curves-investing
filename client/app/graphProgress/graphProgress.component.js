@@ -30,9 +30,14 @@ export class GraphProgressComponent {
         $http.post('/api/graphProgress/getCache', params)
           .then(resCache => {
 
+            console.log(resCache.data);
+
             if(resCache.data.length == 0) getWalletValue();
             else {
               $scope.weeks = resCache.data[0].weeks;
+
+              // Ici il faut récupérer les semaines manquantes entre la fin du cache et la date demandée
+
               generateChart();
             }
 
@@ -319,6 +324,9 @@ export class GraphProgressComponent {
             $scope.nextCAC++;
             if($scope.nextCAC < $scope.weeks.length) getCACETFvalue();
             else {
+
+              generateChart();
+
               // poster dans base graphProgress
               var params = {
                 startDate: $scope.weeks[0].date,

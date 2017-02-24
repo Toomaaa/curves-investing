@@ -158,7 +158,6 @@ export function getAccountSelected(req, res, next) {
       if(!user) {
         return res.status(401).end();
       }
-      console.log({ accountSelected: user.accountSelected });
       res.json({ accountSelected: user.accountSelected });
     })
     .catch(err => next(err));

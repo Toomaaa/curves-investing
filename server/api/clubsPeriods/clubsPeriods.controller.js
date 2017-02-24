@@ -68,8 +68,6 @@ function handleError(res, statusCode) {
 export function index(req, res, next) {
   var userId = req.user._id;
 
-  console.log("ok ici : "+userId);
-
   return User.findOne({ _id: userId }, '-salt -password').exec()
     .then(user => { // don't ever give out the password or salt
 

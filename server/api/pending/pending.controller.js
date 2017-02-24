@@ -84,7 +84,6 @@ export function getFinalize(req, res) {
     .then(handleEntityNotFound(res))
     .then(respondWithResult(res))
     .catch(handleError(res));
-    console.log(res);
 }
 
 // Creates a new Pending in the DB
