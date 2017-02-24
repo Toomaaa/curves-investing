@@ -13,7 +13,7 @@ export class NavbarComponent {
 
   isCollapsed = true;
 
-  constructor(Auth, $scope, $state, $http, userSelection) {
+  constructor(Auth, $scope, $state, $http, userSelection, $window) {
     'ngInject';
 
     this.isLoggedIn = Auth.isLoggedInSync;
@@ -104,6 +104,7 @@ export class NavbarComponent {
       }
       userSelection.set('accountSelected', $scope.accountSelected);
       setAccountSelectedInBdd($scope.accountSelected);
+      $window.location.reload();
     }
 
     function setAccountSelectedInBdd(accountSelected) {

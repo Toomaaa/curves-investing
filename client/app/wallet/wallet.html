@@ -58,6 +58,13 @@
 		</div>
 	</div>
 
+	<div class="row" ng-if="!wallet.equities.length">
+		<div class="col-xs-12 text-center" style="border: 1px solid #ddd;">
+			<br />
+			Aucun titre dans votre portefeuille
+			<br /><br />
+		</div>
+	</div>
 
 	<div class="row" ng-repeat="equity in wallet.equities">
 		<div class="col-sm-3 wallet-table-wrap wallet-table-content wallet-table-quotename">
@@ -91,7 +98,7 @@
 		</div>
 	</div>
 
-	<div class="row wallet-table-total">
+	<div class="row wallet-table-total" ng-if="wallet.equities.length > 0">
 		<div class="col-sm-3 wallet-table-wrap">
 			Total
 		</div>
@@ -176,6 +183,13 @@
 		</div>
 	</div>
 
+	<div class="row" ng-if="!orders.length">
+		<div class="col-xs-12 text-center" style="border: 1px solid #ddd;">
+			<br />
+			Aucun ordre en attente
+			<br /><br />
+		</div>
+	</div>
 
 	<div class="row" ng-repeat="order in orders track by $index">
 		<div class="col-sm-6 wallet-table-wrap">
@@ -307,6 +321,8 @@
 			</div>
 		</div>
 	</div>
+
+	<br />
 
 
 

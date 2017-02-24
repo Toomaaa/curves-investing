@@ -127,52 +127,54 @@ export function wallet(req, res, next) {
 
   return User.findOne({ _id: userId }, '-salt -password').exec()
     .then(user => { // don't ever give out the password or salt
-      if(!user || !user.accountSelected.clubCode) {
+      if(!user) {
         return res.status(401).end();
       }
 
-      Trade.aggregate( 
-        [ 
-          { 
-            $match : { 
-              clubCode : user.accountSelected.clubCode, 
-              orderDone: true 
+      if(user.accountSelected.clubCode) {
+        Trade.aggregate( 
+          [ 
+            { 
+              $match : { 
+                clubCode : user.accountSelected.clubCode, 
+                orderDone: true 
+              } 
+            }, { 
+              $group : { 
+                _id : "$symbol",
+                name: { "$first": "$name" },
+                quantity: { 
+                  $sum : "$quantity" 
+                }, 
+                totalPrice: { 
+                  $sum: { 
+                    $sum: [ 
+                      {
+                        $multiply: [ "$quantity", "$price" ]
+                      }, 
+                      "$fees"
+                    ] 
+                  } 
+                }
+              } 
             } 
-          }, { 
-            $group : { 
-              _id : "$symbol",
-              name: { "$first": "$name" },
-              quantity: { 
-                $sum : "$quantity" 
-              }, 
-              totalPrice: { 
-                $sum: { 
-                  $sum: [ 
-                    {
-                      $multiply: [ "$quantity", "$price" ]
-                    }, 
-                    "$fees"
-                  ] 
-                } 
-              }
-            } 
-          } 
-        ], function(err, result) {
+          ], function(err, result) {
 
-          if(err) {
-            console.log(err);
-            return res.status(404).end();
-          }
-
-          result.forEach(res => {
-            if(res.quantity === 0) {
-              result.splice(result.indexOf(res), 1);
+            if(err) {
+              console.log(err);
+              return res.status(404).end();
             }
-          });
-          res.json(result);
 
-        }
-      );
+            result.forEach(res => {
+              if(res.quantity === 0) {
+                result.splice(result.indexOf(res), 1);
+              }
+            });
+            res.json(result);
+
+          }
+        );
+      }
     })
     .catch(err => next(err));
 }
@@ -184,21 +186,23 @@ export function orders(req, res, next) {
 
   return User.findOne({ _id: userId }, '-salt -password').exec()
     .then(user => { // don't ever give out the password or salt
-      if(!user || !user.accountSelected.clubCode) {
+      if(!user) {
         return res.status(401).end();
       }
 
-      Trade.find({ clubCode : user.accountSelected.clubCode, orderDone: false }, function(err, result) {
+      if(user.accountSelected.clubCode) {
+        Trade.find({ clubCode : user.accountSelected.clubCode, orderDone: false }, function(err, result) {
 
-          if(err) {
-            console.log(err);
-            return res.status(404).end();
+            if(err) {
+              console.log(err);
+              return res.status(404).end();
+            }
+
+            res.json(result);
+
           }
-
-          res.json(result);
-
-        }
-      )
+        );
+      }
     })
     .catch(err => next(err));
 }
