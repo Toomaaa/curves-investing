@@ -85,6 +85,11 @@ export function show(req, res) {
 
 // Creates a new Trade in the DB
 export function create(req, res) {
+
+  var userId = req.user._id;
+
+  if(!req.body.clubCode) req.body.userId = String(userId);
+
   return Trade.create(req.body)
     .then(respondWithResult(res, 201))
     .catch(handleError(res));
@@ -136,7 +141,7 @@ export function wallet(req, res, next) {
         match.clubCode = user.accountSelected.clubCode;
       }
       else {
-        match.userId = userId;
+        match.userId = String(userId);
       }
 
       Trade.aggregate( 
@@ -198,7 +203,7 @@ export function orders(req, res, next) {
         match.clubCode = user.accountSelected.clubCode;
       }
       else {
-        match.userId = userId;
+        match.userId = String(userId);
       }
 
       Trade.find(match, function(err, result) {
@@ -229,14 +234,11 @@ export function treasury(req, res, next) {
       }
 
       var match = { "orderDone" : true };
-      var cat;
       if(user.accountSelected.clubCode) {
         match.clubCode = user.accountSelected.clubCode;
-        cat = 'clubCode';
       }
       else {
-        match.userId = userId;
-        cat = 'userId';
+        match.userId = String(userId);
       }
 
       Trade.aggregate([
@@ -246,15 +248,15 @@ export function treasury(req, res, next) {
                         {
                             "$lookup": {
                                 "from": "subscriptions",
-                                "localField": cat,
-                                "foreignField": cat,
+                                "localField": "clubCode",
+                                "foreignField": "clubCode",
                                 "as": "subs"
                             }
                         },
                         { "$unwind": "$subs" },
                         {
                             "$group": {
-                                "_id": "$"+cat,
+                                "_id": "$clubCode",
                                 "trades": {
                                     "$push": {
                                         "date": "$date",
@@ -274,7 +276,7 @@ export function treasury(req, res, next) {
                         },
                         {
                             "$project": {
-                                "recordId": "$_id",
+                                "clubCode": "$_id",
                                 "_id": 0,
                                 "treasury_moves": { "$setUnion": ["$subs", "$trades"] }
                             }
@@ -285,7 +287,7 @@ export function treasury(req, res, next) {
                         },
                         {
                             "$group": {
-                                "_id": "$recordId",
+                                "_id": "$clubCode",
                                 "treasury_moves": {
                                     "$push" : "$treasury_moves"
                                 }
@@ -293,7 +295,7 @@ export function treasury(req, res, next) {
                         },
                         {
                             "$project": {
-                                "recordId": "$_id",
+                                "clubCode": "$_id",
                                 "_id": 0,
                                 "treasury_moves": 1
                             }
@@ -391,7 +393,7 @@ export function accountHistory(req, res, next) {
         match.clubCode = user.accountSelected.clubCode;
       }
       else {
-        match.userId = userId;
+        match.userId = String(userId);
       }
 
       Trade.aggregate([
@@ -457,6 +459,10 @@ export function accountHistory(req, res, next) {
                             }
                         }
                     ], function(err, result) {
+
+                      console.log("=============================");
+                      console.log(result);
+                      console.log("=============================");
 
           if(err) {
             console.log(err);

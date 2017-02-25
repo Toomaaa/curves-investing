@@ -3,6 +3,7 @@
 import mongoose from 'mongoose';
 
 var TradeSchema = new mongoose.Schema({
+  userId: String,
   clubCode: String,
   date: Date,
   symbol: String,

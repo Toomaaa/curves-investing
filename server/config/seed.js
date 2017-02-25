@@ -59,6 +59,7 @@ User.find({}).remove()
       email: 'admin@example.com',
       password: 'admin'
     }, {
+      _id: "58b1f0fe567162101847befb",
       isActivated: true,
       firstName: 'Thomas',
       lastName: 'Anicotte',
@@ -76,7 +77,13 @@ User.find({}).remove()
         clubCode: 'AAAAA',
         clubName: 'TRUC',
         function: 'member'
-      } ]
+      } ],
+      accountSelected : { 
+        type : "individual", 
+        clubCode : "", 
+        clubName : "", 
+        function : "" 
+      }
     })
     .then(() => {
       console.log('finished populating users');
