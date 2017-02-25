@@ -215,16 +215,21 @@ export function treasury(req, res, next) {
 
   return User.findOne({ _id: userId }, '-salt -password').exec()
     .then(user => { // don't ever give out the password or salt
-      if(!user || !user.accountSelected.clubCode) {
+      if(!user) {
         return res.status(401).end();
+      }
+
+      var match = { "orderDone" : true };
+      if(user.accountSelected.clubCode) {
+        match.clubCode = user.accountSelected.clubCode;
+      }
+      else {
+        match.userId = userId;
       }
 
       Trade.aggregate([
                         {
-                            "$match" : {
-                                "clubCode" : user.accountSelected.clubCode,
-                                "orderDone" : true
-                            }
+                            "$match" : match
                         },
                         {
                             "$lookup": {
