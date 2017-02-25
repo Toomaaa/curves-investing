@@ -131,50 +131,53 @@ export function wallet(req, res, next) {
         return res.status(401).end();
       }
 
+      var match = { "orderDone" : true };
       if(user.accountSelected.clubCode) {
-        Trade.aggregate( 
-          [ 
-            { 
-              $match : { 
-                clubCode : user.accountSelected.clubCode, 
-                orderDone: true 
-              } 
-            }, { 
-              $group : { 
-                _id : "$symbol",
-                name: { "$first": "$name" },
-                quantity: { 
-                  $sum : "$quantity" 
-                }, 
-                totalPrice: { 
-                  $sum: { 
-                    $sum: [ 
-                      {
-                        $multiply: [ "$quantity", "$price" ]
-                      }, 
-                      "$fees"
-                    ] 
-                  } 
-                }
-              } 
-            } 
-          ], function(err, result) {
-
-            if(err) {
-              console.log(err);
-              return res.status(404).end();
-            }
-
-            result.forEach(res => {
-              if(res.quantity === 0) {
-                result.splice(result.indexOf(res), 1);
-              }
-            });
-            res.json(result);
-
-          }
-        );
+        match.clubCode = user.accountSelected.clubCode;
       }
+      else {
+        match.userId = userId;
+      }
+
+      Trade.aggregate( 
+        [ 
+          { 
+            $match : match
+          }, { 
+            $group : { 
+              _id : "$symbol",
+              name: { "$first": "$name" },
+              quantity: { 
+                $sum : "$quantity" 
+              }, 
+              totalPrice: { 
+                $sum: { 
+                  $sum: [ 
+                    {
+                      $multiply: [ "$quantity", "$price" ]
+                    }, 
+                    "$fees"
+                  ] 
+                } 
+              }
+            } 
+          } 
+        ], function(err, result) {
+
+          if(err) {
+            console.log(err);
+            return res.status(404).end();
+          }
+
+          result.forEach(res => {
+            if(res.quantity === 0) {
+              result.splice(result.indexOf(res), 1);
+            }
+          });
+          res.json(result);
+
+        }
+      );
     })
     .catch(err => next(err));
 }
@@ -190,19 +193,25 @@ export function orders(req, res, next) {
         return res.status(401).end();
       }
 
+      var match = { "orderDone" : false };
       if(user.accountSelected.clubCode) {
-        Trade.find({ clubCode : user.accountSelected.clubCode, orderDone: false }, function(err, result) {
-
-            if(err) {
-              console.log(err);
-              return res.status(404).end();
-            }
-
-            res.json(result);
-
-          }
-        );
+        match.clubCode = user.accountSelected.clubCode;
       }
+      else {
+        match.userId = userId;
+      }
+
+      Trade.find(match, function(err, result) {
+
+          if(err) {
+            console.log(err);
+            return res.status(404).end();
+          }
+
+          res.json(result);
+
+        }
+      );
     })
     .catch(err => next(err));
 }
@@ -220,11 +229,14 @@ export function treasury(req, res, next) {
       }
 
       var match = { "orderDone" : true };
+      var cat;
       if(user.accountSelected.clubCode) {
         match.clubCode = user.accountSelected.clubCode;
+        cat = 'clubCode';
       }
       else {
         match.userId = userId;
+        cat = 'userId';
       }
 
       Trade.aggregate([
@@ -234,15 +246,15 @@ export function treasury(req, res, next) {
                         {
                             "$lookup": {
                                 "from": "subscriptions",
-                                "localField": "clubCode",
-                                "foreignField": "clubCode",
+                                "localField": cat,
+                                "foreignField": cat,
                                 "as": "subs"
                             }
                         },
                         { "$unwind": "$subs" },
                         {
                             "$group": {
-                                "_id": "$clubCode",
+                                "_id": "$"+cat,
                                 "trades": {
                                     "$push": {
                                         "date": "$date",
@@ -262,7 +274,7 @@ export function treasury(req, res, next) {
                         },
                         {
                             "$project": {
-                                "clubCode": "$_id",
+                                "recordId": "$_id",
                                 "_id": 0,
                                 "treasury_moves": { "$setUnion": ["$subs", "$trades"] }
                             }
@@ -273,7 +285,7 @@ export function treasury(req, res, next) {
                         },
                         {
                             "$group": {
-                                "_id": "$clubCode",
+                                "_id": "$recordId",
                                 "treasury_moves": {
                                     "$push" : "$treasury_moves"
                                 }
@@ -281,7 +293,7 @@ export function treasury(req, res, next) {
                         },
                         {
                             "$project": {
-                                "clubCode": "$_id",
+                                "recordId": "$_id",
                                 "_id": 0,
                                 "treasury_moves": 1
                             }
@@ -300,7 +312,9 @@ export function treasury(req, res, next) {
               var split = move.wording.split("#");
               if(split[0] == "Versement") {
 
-                ClubsPeriods.findOne({clubCode: resultOne.clubCode})
+                match.orderDone = undefined;
+
+                ClubsPeriods.findOne(match)
                   .then(resultPeriods => {
                     for(var i=0; i<resultPeriods.periods.length; i++) {
                       if(new Date(resultPeriods.periods[i]).getTime() == new Date(move.period).getTime()) {
@@ -368,16 +382,21 @@ export function accountHistory(req, res, next) {
 
   return User.findOne({ _id: userId }, '-salt -password').exec()
     .then(user => { // don't ever give out the password or salt
-      if(!user || !user.accountSelected.clubCode) {
+      if(!user) {
         return res.status(401).end();
+      }
+
+      var match = { "orderDone" : true };
+      if(user.accountSelected.clubCode) {
+        match.clubCode = user.accountSelected.clubCode;
+      }
+      else {
+        match.userId = userId;
       }
 
       Trade.aggregate([
                         {
-                            "$match" : {
-                                "clubCode" : user.accountSelected.clubCode,
-                                "orderDone" : true
-                            }
+                            "$match" : match
                         },
                         {
                             "$lookup": {
