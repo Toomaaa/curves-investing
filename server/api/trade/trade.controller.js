@@ -12,9 +12,11 @@
 
 import jsonpatch from 'fast-json-patch';
 import Trade from './trade.model';
+import Subscription from '../subscription/subscription.model';
 import User from '../user/user.model';
 import Pending from '../pending/pending.model';
 import ClubsPeriods from '../clubsPeriods/clubsPeriods.model';
+import TreasuryMove from '../treasuryMove/treasuryMove.model';
 
 
 
@@ -233,175 +235,68 @@ export function treasury(req, res, next) {
         return res.status(401).end();
       }
 
-      var match = { "orderDone" : true };
-      var query;
-      if(user.accountSelected.clubCode) {
-        match.clubCode = user.accountSelected.clubCode;
-
-        query = [
-                    {
-                        "$match" : match
-                    },
-                    {
-                        "$lookup": {
-                            "from": "subscriptions",
-                            "localField": "clubCode",
-                            "foreignField": "clubCode",
-                            "as": "subs"
-                        }
-                    },
-                    { "$unwind": "$subs" },
-                    {
-                        "$group": {
-                            "_id": "$clubCode",
-                            "trades": {
-                                "$push": {
-                                    "date": "$date",
-                                    "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
-                                    "amount": {$multiply: [-1, "$total"]}
-                                }
-                            },
-                            "subs": {
-                                "$push": {
-                                    "date": "$subs.period",
-                                    "wording": { "$concat": ["Versement#", "$subs.email"] },
-                                    "period" : "$subs.period",
-                                    "amount": "$subs.amount"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "$project": {
-                            "clubCode": "$_id",
-                            "_id": 0,
-                            "treasury_moves": { "$setUnion": ["$subs", "$trades"] }
-                        }
-                    },
-                    { "$unwind": "$treasury_moves" },
-                    { 
-                        "$sort" : { "treasury_moves.date" : 1 }
-                    },
-                    {
-                        "$group": {
-                            "_id": "$clubCode",
-                            "treasury_moves": {
-                                "$push" : "$treasury_moves"
-                            }
-                        }
-                    },
-                    {
-                        "$project": {
-                            "clubCode": "$_id",
-                            "_id": 0,
-                            "treasury_moves": 1
-                        }
-                    }
-                ];
-      }
-      else {
-        match.userId = String(userId);
-
-        query = [
-                    {
-                        "$match" : match
-                    },
-                    {
-                        "$project": {
-                            "userId": 1,
-                            "date": 1,
-                            "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
-                            "amount": {$multiply: [-1, "$total"]}
-                        }
-                    },
-                    { 
-                        "$sort" : { "date" : 1 }
-                    },
-                    {
-                        "$group": {
-                            "_id": "$userId",
-                            "treasury_moves": {
-                                "$push" : {"date": "$date", "wording": "$wording", "amount": "$amount"}
-                            }
-                        }
-                    },
-                    {
-                        "$project": {
-                            "userId": "$_id",
-                            "_id": 0,
-                            "treasury_moves": 1
-                        }
-                    }
-                ];
-      }
-
-      Trade.aggregate(query, function(err, result) {
-
-          if(err) {
-            console.log(err);
-            return res.status(404).end();
-          }
+      aggregateTables([Trade, Subscription, TreasuryMove], userId, user.accountSelected.clubCode)
+        .then(result => {
 
           var count=0;
 
-          result.forEach(resultOne => {
-            resultOne.treasury_moves.forEach(move => {
-              var split = move.wording.split("#");
-              if(split[0] == "Versement") {
+          result.forEach(move => {
 
-                match.orderDone = undefined;
+            var split = move.wording.split("#");
+            if(split[0] == "Versement") {
 
-                ClubsPeriods.findOne(match)
-                  .then(resultPeriods => {
-                    for(var i=0; i<resultPeriods.periods.length; i++) {
-                      if(new Date(resultPeriods.periods[i]).getTime() == new Date(move.period).getTime()) {
-                        move.period = new Date(move.period);
-                        move.periodEnd = new Date(resultPeriods.periods[i+1]);
-                      }
+              ClubsPeriods.findOne({clubCode: user.accountSelected.clubCode})
+                .then(resultPeriods => {
+                  for(var i=0; i<resultPeriods.periods.length; i++) {
+                    if(new Date(resultPeriods.periods[i]).getTime() == new Date(move.period).getTime()) {
+                      move.period = new Date(move.period);
+                      move.periodEnd = new Date(resultPeriods.periods[i+1]);
                     }
-                  })
-                  .catch(err => {
-                    console.log(err);
-                  })
+                  }
+                })
+                .catch(err => {
+                  console.log(err);
+                })
 
-                User.findOne({email: split[1]}, '-salt -password')
-                  .then(resultUser => {
+              User.findOne({email: split[1]}, '-salt -password')
+                .then(resultUser => {
+                  
+                  if(resultUser) {
+                    move.wording = "Versement "+resultUser.firstName+" "+resultUser.lastName;
                     
-                    if(resultUser) {
-                      move.wording = "Versement "+resultUser.firstName+" "+resultUser.lastName;
-                      
-                      count++;
-                      if(count == result.length * resultOne.treasury_moves.length) res.json(result);
-                    }
-                    else {
-                      Pending.findOne({email: split[1]})
-                        .then(resultPending => {
-                          move.wording = "Versement "+resultPending.firstName+" "+resultPending.lastName;
+                    count++;
+                    if(count == result.length * result.length) res.json(result);
+                  }
+                  else {
+                    Pending.findOne({email: split[1]})
+                      .then(resultPending => {
+                        move.wording = "Versement "+resultPending.firstName+" "+resultPending.lastName;
 
-                          count++;
-                          if(count == result.length * resultOne.treasury_moves.length) res.json(result);
-                        })
-                        .catch(err => {
-                          console.log(err);
-                        })
-                    }
+                        count++;
+                        if(count == result.length) res.json(result);
+                      })
+                      .catch(err => {
+                        console.log(err);
+                      });
+                  }
 
-                  })
-                  .catch(err => {
-                    console.log(err);
-                  })
-              } else {
-                count++;
-                if(count == result.length * resultOne.treasury_moves.length) res.json(result);
-              }
+                })
+                .catch(err => {
+                  console.log(err);
+                })
+            } else {
+              count++;
+              if(count == result.length) res.json(result);
+            }
 
-            });
           });
 
-          
+        })
+        .catch(err => {
+          console.log(err);
+          return res.status(404).end();
+        });
 
-        }
-      )
     })
     .catch(err => next(err));
 }
@@ -415,6 +310,7 @@ export function treasury(req, res, next) {
 
 
 export function accountHistory(req, res, next) {
+  
   var userId = req.user._id;
 
   return User.findOne({ _id: userId }, '-salt -password').exec()
@@ -423,178 +319,166 @@ export function accountHistory(req, res, next) {
         return res.status(401).end();
       }
 
-      var match = { "orderDone" : true };
-      var query;
-      if(user.accountSelected.clubCode) {
-        match.clubCode = user.accountSelected.clubCode;
-        query = [
-                    {
-                        "$match" : match
-                    },
-                    {
-                        "$lookup": {
-                            "from": "subscriptions",
-                            "localField": "clubCode",
-                            "foreignField": "clubCode",
-                            "as": "subs"
-                        }
-                    },
-                    { "$unwind": "$subs" },
-                    {
-                        "$group": {
-                            "_id": "$clubCode",
-                            "trades": {
-                                "$push": {
-                                    "date": "$date",
-                                    "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
-                                    "quantity": "$quantity",
-                                    "price": "$price",
-                                    "fees": "$fees",
-                                    "amount": {$multiply: [-1, "$total"]} //{ $cond: { if: { $gte: [ "$quantity", 0 ] }, then: {$multiply: [-1, "$total"]}, else: "$total" } }
-                                }
-                            },
-                            "subs": {
-                                "$push": {
-                                    "date": "$subs.period",
-                                    "wording": { "$concat": ["Versement#", "$subs.email"] },
-                                    "period" : "$subs.period",
-                                    "amount": "$subs.amount"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "$project": {
-                            "clubCode": "$_id",
-                            "_id": 0,
-                            "accountHistory_moves": { "$setUnion": ["$subs", "$trades"] }
-                        }
-                    },
-                    { "$unwind": "$accountHistory_moves" },
-                    { 
-                        "$sort" : { "accountHistory_moves.date" : 1 }
-                    },
-                    {
-                        "$group": {
-                            "_id": "$clubCode",
-                            "accountHistory_moves": {
-                                "$push" : "$accountHistory_moves"
-                            }
-                        }
-                    },
-                    {
-                        "$project": {
-                            "clubCode": "$_id",
-                            "_id": 0,
-                            "accountHistory_moves": 1
-                        }
-                    }
-                ];
-      }
-      else {
-        match.userId = String(userId);
-        query = [
-                    {
-                        "$match" : match
-                    },
-                    {
-                        "$project": {
-                            "userId": 1,
-                            "date": "$date",
-                            "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
-                            "quantity": "$quantity",
-                            "price": "$price",
-                            "fees": "$fees",
-                            "amount": {$multiply: [-1, "$total"]}
-                        }
-                    },
-                    { 
-                        "$sort" : { "date" : 1 }
-                    },
-                    {
-                        "$group": {
-                            "_id": "$userId",
-                            "accountHistory_moves": {
-                                "$push" : {"date": "$date", "wording": "$wording", "quantity": "$quantity", "price": "$price", "fees": "$fees", "amount": "$amount"}
-                            }
-                        }
-                    },
-                    {
-                        "$project": {
-                            "userId": "$_id",
-                            "_id": 0,
-                            "accountHistory_moves": 1
-                        }
-                    }
-                ];
-      }
-
-      Trade.aggregate(query, function(err, result) {
-
-          if(err) {
-            console.log(err);
-            return res.status(404).end();
-          }
+      aggregateTables([Trade, Subscription, TreasuryMove], userId, user.accountSelected.clubCode)
+        .then(result => {
 
           var count=0;
 
-          result.forEach(resultOne => {
-            resultOne.accountHistory_moves.forEach(move => {
-              var split = move.wording.split("#");
-              if(split[0] == "Versement") {
+          result.forEach(move => {
 
-                ClubsPeriods.findOne({clubCode: resultOne.clubCode})
-                  .then(resultPeriods => {
-                    for(var i=0; i<resultPeriods.periods.length; i++) {
-                      if(new Date(resultPeriods.periods[i]).getTime() == new Date(move.period).getTime()) {
-                        move.period = new Date(move.period);
-                        move.periodEnd = new Date(resultPeriods.periods[i+1]);
-                      }
+            var split = move.wording.split("#");
+            if(split[0] == "Versement") {
+
+              ClubsPeriods.findOne({clubCode: user.accountSelected.clubCode})
+                .then(resultPeriods => {
+                  for(var i=0; i<resultPeriods.periods.length; i++) {
+                    if(new Date(resultPeriods.periods[i]).getTime() == new Date(move.period).getTime()) {
+                      move.period = new Date(move.period);
+                      move.periodEnd = new Date(resultPeriods.periods[i+1]);
                     }
-                  })
-                  .catch(err => {
-                    console.log(err);
-                  })
+                  }
+                })
+                .catch(err => {
+                  console.log(err);
+                })
 
-                User.findOne({email: split[1]}, '-salt -password')
-                  .then(resultUser => {
+              User.findOne({email: split[1]}, '-salt -password')
+                .then(resultUser => {
+                  
+                  if(resultUser) {
+                    move.wording = "Versement "+resultUser.firstName+" "+resultUser.lastName;
                     
-                    if(resultUser) {
-                      move.wording = "Versement "+resultUser.firstName+" "+resultUser.lastName;
-                      
-                      count++;
-                      if(count == result.length * resultOne.accountHistory_moves.length) res.json(result);
-                    }
-                    else {
-                      Pending.findOne({email: split[1]})
-                        .then(resultPending => {
-                          move.wording = "Versement "+resultPending.firstName+" "+resultPending.lastName;
+                    count++;
+                    if(count == result.length * result.length) res.json(result);
+                  }
+                  else {
+                    Pending.findOne({email: split[1]})
+                      .then(resultPending => {
+                        move.wording = "Versement "+resultPending.firstName+" "+resultPending.lastName;
 
-                          count++;
-                          if(count == result.length * resultOne.accountHistory_moves.length) res.json(result);
-                        })
-                        .catch(err => {
-                          console.log(err);
-                        })
-                    }
+                        count++;
+                        if(count == result.length) res.json(result);
+                      })
+                      .catch(err => {
+                        console.log(err);
+                      });
+                  }
 
-                  })
-                  .catch(err => {
-                    console.log(err);
-                  })
-              } else {
-                count++;
-                if(count == result.length * resultOne.accountHistory_moves.length) res.json(result);
-              }
+                })
+                .catch(err => {
+                  console.log(err);
+                })
+            } else {
+              count++;
+              if(count == result.length) res.json(result);
+            }
 
-            });
           });
 
-          // res.json(result);
-          
-
-        }
-      )
+        })
+        .catch(err => {
+          console.log(err);
+          return res.status(404).end();
+        });
     })
     .catch(err => next(err));
+}
+
+
+
+function aggregateTables(tables, userId, clubCode) {
+
+  return new Promise(function (resolve, reject) {
+
+    var finalResult = [];
+
+    queryTables(tables, userId, clubCode)
+      .then(totalResult => {
+
+        totalResult.forEach(tableResult => {
+
+          tableResult.result.forEach(result => {
+
+            if(tableResult.table === Trade) {
+              var toPush = {};
+              if(result.userId) toPush.userId = result.userId;
+              if(result.clubCode) toPush.clubCode = result.clubCode;
+              toPush.date = result.date;
+              toPush.wording = (result.quantity >= 0 ? "Achat ": "Vente ")+result.name;
+              toPush.quantity = result.quantity;
+              toPush.price = result.price;
+              toPush.fees = result.fees;
+              toPush.amount = -1*result.total;
+
+              finalResult.push(toPush);
+            }
+            else if(tableResult.table === Subscription) {
+              var toPush = {};
+
+              toPush.clubCode = result.clubCode;
+              toPush.date = result.period;
+              toPush.wording = "Versement#"+result.email;
+              toPush.period = result.period;
+              toPush.amount = result.amount;
+
+              finalResult.push(toPush);
+            }
+            else if(tableResult.table === TreasuryMove) {
+              var toPush = {};
+
+              if(result.userId) toPush.userId = result.userId;
+              if(result.clubCode) toPush.clubCode = result.clubCode;
+              toPush.date = result.date;
+              toPush.wording = result.libelle;
+              toPush.amount = result.amount;
+
+              finalResult.push(toPush);
+            }
+          });
+
+        });
+
+
+        finalResult.sort(function(a, b) {
+          return a.date - b.date;
+        });
+
+        resolve(finalResult);
+
+      })
+      .catch(err => {
+        throw err;
+      });
+
+  });
+
+}
+
+
+function queryTables(tables, userId, clubCode) {
+
+  var countTable = 0;
+  var totalResult = [];
+
+  return new Promise(function (resolve, reject) {
+
+    tables.forEach(table => {
+
+      var match = {};
+      if(clubCode) match.clubCode = clubCode;
+      else match.userId = userId;
+
+      if(table === Trade) match.orderDone = true;
+
+      table.find(match, function (err, result) {
+        totalResult.push({table: table, result: result});
+        countTable++;
+
+        if(countTable === tables.length) resolve(totalResult);
+      });
+
+    });
+
+  });  
+
 }

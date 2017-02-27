@@ -11,7 +11,7 @@ export class AccountHistoryComponent {
     
     $http.get('/api/trades/accountHistory')
       .then(result => {
-        $scope.accountHistory_moves = result.data[0].accountHistory_moves;
+        $scope.accountHistory_moves = result.data;
       })
       .catch(err => {
         console.log(err);
