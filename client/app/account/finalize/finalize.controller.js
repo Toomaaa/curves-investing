@@ -56,7 +56,8 @@ export default class FinalizeController {
         isPasswordSet: true,
         individualAccount: false,
         isPartOfClub: true,
-        club: this.user.club
+        club: this.user.club,
+        signupDate: new Date()
       })
         .then(() => {
 

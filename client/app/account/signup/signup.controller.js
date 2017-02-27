@@ -173,7 +173,8 @@ export default class SignupController {
         password: this.user.password,
         isPasswordSet: true,
         individualAccount: false,
-        isPartOfClub: false
+        isPartOfClub: false,
+        signupDate: new Date()
       })
         .then(() => {
           // Account created, redirect to home
