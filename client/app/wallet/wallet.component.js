@@ -72,7 +72,7 @@ export class WalletComponent {
 
           $scope.wallet.equities = response.data;
             
-          getValueDetails();
+          if($scope.wallet.equities.length > 0) getValueDetails();
 
         })
         .catch(err => {
@@ -87,7 +87,7 @@ export class WalletComponent {
       $http.get('/api/trades/orders')
         .then(response => {
           $scope.orders = response.data;
-          getOrdersDetails();
+          if($scope.orders.length > 0) getOrdersDetails();
         })
         .catch(err => {
           console.log(err);
