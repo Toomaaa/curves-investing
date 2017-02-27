@@ -420,6 +420,7 @@ function aggregateTables(tables, userId, clubCode) {
               toPush.wording = "Versement#"+result.email;
               toPush.period = result.period;
               toPush.amount = result.amount;
+              toPush.cashGiven = true;
 
               finalResult.push(toPush);
             }
@@ -431,6 +432,7 @@ function aggregateTables(tables, userId, clubCode) {
               toPush.date = result.date;
               toPush.wording = result.libelle;
               toPush.amount = result.amount;
+              toPush.cashGiven = true;
 
               finalResult.push(toPush);
             }

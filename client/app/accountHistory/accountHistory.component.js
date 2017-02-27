@@ -34,7 +34,7 @@ export class AccountHistoryComponent {
       var cashGiven=0;
 
       for(var i=0; i<=index; i++) {  
-        if($scope.accountHistory_moves[i].period) cashGiven += $scope.accountHistory_moves[i].amount;
+        if($scope.accountHistory_moves[i].cashGiven) cashGiven += $scope.accountHistory_moves[i].amount;
       }
 
       return cashGiven;
