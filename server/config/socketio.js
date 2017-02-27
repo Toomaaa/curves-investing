@@ -16,6 +16,7 @@ function onConnect(socket) {
   });
 
   // Insert sockets below
+  require('../api/treasuryMove/treasuryMove.socket').register(socket);
   require('../api/graphProgress/graphProgress.socket').register(socket);
   require('../api/yahooCache/yahooCache.socket').register(socket);
   require('../api/trade/trade.socket').register(socket);

@@ -1,0 +1,85 @@
+<div class="container">
+	<form class="form" name="treasuryMoveForm">
+
+
+		<div class="row">
+			<div class="col-sm-12 text-center">
+				<h1>Mouvement de trésorerie</h1><br /><br />
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12 text-center success" ng-show="validated">
+				{{ validationText }}
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right"><label>Ajouter</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input type="radio" name="debitOrCredit" ng-model="debitOrCredit" value="debit"> un débit
+				</div>
+				<div class="col-sm-2">
+					<input type="radio" name="debitOrCredit" ng-model="debitOrCredit" value="credit"> un crédit
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12">&nbsp;</div>
+		</div>
+
+		<div class="row"">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Date</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input class="form-control text-center" type="date" name="date" ng-model="date" />
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12">&nbsp;</div>
+		</div>
+
+		<div class="row"">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Libellé</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input class="form-control" type="text" name="libelle" ng-model="libelle" />
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12">&nbsp;</div>
+		</div>
+
+		<div class="row">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Montant</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<div class="input-group">
+						<input class="form-control text-center" type="number" step="any" min="0" name="amount" ng-model="amount" />
+						<span class="input-group-addon">€</span>
+					</div>
+				</div>
+				<div class="col-sm-2">
+					<button class="btn btn-success form-control" ng-click="formValidation()">Enregistrer</button>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+		
+
+	</form>
+</div>

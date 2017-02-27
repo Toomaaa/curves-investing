@@ -23,6 +23,7 @@ import MembersListComponent from './members-list/members-list.component';
 import BuysellComponent from './buysell/buysell.component';
 import WalletComponent from './wallet/wallet.component';
 import TreasuryComponent from './treasury/treasury.component';
+import TreasuryMoveComponent from './treasuryMove/treasuryMove.component';
 import AccountHistoryComponent from './accountHistory/accountHistory.component';
 import GraphProgressComponent from './graphProgress/graphProgress.component';
 import userSelection from './userSelection/userSelection.service';
@@ -51,6 +52,7 @@ angular.module('curvesInvestingApp', [ngCookies, ngResource, ngSanitize, 'btford
   BuysellComponent, 
   WalletComponent, 
   TreasuryComponent, 
+  TreasuryMoveComponent,
   AccountHistoryComponent, 
   GraphProgressComponent, 
   userSelection, 

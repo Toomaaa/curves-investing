@@ -64,7 +64,7 @@ export class BuysellComponent {
       var club = userSelection.get('accountSelected');
 
       var data = {
-        clubCode: club.clubCode,
+        clubCode: club.clubCode != '' ? club.clubCode : undefined,
         date: $scope.orderDate,
         symbol: $scope.selectedValue.symbol,
         name: $scope.selectedValue.name,
