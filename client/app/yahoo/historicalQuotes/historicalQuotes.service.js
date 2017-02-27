@@ -51,7 +51,7 @@ export function historicalQuotesService($http, $sce, $q, yahooRequest) {
 		var symbols = [];
 		wallet.forEach(equity => {
 			symbols.push(encodeURI(equity.symbol));
-		})
+		});
 
 		date = new Date(date);
 		if(date.getFullYear() === new Date().getFullYear() && date.getMonth() === new Date().getMonth() && date.getDate() === new Date().getDate())

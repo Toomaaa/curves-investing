@@ -109,7 +109,7 @@ export function showByClubCode(req, res, next) {
 
               members.forEach(member => {
 
-                var newLength = result.push({ email: member.email, unpaid: [] });
+                var newLength = result.push({ email: member.email, unpaid: [], totalSubscriptions: 0 });
                 var index = newLength-1;
 
                 var entryDate = new Date(member.entryDate);
@@ -173,7 +173,11 @@ export function showByClubCode(req, res, next) {
                               startPeriod: memberPeriod,
                               endPeriod: periodsRes.periods[periodsRes.periods.indexOf(memberPeriod)+1],
                               amountDue: clubRes.monthlyAmount-subscriptionsRes[found].amount
-                            });                    
+                            });  
+                            result[index].totalSubscriptions += subscriptionsRes[found].amount; 
+                          }
+                          else {
+                            result[index].totalSubscriptions += subscriptionsRes[found].amount; 
                           }
                           
                         });

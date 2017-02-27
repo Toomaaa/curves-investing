@@ -7,40 +7,66 @@ import routes from './members-list.routes';
 
 export class MembersListComponent {
   /*@ngInject*/
-  constructor($scope, $http, userSelection) {
+  constructor($scope, $http, userSelection, historicalQuotes) {
 
-    $scope.$watch(function() { return userSelection.get('accountSelected'); }, function() {
-      $http.get('/api/users/accountSelected')
-        .then(response => {
-          $scope.accountSelected = response.data.accountSelected;
+    $http.get('/api/users/accountSelected')
+      .then(response => {
+        $scope.accountSelected = response.data.accountSelected;
 
-          $http.get('/api/clubs/clubCode/'+$scope.accountSelected.clubCode)
-            .then(response => {
-              $scope.club = response.data;
-            })
-            .catch(err => {
-              console.log(err);
-            });
+        $http.get('/api/clubs/clubCode/'+$scope.accountSelected.clubCode)
+          .then(response => {
+            $scope.club = response.data;
 
-            $scope.nextSubscriptions();
 
+          })
+          .catch(err => {
+            console.log(err);
+          });
+
+          $scope.nextSubscriptions();
+
+      })
+      .catch(err => {
+        throw err;
+      });
+
+
+    function getNewValorization() {
+      $http.get('/api/trades/wallet')
+        .then(wallet => {
+
+          wallet.data.forEach(w => {
+            w.symbol = w._id;
+          });
+
+          historicalQuotes.getWallet(wallet.data, new Date())
+          .then(walletValue => {
+            $scope.valorization = walletValue;
+          })
+          .catch(err => {
+            throw err;
+          });
         })
         .catch(err => {
-          console.log(err);
-        });
-    }, true);
-    
-    
-    function getAccountSelected() {
-      $http.get('/api/users/accountSelected')
-        .then(response => {
-          return response.data.accountSelected;
-        })
-        .catch(err => {
-          console.log(err);
           throw err;
-        })
+        });
+
+      $http.get('/api/trades/treasury')
+      .then(treasury_moves => {
+
+        $scope.treasury = 0;
+
+        treasury_moves.data.forEach(move => {
+          $scope.treasury += move.amount;
+        });
+
+      })
+      .catch(err => {
+        throw err;
+      });
     }
+
+    getNewValorization();
 
 
     $scope.nextSubscriptions = function() {
@@ -48,16 +74,27 @@ export class MembersListComponent {
         .then(response => {
           $scope.subscriptions = response.data;
 
+          $scope.club.president.totalSubscriptions = 0;
+          $scope.club.treasurer.totalSubscriptions = 0;
+          $scope.club.members.forEach(member => {
+            member.totalSubscriptions = 0;
+          });
+          $scope.club.shares = 0;
+
           $scope.subscriptions.forEach(subscription => {
             if($scope.club.president.email === subscription.email) {
               $scope.club.president.unpaid = subscription.unpaid;
               $scope.club.president.warning = subscription.warning;
               $scope.club.president.initial = subscription.initial;
+              $scope.club.president.totalSubscriptions += subscription.totalSubscriptions;
+              $scope.club.shares += subscription.totalSubscriptions;
             }
             else if($scope.club.treasurer.email === subscription.email) {
               $scope.club.treasurer.unpaid = subscription.unpaid;
               $scope.club.treasurer.warning = subscription.warning;
               $scope.club.treasurer.initial = subscription.initial;
+              $scope.club.treasurer.totalSubscriptions += subscription.totalSubscriptions;
+              $scope.club.shares += subscription.totalSubscriptions;
             }
             else {
               $scope.club.members.forEach(member => {
@@ -65,6 +102,8 @@ export class MembersListComponent {
                   member.unpaid = subscription.unpaid;
                   member.warning = subscription.warning;
                   member.initial = subscription.initial;
+                  member.totalSubscriptions += subscription.totalSubscriptions;
+                  $scope.club.shares += subscription.totalSubscriptions;
                 }
               });
             }
@@ -111,6 +150,8 @@ export class MembersListComponent {
       $http.post('/api/subscriptions', data)
       .then(response => {
         $scope.nextSubscriptions();
+
+        getNewValorization();
       })
       .catch(err => {
         console.log(err);
@@ -120,7 +161,7 @@ export class MembersListComponent {
 
   }
 }
-MembersListComponent.$inject = ["$scope", "$http", "userSelection"];
+MembersListComponent.$inject = ["$scope", "$http", "userSelection", "historicalQuotes"];
 
 export default angular.module('curvesInvestingApp.members-list', [uiRouter])
   .config(routes)
