@@ -24,8 +24,8 @@
           <ul class="dropdown-menu" role="menu">
             <li ng-repeat="choice in accountChoices" 
                         ng-hide="(choice.type == accountSelected.type && choice.type == 'individual') || choice.clubName == accountSelected.clubName">
-              <a ng-show="choice.type == 'club'" ng-click="$ctrl.setAccount('club', choice.clubCode)">Club {{choice.clubName}}</a>
-              <a ng-show="choice.type == 'individual'" ng-click="$ctrl.setAccount('individual')">Individuel</a>
+              <a ng-show="choice.type == 'club'" ng-click="$ctrl.setAccount('club', choice.clubCode)" href="#">Club {{choice.clubName}}</a>
+              <a ng-show="choice.type == 'individual'" ng-click="$ctrl.setAccount('individual')" href="#">Individuel</a>
             </li>
           </ul>
         </li>
@@ -34,14 +34,11 @@
         </li>
         <li ng-show="$ctrl.isLoggedIn() && accountSelected.type == 'club'" class="dropdown" uib-dropdown>
           <a class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">
-            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;&nbsp;Club <span class="caret"></span>
+            <span class="fa fa-users" aria-hidden="true"></span>&nbsp;&nbsp;Club <span class="caret"></span>
           </a>
           <ul class="dropdown-menu" role="menu">
             <li><a ui-sref="members-list">Liste des membres</a></li>
             <li><a ui-sref="member-exit">Départ d'un membre</a></li>
-            <li><a ui-sref="treasury">Trésorerie</a></li>
-            <li><a ui-sref="accountHistory">Historique du compte</a></li>
-            <li><a ui-sref="graphProgress">Progression de la performance</a></li>
           </ul>
         </li>
         <li ng-show="$ctrl.isLoggedIn()" class="dropdown" uib-dropdown>
@@ -53,6 +50,19 @@
             <li><a ui-sref="buysell">Achat / Vente valeur</a></li>
           </ul>
         </li>
+
+
+        <li ng-show="$ctrl.isLoggedIn()" class="dropdown" uib-dropdown>
+          <a class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">
+            <span class="fa fa-bar-chart" aria-hidden="true"></span>&nbsp;&nbsp;Suivi <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a ui-sref="treasury">Trésorerie</a></li>
+            <li><a ui-sref="accountHistory">Historique du compte</a></li>
+            <li><a ui-sref="graphProgress">Progression de la performance</a></li>
+          </ul>
+        </li>
+
         <li ng-show="$ctrl.isAdmin()" ui-sref-active="active"><a ui-sref="admin">Admin</a></li>
       </ul>
 

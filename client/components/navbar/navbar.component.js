@@ -84,8 +84,10 @@ export class NavbarComponent {
     });
 
     this.setAccount = function(type, clubCode) {
+      var accountSelected =  {};
+
       if(type == 'individual') {
-        $scope.accountSelected = {
+        accountSelected = {
           type: 'individual',
           clubCode: '',
           clubName: '',
@@ -95,15 +97,15 @@ export class NavbarComponent {
       else if(type == 'club') {
         $scope.accountChoices.forEach(accountChoice => {
           if(accountChoice.clubCode == clubCode) {
-            $scope.accountSelected.type = 'club';
-            $scope.accountSelected.clubCode = clubCode;
-            $scope.accountSelected.clubName = accountChoice.clubName;
-            $scope.accountSelected.function = accountChoice.function;
+            accountSelected.type = 'club';
+            accountSelected.clubCode = clubCode;
+            accountSelected.clubName = accountChoice.clubName;
+            accountSelected.function = accountChoice.function;
           }
         });
       }
-      userSelection.set('accountSelected', $scope.accountSelected);
-      setAccountSelectedInBdd($scope.accountSelected);
+      userSelection.set('accountSelected', accountSelected);
+      setAccountSelectedInBdd(accountSelected);
       $window.location.reload();
     }
 
