@@ -234,73 +234,108 @@ export function treasury(req, res, next) {
       }
 
       var match = { "orderDone" : true };
+      var query;
       if(user.accountSelected.clubCode) {
         match.clubCode = user.accountSelected.clubCode;
+
+        query = [
+                    {
+                        "$match" : match
+                    },
+                    {
+                        "$lookup": {
+                            "from": "subscriptions",
+                            "localField": "clubCode",
+                            "foreignField": "clubCode",
+                            "as": "subs"
+                        }
+                    },
+                    { "$unwind": "$subs" },
+                    {
+                        "$group": {
+                            "_id": "$clubCode",
+                            "trades": {
+                                "$push": {
+                                    "date": "$date",
+                                    "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
+                                    "amount": {$multiply: [-1, "$total"]}
+                                }
+                            },
+                            "subs": {
+                                "$push": {
+                                    "date": "$subs.period",
+                                    "wording": { "$concat": ["Versement#", "$subs.email"] },
+                                    "period" : "$subs.period",
+                                    "amount": "$subs.amount"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "$project": {
+                            "clubCode": "$_id",
+                            "_id": 0,
+                            "treasury_moves": { "$setUnion": ["$subs", "$trades"] }
+                        }
+                    },
+                    { "$unwind": "$treasury_moves" },
+                    { 
+                        "$sort" : { "treasury_moves.date" : 1 }
+                    },
+                    {
+                        "$group": {
+                            "_id": "$clubCode",
+                            "treasury_moves": {
+                                "$push" : "$treasury_moves"
+                            }
+                        }
+                    },
+                    {
+                        "$project": {
+                            "clubCode": "$_id",
+                            "_id": 0,
+                            "treasury_moves": 1
+                        }
+                    }
+                ];
       }
       else {
         match.userId = String(userId);
-      }
 
-      Trade.aggregate([
-                        {
-                            "$match" : match
-                        },
-                        {
-                            "$lookup": {
-                                "from": "subscriptions",
-                                "localField": "clubCode",
-                                "foreignField": "clubCode",
-                                "as": "subs"
-                            }
-                        },
-                        { "$unwind": "$subs" },
-                        {
-                            "$group": {
-                                "_id": "$clubCode",
-                                "trades": {
-                                    "$push": {
-                                        "date": "$date",
-                                        "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
-                                        "amount": {$multiply: [-1, "$total"]}
-                                    }
-                                },
-                                "subs": {
-                                    "$push": {
-                                        "date": "$subs.period",
-                                        "wording": { "$concat": ["Versement#", "$subs.email"] },
-                                        "period" : "$subs.period",
-                                        "amount": "$subs.amount"
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            "$project": {
-                                "clubCode": "$_id",
-                                "_id": 0,
-                                "treasury_moves": { "$setUnion": ["$subs", "$trades"] }
-                            }
-                        },
-                        { "$unwind": "$treasury_moves" },
-                        { 
-                            "$sort" : { "treasury_moves.date" : 1 }
-                        },
-                        {
-                            "$group": {
-                                "_id": "$clubCode",
-                                "treasury_moves": {
-                                    "$push" : "$treasury_moves"
-                                }
-                            }
-                        },
-                        {
-                            "$project": {
-                                "clubCode": "$_id",
-                                "_id": 0,
-                                "treasury_moves": 1
+        query = [
+                    {
+                        "$match" : match
+                    },
+                    {
+                        "$project": {
+                            "userId": 1,
+                            "date": 1,
+                            "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
+                            "amount": {$multiply: [-1, "$total"]}
+                        }
+                    },
+                    { 
+                        "$sort" : { "date" : 1 }
+                    },
+                    {
+                        "$group": {
+                            "_id": "$userId",
+                            "treasury_moves": {
+                                "$push" : {"date": "$date", "wording": "$wording", "amount": "$amount"}
                             }
                         }
-                    ], function(err, result) {
+                    },
+                    {
+                        "$project": {
+                            "userId": "$_id",
+                            "_id": 0,
+                            "treasury_moves": 1
+                        }
+                    }
+                ];
+      }
+
+      Trade.aggregate(query, function(err, result) {
 
           if(err) {
             console.log(err);
@@ -389,80 +424,112 @@ export function accountHistory(req, res, next) {
       }
 
       var match = { "orderDone" : true };
+      var query;
       if(user.accountSelected.clubCode) {
         match.clubCode = user.accountSelected.clubCode;
+        query = [
+                    {
+                        "$match" : match
+                    },
+                    {
+                        "$lookup": {
+                            "from": "subscriptions",
+                            "localField": "clubCode",
+                            "foreignField": "clubCode",
+                            "as": "subs"
+                        }
+                    },
+                    { "$unwind": "$subs" },
+                    {
+                        "$group": {
+                            "_id": "$clubCode",
+                            "trades": {
+                                "$push": {
+                                    "date": "$date",
+                                    "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
+                                    "quantity": "$quantity",
+                                    "price": "$price",
+                                    "fees": "$fees",
+                                    "amount": {$multiply: [-1, "$total"]} //{ $cond: { if: { $gte: [ "$quantity", 0 ] }, then: {$multiply: [-1, "$total"]}, else: "$total" } }
+                                }
+                            },
+                            "subs": {
+                                "$push": {
+                                    "date": "$subs.period",
+                                    "wording": { "$concat": ["Versement#", "$subs.email"] },
+                                    "period" : "$subs.period",
+                                    "amount": "$subs.amount"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "$project": {
+                            "clubCode": "$_id",
+                            "_id": 0,
+                            "accountHistory_moves": { "$setUnion": ["$subs", "$trades"] }
+                        }
+                    },
+                    { "$unwind": "$accountHistory_moves" },
+                    { 
+                        "$sort" : { "accountHistory_moves.date" : 1 }
+                    },
+                    {
+                        "$group": {
+                            "_id": "$clubCode",
+                            "accountHistory_moves": {
+                                "$push" : "$accountHistory_moves"
+                            }
+                        }
+                    },
+                    {
+                        "$project": {
+                            "clubCode": "$_id",
+                            "_id": 0,
+                            "accountHistory_moves": 1
+                        }
+                    }
+                ];
       }
       else {
         match.userId = String(userId);
-      }
-
-      Trade.aggregate([
-                        {
-                            "$match" : match
-                        },
-                        {
-                            "$lookup": {
-                                "from": "subscriptions",
-                                "localField": "clubCode",
-                                "foreignField": "clubCode",
-                                "as": "subs"
-                            }
-                        },
-                        { "$unwind": "$subs" },
-                        {
-                            "$group": {
-                                "_id": "$clubCode",
-                                "trades": {
-                                    "$push": {
-                                        "date": "$date",
-                                        "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
-                                        "quantity": "$quantity",
-                                        "price": "$price",
-                                        "fees": "$fees",
-                                        "amount": {$multiply: [-1, "$total"]} //{ $cond: { if: { $gte: [ "$quantity", 0 ] }, then: {$multiply: [-1, "$total"]}, else: "$total" } }
-                                    }
-                                },
-                                "subs": {
-                                    "$push": {
-                                        "date": "$subs.period",
-                                        "wording": { "$concat": ["Versement#", "$subs.email"] },
-                                        "period" : "$subs.period",
-                                        "amount": "$subs.amount"
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            "$project": {
-                                "clubCode": "$_id",
-                                "_id": 0,
-                                "accountHistory_moves": { "$setUnion": ["$subs", "$trades"] }
-                            }
-                        },
-                        { "$unwind": "$accountHistory_moves" },
-                        { 
-                            "$sort" : { "accountHistory_moves.date" : 1 }
-                        },
-                        {
-                            "$group": {
-                                "_id": "$clubCode",
-                                "accountHistory_moves": {
-                                    "$push" : "$accountHistory_moves"
-                                }
-                            }
-                        },
-                        {
-                            "$project": {
-                                "clubCode": "$_id",
-                                "_id": 0,
-                                "accountHistory_moves": 1
+        query = [
+                    {
+                        "$match" : match
+                    },
+                    {
+                        "$project": {
+                            "userId": 1,
+                            "date": "$date",
+                            "wording": { "$concat": [ { $cond: { if: { $gte: [ "$quantity", 0 ] }, then: "Achat ", else: "Vente " } }, "$name"] },
+                            "quantity": "$quantity",
+                            "price": "$price",
+                            "fees": "$fees",
+                            "amount": {$multiply: [-1, "$total"]}
+                        }
+                    },
+                    { 
+                        "$sort" : { "date" : 1 }
+                    },
+                    {
+                        "$group": {
+                            "_id": "$userId",
+                            "accountHistory_moves": {
+                                "$push" : {"date": "$date", "wording": "$wording", "quantity": "$quantity", "price": "$price", "fees": "$fees", "amount": "$amount"}
                             }
                         }
-                    ], function(err, result) {
+                    },
+                    {
+                        "$project": {
+                            "userId": "$_id",
+                            "_id": 0,
+                            "accountHistory_moves": 1
+                        }
+                    }
+                ];
+      }
 
-                      console.log("=============================");
-                      console.log(result);
-                      console.log("=============================");
+      Trade.aggregate(query, function(err, result) {
 
           if(err) {
             console.log(err);
