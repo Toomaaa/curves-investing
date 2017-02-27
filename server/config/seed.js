@@ -69,6 +69,7 @@ User.find({}).remove()
       isPasswordSet: true,
       individualAccount: true,
       isPartOfClub: true,
+      signupDate: new Date(2017,0,10),
       club: [ {
         clubCode: '43W0K',
         clubName: 'BIC',

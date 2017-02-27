@@ -14,6 +14,7 @@ import jsonpatch from 'fast-json-patch';
 import Trade from './trade.model';
 import Subscription from '../subscription/subscription.model';
 import User from '../user/user.model';
+import Club from '../club/club.model';
 import Pending from '../pending/pending.model';
 import ClubsPeriods from '../clubsPeriods/clubsPeriods.model';
 import TreasuryMove from '../treasuryMove/treasuryMove.model';
@@ -405,10 +406,13 @@ function aggregateTables(tables, userId, clubCode) {
               if(result.clubCode) toPush.clubCode = result.clubCode;
               toPush.date = result.date;
               toPush.wording = (result.quantity >= 0 ? "Achat ": "Vente ")+result.name;
+              toPush.symbol = result.symbol;
+              toPush.name = result.name;
               toPush.quantity = result.quantity;
               toPush.price = result.price;
               toPush.fees = result.fees;
               toPush.amount = -1*result.total;
+              toPush.total = result.total;
 
               finalResult.push(toPush);
             }
@@ -421,6 +425,7 @@ function aggregateTables(tables, userId, clubCode) {
               toPush.period = result.period;
               toPush.amount = result.amount;
               toPush.cashGiven = true;
+              toPush.cashBalance = true;
 
               finalResult.push(toPush);
             }
@@ -432,7 +437,8 @@ function aggregateTables(tables, userId, clubCode) {
               toPush.date = result.date;
               toPush.wording = result.libelle;
               toPush.amount = result.amount;
-              toPush.cashGiven = true;
+              toPush.cashGiven = result.cashGiven;
+              toPush.cashBalance = true;
 
               finalResult.push(toPush);
             }
@@ -482,5 +488,202 @@ function queryTables(tables, userId, clubCode) {
     });
 
   });  
+
+}
+
+
+
+
+
+
+
+export function weekProgress(req, res, next) {
+
+  var userId = req.user._id;
+  var weeks = [];
+  var result = {};
+
+  return User.findOne({ _id: userId }, '-salt -password').exec()
+    .then(user => { // don't ever give out the password or salt
+      if(!user) {
+        return res.status(401).end();
+      }
+
+      result.clubCode = user.accountSelected.clubCode;
+
+      Club.findOne({ clubCode : user.accountSelected.clubCode })
+        .then(club => {
+          // find all end of weeks since the creation date
+          if(club) var creationDate = new Date(club.creationDate);
+          else var creationDate = new Date(user.signupDate);
+          var dateNow = new Date();
+          dateNow.setHours(11);
+          dateNow.setMinutes(0);
+          dateNow.setSeconds(0);
+          dateNow.setMilliseconds(0);
+
+          var cursorDate = new Date(creationDate);
+          cursorDate.setHours(12);
+          cursorDate.setMinutes(0);
+          cursorDate.setSeconds(0);
+          cursorDate.setMilliseconds(0);
+
+          // find the first friday after the creation date
+          var offsetToFriday = 5-creationDate.getDay();
+          if(offsetToFriday<0) offsetToFriday += 7;
+
+          cursorDate.setDate(creationDate.getDate()+offsetToFriday);
+
+          while(cursorDate < dateNow) {
+            weeks.push({ date: new Date(cursorDate) });
+            cursorDate.setDate(cursorDate.getDate()+7);
+          }
+          weeks.push({date: dateNow});
+          result.weeks = weeks;
+
+          aggregateTables([Trade, Subscription, TreasuryMove], userId, user.accountSelected.clubCode)
+            .then(result => {
+
+              // for each week
+              weeks.forEach(week => {
+
+                // find the cash Given
+                week.cashGiven = 0;
+                week.cashBalance = 0;
+                week.wallet = [];
+
+                result.forEach(move => {
+
+                  if(move.cashGiven && new Date(move.date) <= new Date(week.date)) {
+                    week.cashGiven += move.amount;
+                  }
+
+                  if(move.cashBalance && new Date(move.date) <= new Date(week.date)) {
+                    week.cashBalance += move.amount;
+                  }
+
+                  if(move.price && new Date(move.date) <= new Date(week.date)) {
+                    week.cashBalance -= move.total;
+
+                    var index = week.wallet.length;
+                    for(var j=0; j<week.wallet.length; j++) {
+                      if(move.symbol === week.wallet[j].symbol) index=j;
+                    }
+
+                    if(index == week.wallet.length) {
+                      week.wallet[index] = {
+                        quantity: 0,
+                        total: 0,
+                        symbol: '',
+                        name : ''
+                      };
+                    }
+                    week.wallet[index].symbol = move.symbol;
+                    week.wallet[index].name = move.name;
+                    week.wallet[index].quantity += move.quantity;
+                    week.wallet[index].total += move.total;
+                    if(week.wallet[index].quantity === 0) {
+                      week.wallet.splice(week.wallet.indexOf(week.wallet[index]), 1);
+                    }
+
+
+                  }
+
+
+                });
+
+                
+
+              });
+
+              res.json(weeks);
+
+            })
+            .catch(err => {
+              console.log(err);
+              throw err;
+            });
+
+
+          // // Get all the subscriptions from the members
+          // Subscription.find({clubCode : user.accountSelected.clubCode})
+          //   .then(subscriptions => {
+
+          //     Trade.find({clubCode : user.accountSelected.clubCode, orderDone: true})
+          //       .then(trades => {
+
+          //         // for each week
+          //         weeks.forEach(week => {
+
+          //           // find the cash Given
+          //           week.cashGiven = 0;
+          //           subscriptions.forEach(subscription => {
+          //             if(new Date(subscription.period) <= new Date(week.date))
+          //               week.cashGiven += subscription.amount;
+          //           });
+
+          //           // find the cash Balance
+          //           week.cashBalance = week.cashGiven;
+          //           trades.forEach(trade => {
+          //             if(new Date(trade.date) <= new Date(week.date))
+          //               week.cashBalance -= trade.total;
+          //           });
+
+
+          //           // find the wallet
+          //           week.wallet = [];
+
+
+          //           for(var i=0; i<trades.length; i++) {
+
+          //             if(new Date(trades[i].date) <= new Date(week.date)) {
+
+          //               var index = week.wallet.length;
+          //               for(var j=0; j<week.wallet.length; j++) {
+          //                 if(trades[i].symbol === week.wallet[j].symbol) index=j;
+          //               }
+
+          //               if(index == week.wallet.length) {
+          //                 week.wallet[index] = {
+          //                   quantity: 0,
+          //                   total: 0,
+          //                   symbol: '',
+          //                   name : ''
+          //                 };
+          //               }
+          //               week.wallet[index].symbol = trades[i].symbol;
+          //               week.wallet[index].name = trades[i].name;
+          //               week.wallet[index].quantity += trades[i].quantity;
+          //               week.wallet[index].total += trades[i].total;
+          //               if(week.wallet[index].quantity === 0) {
+          //                 week.wallet.splice(week.wallet.indexOf(week.wallet[index]), 1);
+          //               }
+                        
+          //             }
+
+          //           }
+
+          //         });
+
+          //         res.json(weeks);
+
+          //       })
+          //       .catch(err => {
+          //         console.log(err);
+          //       });
+          //   })
+          //   .catch(err => {
+          //     console.log(err);
+          //   });
+
+        })
+        .catch(err => {
+          console.log(err);
+        })
+
+    })
+    .catch(err => {
+      console.log(err);
+    });
 
 }

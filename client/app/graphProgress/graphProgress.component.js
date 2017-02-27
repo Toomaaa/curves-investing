@@ -11,13 +11,13 @@ export class GraphProgressComponent {
 
 
 
-    $scope.showTable = false;
+    $scope.showTable = true;
 
 
 
     $scope.firstFound = 0;
     
-    $http.get('/api/clubs/weekProgress')
+    $http.get('/api/trades/weekProgress')
       .then(result => {
         $scope.weeks = result.data;
         var saveWeeks = $scope.weeks;

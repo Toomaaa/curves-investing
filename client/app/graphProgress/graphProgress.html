@@ -47,7 +47,7 @@
 		<div class="col-sm-4 no-side-padding">
 			<div class="col-sm-2 text-center no-side-padding">{{ week.date | date: 'dd/MM/yy' }}</div>
 			<div class="col-sm-2 text-center no-side-padding">{{ week.cashGiven | number:0 }}{{ week.cashGiven ? ' €' : '' }}</div>
-			<div class="col-sm-2 text-center no-side-padding">{{ week.cashBalance | number:0 }}{{ week.cashGiven ? ' €' : '' }}</div>
+			<div class="col-sm-2 text-center no-side-padding">{{ week.cashBalance | number:0 }}{{ week.cashBalance ? ' €' : '' }}</div>
 			<div class="col-sm-2 text-center no-side-padding">{{ (walletValue[$index] | number: 0)+' €' }}</div>
 			<div class="col-sm-2 text-center no-side-padding">{{ week.totalValue | number:0 }} €</div>
 			<div class="col-sm-2 text-center no-side-padding">{{ week.win | number:0 }} €</div>

@@ -8,7 +8,8 @@ var TreasuryMoveSchema = new mongoose.Schema({
   clubCode: String,
   date: Date,
   libelle: String,
-  amount: Number
+  amount: Number,
+  cashGiven: Boolean
 });
 
 registerEvents(TreasuryMoveSchema);

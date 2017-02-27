@@ -7,8 +7,6 @@ var controller = require('./club.controller');
 
 var router = express.Router();
 
-router.get('/weekProgress', auth.isAuthenticated(), controller.weekProgress);
-
 router.get('/', controller.index);
 router.get('/:id', controller.show);
 router.get('/clubCode/:clubCode', controller.clubCodeGet);

@@ -30,6 +30,22 @@
 			<div class="col-sm-12">&nbsp;</div>
 		</div>
 
+		<div class="row" ng-show="debitOrCredit == 'credit'">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-2 text-right"><label>Apport personnel ?</label></div>
+				<div class="col-sm-offset-1 col-sm-2">
+					<input type="radio" name="cashGiven" ng-model="cashGiven" value="oui"> oui
+				</div>
+				<div class="col-sm-2">
+					<input type="radio" name="cashGiven" ng-model="cashGiven" value="non"> non
+				</div>
+			</div>
+		</div>
+
+		<div class="row" ng-if="debitOrCredit == 'credit'">
+			<div class="col-sm-12">&nbsp;</div>
+		</div>
+
 		<div class="row"">
 			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-2 text-right label-input"><label>Date</label></div>

@@ -10,17 +10,25 @@ export class TreasuryMoveComponent {
   constructor($scope, $http, userSelection) {
     
     $scope.validated = false;
+    $scope.debitOrCredit = 'credit';
     $scope.date = new Date();
 
     $scope.formValidation = function () {
 
       var club = userSelection.get('accountSelected');
 
+      console.log($scope.cashGiven);
+      var cashGiven;
+      if($scope.cashGiven === 'oui') cashGiven = true;
+      if($scope.cashGiven === 'non') cashGiven = false;
+
+
       var data = {
         clubCode: club.clubCode != '' ? club.clubCode : undefined,
         date: $scope.date,
         libelle: $scope.libelle,
-        amount: ($scope.debitOrCredit == 'debit' ? -1 : 1)*$scope.amount
+        amount: ($scope.debitOrCredit == 'debit' ? -1 : 1)*$scope.amount,
+        cashGiven: cashGiven
       };
 
       $http.post('/api/treasuryMoves', data)
@@ -42,6 +50,7 @@ export class TreasuryMoveComponent {
           $scope.debitOrCredit = undefined;
           $scope.libelle = undefined;
           $scope.amount = undefined;
+          $scope.cashGiven = undefined;
 
         })
         .catch(err => {
