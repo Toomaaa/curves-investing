@@ -132,9 +132,11 @@ export function historicalQuotesService($http, $sce, $q, yahooRequest) {
 
 	function getCACETFvalue (date) {
 
+		console.log(date);
+
 		date = new Date(date);
 
-		if(date > new Date(2017,0,21))
+		if(date > new Date(2017,0,21) && date.getDay() === 5)
 			date.setDate(date.getDate()-1);
 
 		if(date.getFullYear() === new Date().getFullYear() && date.getMonth() === new Date().getMonth() && date.getDate() === new Date().getDate())

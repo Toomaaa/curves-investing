@@ -11,7 +11,7 @@ export class GraphProgressComponent {
 
 
 
-    $scope.showTable = true;
+    $scope.showTable = false;
 
 
 
