@@ -53,6 +53,7 @@
 @import 'main/main.css';
 @import 'members-list/members-list.css';
 @import 'treasury/treasury.css';
+@import 'treasuryMove/treasuryMove.css';
 @import 'wallet/wallet.css';
 @import '../components/footer/footer.css';
 @import '../components/modal/modal.css';

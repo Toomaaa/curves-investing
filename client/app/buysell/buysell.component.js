@@ -39,6 +39,7 @@ export class BuysellComponent {
       quotes.getQuote(symbol)
         .then(result => {
           $scope.price = result.LastTradePriceOnly;
+          $scope.lastTradeValue = result.LastTradePriceOnly;
           $scope.lastTradeDate = result.LastTradeDate;
         })
         .catch(err => {
