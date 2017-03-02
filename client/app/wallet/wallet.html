@@ -321,6 +321,11 @@
 			</div>
 		</div>
 	</div>
+	<div class="row" ng-if="orders.length">
+		<div class="col-xs-12 wallet-table-total text-right">
+			<strong>Total en carnet : {{ ordersTotal | number:2 }} €</strong>
+		</div>
+	</div>
 
 	<br />
 

@@ -96,6 +96,7 @@ export class WalletComponent {
 
 
     $scope.nextOrder=0;
+    $scope.ordersTotal=0;
 
     function getOrdersDetails() {
 
@@ -110,6 +111,8 @@ export class WalletComponent {
         .then(result => {
           order.actualPrice = result.LastTradePriceOnly;
           order.lastTradeDate = result.LastTradeDate;
+
+          $scope.ordersTotal += (order.actualPrice * order.quantity);
 
           $scope.nextOrder++;
           if($scope.nextOrder < $scope.orders.length) getOrdersDetails();
