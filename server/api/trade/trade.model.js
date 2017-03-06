@@ -16,7 +16,8 @@ var TradeSchema = new mongoose.Schema({
   limit1: Number,
   limit2: Number,
   fees: Number,
-  total: Number
+  total: Number,
+  notification: Boolean
 });
 
 export default mongoose.model('Trade', TradeSchema);
