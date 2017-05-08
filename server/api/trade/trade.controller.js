@@ -177,11 +177,13 @@ export function wallet(req, res, next) {
             return res.status(404).end();
           }
 
-          result.forEach(res => {
-            if(res.quantity === 0) {
-              result.splice(result.indexOf(res), 1);
+          for(var i=0; i<result.length; i++) {
+            var r = result[i];
+            if(r.quantity === 0) {
+              result.splice(i, 1);
+              i--;
             }
-          });
+          }
           res.json(result);
 
         }

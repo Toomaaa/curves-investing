@@ -77,8 +77,10 @@ export class BuysellComponent {
         limit1: ($scope.orderType == 'ASD' || $scope.orderType == 'APD' ? $scope.limit1 : undefined),
         limit2: ($scope.orderType == 'APD' ? $scope.limit2 : undefined),
         fees: $scope.fees,
-        total: Math.round(100*($scope.quantity * ($scope.orderType == 'ACL' ? $scope.price : $scope.orderType == 'OAM' || $scope.orderType == 'APM' ? $scope.actualPrice : $scope.limit1) + ($scope.buyOrSell == 'buy' ? -1 : 1)*$scope.fees))/100
+        total: Math.round(100*(($scope.buyOrSell == 'buy' ? 1 : -1) * $scope.quantity * ($scope.orderType == 'ACL' ? $scope.price : $scope.orderType == 'OAM' || $scope.orderType == 'APM' ? $scope.actualPrice : $scope.limit1) + ($scope.buyOrSell == 'buy' ? -1 : 1)*$scope.fees))/100
       };
+
+      console.log(data);
 
 
       $http.post('/api/trades', data);
